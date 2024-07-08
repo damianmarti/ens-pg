@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { recoverTypedDataAddress } from "viem";
 import { GrantInsert, createGrant } from "~~/services/database/repositories/grants";
+import { createStage } from "~~/services/database/repositories/stages";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_GRANT } from "~~/utils/eip712";
 
 export type CreateNewGrantReqBody = GrantInsert & { signature: `0x${string}` };
@@ -37,8 +38,13 @@ export async function POST(req: Request) {
     if (recoveredAddress !== newGrant.builderAddress)
       return NextResponse.json({ error: "Recovered address did not match signer" }, { status: 401 });
 
-    const result = await createGrant(newGrant);
-    return NextResponse.json(result, { status: 201 });
+    const [createdGrant] = await createGrant(newGrant);
+
+    const [createdStage] = await createStage({
+      grantId: createdGrant.id,
+    });
+
+    return NextResponse.json({ grantId: createdGrant.id, stageId: createdStage.id }, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Error creating grant" }, { status: 500 });

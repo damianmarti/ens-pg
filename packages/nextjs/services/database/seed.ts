@@ -45,10 +45,27 @@ async function seed() {
   await db
     .insert(stages)
     .values([
-      { description: "Stage 1 for Grant 1", stageNumber: 1, grantId: insertedGrants[0].id },
-      { description: "Stage 2 for Grant 1", stageNumber: 2, grantId: insertedGrants[0].id },
-      { description: "Stage 1 for Grant 2", stageNumber: 1, grantId: insertedGrants[1].id },
-      { description: "Stage 1 for Grant 3", stageNumber: 1, grantId: insertedGrants[2].id },
+      {
+        title: "Stage 1 for Grant 1",
+        stageNumber: 1,
+        grantId: insertedGrants[0].id,
+        status: "completed",
+      },
+      {
+        title: "Stage 2 for Grant 1",
+        stageNumber: 2,
+        grantId: insertedGrants[0].id,
+      },
+      {
+        title: "Stage 1 for Grant 2",
+        stageNumber: 1,
+        grantId: insertedGrants[1].id,
+      },
+      {
+        title: "Stage 1 for Grant 3",
+        stageNumber: 1,
+        grantId: insertedGrants[2].id,
+      },
     ])
     .execute();
 

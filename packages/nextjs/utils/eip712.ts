@@ -9,3 +9,15 @@ export const EIP_712_TYPES__APPLY_FOR_GRANT = {
     { name: "description", type: "string" },
   ],
 } as const;
+
+export const EIP_712_TYPES__APPLY_FOR_STAGE = {
+  Message: [{ name: "title", type: "string" }],
+} as const;
+
+export const EIP_712_TYPES__REVIEW_STAGE = {
+  Message: [
+    { name: "stageId", type: "string" },
+    { name: "action", type: "string" },
+    { name: "txHash", type: "string" },
+  ],
+} as const;

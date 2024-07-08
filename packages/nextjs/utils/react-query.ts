@@ -1,10 +1,10 @@
-export const fetcher = async (...args: Parameters<typeof fetch>) => {
+export const fetcher = async <T = Record<any, any>>(...args: Parameters<typeof fetch>) => {
   const res = await fetch(...args);
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data.error || "Error fetching data");
   }
-  return data;
+  return data as T;
 };
 
 export const makeMutationFetcher =

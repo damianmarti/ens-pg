@@ -16,13 +16,17 @@ export const GrantCard = ({ grant }: { grant: Grant }) => {
   return (
     <div className="card bg-primary text-primary-content w-96">
       <div className="card-body">
-        <h2 className="card-title p-0">Title: {latestStage.stageNumber === 1 ? grant.title : latestStage.title}</h2>
+        <h2 className="card-title p-0">Title: {grant.title}</h2>
         {latestStage.stageNumber === 1 ? (
           <p className="p-0 m-1">{grant.description}</p>
         ) : (
           <p className="p-0 m-1">Stage number: {latestStage.stageNumber}</p>
         )}
-        {latestStage.stageNumber !== 1 && <p className="p-0 m-1">Grant title: {grant.title}</p>}
+        {latestStage.stageNumber !== 1 && (
+          <p className="p-0 m-1">
+            Planned Milestones for Stage {latestStage.stageNumber}: {latestStage.milestone}
+          </p>
+        )}
         <Address address={grant.builderAddress} />
         <div className="flex gap-3 mt-2">
           <button

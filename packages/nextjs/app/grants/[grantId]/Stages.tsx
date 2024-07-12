@@ -23,7 +23,7 @@ export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["i
       {stages.map(stage => (
         <div key={stage.id} className="card bg-primary text-primary-content w-96">
           <div className="card-body">
-            <h2 className="card-title p-0">{stage.title}</h2>
+            <h2 className="card-title p-0">Stage {stage.stageNumber}</h2>
             {stage.status === "approved" && (
               <button
                 className="btn btn-success btn-sm"
@@ -48,6 +48,7 @@ export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["i
       )}
       <NewStageModal
         ref={newStageModalRef}
+        previousStage={latestStage}
         grantId={grantId}
         closeModal={() => newStageModalRef && newStageModalRef.current?.close()}
       />

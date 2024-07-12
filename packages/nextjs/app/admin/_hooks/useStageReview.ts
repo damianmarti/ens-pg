@@ -2,12 +2,10 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useAccount, useSignTypedData } from "wagmi";
 import { ReviewStageBody } from "~~/app/api/stages/[stageId]/review/route";
-import { stagesStatusEnum } from "~~/services/database/config/schema";
+import { Status } from "~~/services/database/repositories/stages";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_STAGE } from "~~/utils/eip712";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
-
-type Status = (typeof stagesStatusEnum.enumValues)[number];
 
 export const useStageReview = (stageId?: number) => {
   const router = useRouter();

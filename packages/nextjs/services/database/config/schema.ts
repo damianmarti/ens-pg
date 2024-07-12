@@ -21,7 +21,7 @@ export const stages = pgTable("stages", {
   // TODO: Should ID be a UUID?
   id: serial("id").primaryKey(),
   stageNumber: integer("stage_number").notNull().default(1),
-  title: varchar("title", { length: 256 }).notNull().default("Stage 1"),
+  milestone: text("milestone"),
   submitedAt: timestamp("submited_at").default(sql`now()`),
   grantId: integer("grant_id")
     .references(() => grants.id)

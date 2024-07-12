@@ -11,7 +11,10 @@ export const EIP_712_TYPES__APPLY_FOR_GRANT = {
 } as const;
 
 export const EIP_712_TYPES__APPLY_FOR_STAGE = {
-  Message: [{ name: "title", type: "string" }],
+  Message: [
+    { name: "stage_number", type: "string" },
+    { name: "milestone", type: "string" },
+  ],
 } as const;
 
 export const EIP_712_TYPES__REVIEW_STAGE = {

@@ -46,23 +46,23 @@ async function seed() {
     .insert(stages)
     .values([
       {
-        title: "Stage 1 for Grant 1",
+        milestone: "Milestone of stage 1 for Grant 1",
         stageNumber: 1,
         grantId: insertedGrants[0].id,
         status: "completed",
       },
       {
-        title: "Stage 2 for Grant 1",
+        milestone: "Milesotne of stage 2 for Grant 1",
         stageNumber: 2,
         grantId: insertedGrants[0].id,
       },
       {
-        title: "Stage 1 for Grant 2",
+        milestone: "Milestone of stage 1 for Grant 2",
         stageNumber: 1,
         grantId: insertedGrants[1].id,
       },
       {
-        title: "Stage 1 for Grant 3",
+        milestone: "Milestone of stage 1 for Grant 3",
         stageNumber: 1,
         grantId: insertedGrants[2].id,
       },

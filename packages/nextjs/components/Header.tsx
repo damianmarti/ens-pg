@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Bars3Icon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { useAuthSession } from "~~/hooks/useAuthSession";
 
 type HeaderMenuLink = {
   label: string;
@@ -29,14 +30,31 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/admin",
     icon: <LockClosedIcon className="h-4 w-4" />,
   },
+  {
+    label: "Siwe",
+    href: "/siwe",
+  },
 ];
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
+  const { isAdmin, data: session, isAuthenticated } = useAuthSession();
 
   return (
     <>
       {menuLinks.map(({ label, href, icon }) => {
+        if (!session && label !== "Siwe") {
+          return null;
+        }
+
+        if (isAuthenticated && label === "Siwe") {
+          return null;
+        }
+
+        if (label === "Admin" && !isAdmin) {
+          return null;
+        }
+
         const isActive = pathname === href;
         return (
           <li key={href}>

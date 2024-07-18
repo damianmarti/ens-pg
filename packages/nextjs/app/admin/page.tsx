@@ -1,9 +1,17 @@
 import { GrantCard } from "./_components/GrantCard";
 import type { NextPage } from "next";
+import { getServerSession } from "next-auth";
 import { getAllGrants } from "~~/services/database/repositories/grants";
+import { authOptions } from "~~/utils/auth";
 
 // TODO: Fix Nextjs caching when navigating to admin page
 const Admin: NextPage = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user?.role !== "admin") {
+    return <div className="flex items-center text-xl flex-col flex-grow pt-10 space-y-4">Access denied</div>;
+  }
+
   const allGrants = await getAllGrants();
 
   // stage 1 propsed grants

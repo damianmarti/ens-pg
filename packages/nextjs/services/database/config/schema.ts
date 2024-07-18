@@ -12,8 +12,12 @@ export const grants = pgTable("grants", {
   builderAddress: varchar("builder_address", { length: 42 }).notNull(),
 });
 
-export const grantsRelations = relations(grants, ({ many }) => ({
+export const grantsRelations = relations(grants, ({ many, one }) => ({
   stages: many(stages),
+  user: one(users, {
+    fields: [grants.builderAddress],
+    references: [users.address],
+  }),
 }));
 
 export const stagesStatusEnum = pgEnum("stage_status", ["proposed", "approved", "completed", "rejected"]);
@@ -36,4 +40,16 @@ export const stagesRelations = relations(stages, ({ one }) => ({
     fields: [stages.grantId],
     references: [grants.id],
   }),
+}));
+
+export const userRoleEnum = pgEnum("user_role", ["admin", "grantee"]);
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  role: userRoleEnum("role").notNull().default("grantee"),
+  address: varchar("address", { length: 42 }).unique().notNull(),
+});
+
+export const usersRelations = relations(users, ({ many }) => ({
+  grants: many(grants),
 }));

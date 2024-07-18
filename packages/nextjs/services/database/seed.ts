@@ -1,4 +1,4 @@
-import { grants, stages } from "./config/schema";
+import { grants, stages, users } from "./config/schema";
 import * as schema from "./config/schema";
 import * as dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -19,6 +19,7 @@ async function seed() {
 
   await db.delete(stages).execute(); // Ensure stages are deleted before grants
   await db.delete(grants).execute(); // Delete grants
+  await db.delete(users).execute();
 
   const insertedGrants = await db
     .insert(grants)
@@ -68,6 +69,17 @@ async function seed() {
       },
     ])
     .execute();
+
+  await db.insert(users).values([
+    {
+      address: "0xadmin",
+      role: "admin",
+    },
+    {
+      address: "0xgrantee",
+      role: "grantee",
+    },
+  ]);
 
   console.log("Database seeded successfully");
 }

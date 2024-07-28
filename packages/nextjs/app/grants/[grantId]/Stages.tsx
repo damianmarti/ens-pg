@@ -8,9 +8,11 @@ import { Grant } from "~~/services/database/repositories/grants";
 import { Stage } from "~~/services/database/repositories/stages";
 
 export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["id"] }) => {
+  const latestStage = stages[0];
+  const reversedStages = [...stages].reverse();
+
   const newStageModalRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
-  const latestStage = stages[stages.length - 1];
 
   const { reviewStage, isSigning, isPostingStageReview } = useStageReview(latestStage.id);
 
@@ -20,7 +22,7 @@ export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["i
 
   return (
     <>
-      {stages.map(stage => (
+      {reversedStages.map(stage => (
         <div key={stage.id} className="card bg-primary text-primary-content w-96">
           <div className="card-body">
             <h2 className="card-title p-0">Stage {stage.stageNumber}</h2>

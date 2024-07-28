@@ -9,9 +9,9 @@ module.exports = {
     themes: [
       {
         light: {
-          primary: "#93BBFB",
+          primary: "#AF52DE",
           "primary-content": "#212638",
-          secondary: "#DAE8FF",
+          secondary: "#F3E6FB",
           "secondary-content": "#212638",
           accent: "#93BBFB",
           "accent-content": "#212638",
@@ -21,12 +21,12 @@ module.exports = {
           "base-200": "#f4f8ff",
           "base-300": "#DAE8FF",
           "base-content": "#212638",
-          info: "#93BBFB",
-          success: "#34EEB6",
-          warning: "#FFCF72",
-          error: "#FF8863",
+          info: "#F3E6FB",
+          success: "#D6FFCF",
+          warning: "#FFEC99",
+          error: "#FFAFAF",
 
-          "--rounded-btn": "9999rem",
+          "--rounded-btn": "0.75rem",
 
           ".tooltip": {
             "--tooltip-tail": "6px",
@@ -76,6 +76,12 @@ module.exports = {
   },
   theme: {
     extend: {
+      colors: {
+        "primary-green": "#33AD46",
+        "primary-orange": "#F08C00",
+        "primary-red": "#E03131",
+        "medium-purple": "#E789FF",
+      },
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",
       },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useStageReview } from "../_hooks/useStageReview";
 import { ApproveModal } from "./ApproveModal";
 import { Address } from "~~/components/scaffold-eth";
@@ -28,6 +29,11 @@ export const GrantCard = ({ grant }: { grant: Grant }) => {
           </p>
         )}
         <Address address={grant.builderAddress} />
+
+        <Link href={`/grants/${grant.id}`}>
+          <button className="btn btn-secondary btn-sm">Grant details</button>
+        </Link>
+
         <div className="flex gap-3 mt-2">
           <button
             className="btn btn-success btn-sm"

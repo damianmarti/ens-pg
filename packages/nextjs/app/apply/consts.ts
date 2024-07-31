@@ -1,0 +1,2 @@
+export const DEFAULT_INPUT_MAX_LENGTH = 75;
+export const DEFAULT_TEXTAREA_MAX_LENGTH = 750;

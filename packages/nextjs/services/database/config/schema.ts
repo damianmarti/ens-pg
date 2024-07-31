@@ -1,13 +1,20 @@
 import { relations, sql } from "drizzle-orm";
-import { integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { bigint, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 // TODO: Define the right schema.
 
 export const grants = pgTable("grants", {
   // TODO: Should ID be a UUID? Or is it fine as a serial?
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 256 }).notNull(),
+  title: varchar("title").notNull(),
   description: text("description").notNull(),
+  milestones: text("milestones").notNull(),
+  showcaseVideoUrl: text("showcaseVideoUrl"),
+  requestedFunds: bigint("requestedFunds", { mode: "bigint" }).notNull(),
+  github: text("github").notNull(),
+  email: text("email").notNull(),
+  twitter: text("twitter"),
+  telegram: text("telegram"),
   submitedAt: timestamp("submited_at").default(sql`now()`),
   builderAddress: varchar("builder_address", { length: 42 }).notNull(),
 });

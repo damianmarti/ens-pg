@@ -7,6 +7,13 @@ export const EIP_712_TYPES__APPLY_FOR_GRANT = {
   Message: [
     { name: "title", type: "string" },
     { name: "description", type: "string" },
+    { name: "milestones", type: "string" },
+    { name: "showcaseVideoUrl", type: "string" },
+    { name: "requestedFunds", type: "string" },
+    { name: "github", type: "string" },
+    { name: "email", type: "string" },
+    { name: "twitter", type: "string" },
+    { name: "telegram", type: "string" },
   ],
 } as const;
 

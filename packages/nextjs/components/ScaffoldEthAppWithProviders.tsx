@@ -15,6 +15,11 @@ import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
+// https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006086291
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
 

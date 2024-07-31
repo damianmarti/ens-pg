@@ -10,7 +10,7 @@ export async function GET(_request: Request, { params }: { params: { builderAddr
     const session = await getServerSession(authOptions);
     const builderAddress = params.builderAddress;
 
-    if (session?.user?.role !== "admin" && session?.user?.address !== builderAddress) {
+    if (session?.user.address !== builderAddress && session?.user.role !== "admin") {
       return NextResponse.json("Access denied", { status: 403 });
     }
 

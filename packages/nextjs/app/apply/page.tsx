@@ -40,7 +40,7 @@ const Apply: NextPage = () => {
         },
       });
 
-      await postNewGrant({ title, description, builderAddress: connectedAddress, signature });
+      await postNewGrant({ title, description, signature });
       router.push("/");
     } catch (error) {
       const errorMessage = getParsedError(error);

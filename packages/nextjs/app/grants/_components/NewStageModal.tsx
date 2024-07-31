@@ -46,7 +46,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
           },
         });
 
-        await postNewStage({ milestone, signer: connectedAddress, signature, grantId });
+        await postNewStage({ milestone, signature, grantId });
         closeModal();
         router.refresh();
       } catch (error) {

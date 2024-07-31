@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { recoverTypedDataAddress } from "viem";
-import { StageUpdate, updateStage } from "~~/services/database/repositories/stages";
+import { StageUpdate, getStageById, updateStage } from "~~/services/database/repositories/stages";
+import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_STAGE } from "~~/utils/eip712";
 
 export type ReviewStageBody = {
   status: Required<StageUpdate>["status"];
   approvedTx?: StageUpdate["approvedTx"];
   signature: `0x${string}`;
-  signer: string;
 };
 
-//TODO: Make sure the signer is admin
 export async function POST(req: NextRequest, { params }: { params: { stageId: string } }) {
   try {
     const { stageId } = params;
     const body = (await req.json()) as ReviewStageBody;
+    const session = await getServerSession(authOptions);
+    const stage = await getStageById(Number(stageId));
 
     const recoveredAddress = await recoverTypedDataAddress({
       domain: EIP_712_DOMAIN,
@@ -28,9 +30,17 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
       signature: body.signature,
     });
 
-    if (recoveredAddress !== body.signer) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (body.status === "completed" && session?.user.address !== stage?.grant.builderAddress) {
+      return NextResponse.json({ error: "Only grant owner can complete stages" }, { status: 401 });
     }
+
+    // TODO: Don't do admin check if the status is completed. The status will be marked completed probably through contraact event
+    if (body.status !== "completed" && session?.user.role !== "admin") {
+      return NextResponse.json({ error: "Only admins can review stages" }, { status: 401 });
+    }
+
+    if (session?.user.address !== recoveredAddress)
+      return NextResponse.json({ error: "Recovered address did not match session address" }, { status: 403 });
 
     if (body.status === "approved" && !body.approvedTx) {
       return NextResponse.json({ error: "Approved grants must have a transaction hash" }, { status: 400 });

@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { recoverTypedDataAddress } from "viem";
 import { getGrantById } from "~~/services/database/repositories/grants";
 import { StageInsert, createStage } from "~~/services/database/repositories/stages";
+import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_STAGE } from "~~/utils/eip712";
 
-export type CreateNewStageReqBody = StageInsert & { signer: string; signature: `0x${string}` };
+export type CreateNewStageReqBody = StageInsert & { signature: `0x${string}` };
 
 export async function POST(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
     const body = (await req.json()) as CreateNewStageReqBody;
 
-    if (!body.milestone || !body.signer || !body.signature)
+    if (!body.milestone || !body.signature)
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
 
-    const { signature, signer, ...newStage } = body;
+    const { signature, ...newStage } = body;
 
     const grant = await getGrantById(newStage.grantId);
     if (!grant) return NextResponse.json({ error: "Grant not found" }, { status: 404 });
@@ -27,8 +30,11 @@ export async function POST(req: Request) {
       signature,
     });
 
-    if (recoveredAddress !== signer)
-      return NextResponse.json({ error: "Recovered address did not match signer" }, { status: 401 });
+    if (grant.builderAddress !== session?.user.address)
+      return NextResponse.json({ error: "Only owner can apply for new stage" }, { status: 401 });
+
+    if (session?.user.address !== recoveredAddress)
+      return NextResponse.json({ error: "Recovered address did not match session address" }, { status: 403 });
 
     // check if previous stage was completed
     if (latestStage.status !== "completed") {

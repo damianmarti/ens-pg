@@ -47,7 +47,6 @@ export const useStageReview = (stageId?: number) => {
         status,
         approvedTx: txHash,
         signature,
-        signer: connectedAddress,
       });
       notification.remove(notificationId);
       notification.success(`Grant ${status}`);

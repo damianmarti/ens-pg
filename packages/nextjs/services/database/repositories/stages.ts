@@ -14,3 +14,12 @@ export async function createStage(stage: StageInsert) {
 export async function updateStage(stageId: Required<StageUpdate>["id"], stage: StageUpdate) {
   return await db.update(stages).set(stage).where(eq(stages.id, stageId));
 }
+
+export async function getStageById(stageId: number) {
+  return await db.query.stages.findFirst({
+    where: eq(stages.id, stageId),
+    with: {
+      grant: true,
+    },
+  });
+}

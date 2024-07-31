@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { recoverTypedDataAddress } from "viem";
 import { GrantInsert, createGrant } from "~~/services/database/repositories/grants";
 import { createStage } from "~~/services/database/repositories/stages";
+import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_GRANT } from "~~/utils/eip712";
 
-export type CreateNewGrantReqBody = GrantInsert & { signature: `0x${string}` };
+export type CreateNewGrantReqBody = Omit<GrantInsert, "builderAddress"> & { signature: `0x${string}` };
 
 const validateBody = (newGrant: Partial<CreateNewGrantReqBody>): newGrant is CreateNewGrantReqBody => {
   if (
     !newGrant.title ||
     !newGrant.description ||
-    !newGrant.builderAddress ||
     !newGrant.signature ||
     newGrant.description.length > 750 ||
     newGrant.title.length > 75
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
 
     if (!validateBody(body)) return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
 
+    const session = await getServerSession(authOptions);
+
     const { signature, ...newGrant } = body;
     const recoveredAddress = await recoverTypedDataAddress({
       domain: EIP_712_DOMAIN,
@@ -35,10 +38,10 @@ export async function POST(req: Request) {
       signature,
     });
 
-    if (recoveredAddress !== newGrant.builderAddress)
-      return NextResponse.json({ error: "Recovered address did not match signer" }, { status: 401 });
+    if (session?.user.address !== recoveredAddress)
+      return NextResponse.json({ error: "Recovered address did not match session address" }, { status: 403 });
 
-    const [createdGrant] = await createGrant(newGrant);
+    const [createdGrant] = await createGrant({ ...newGrant, builderAddress: session.user.address });
 
     const [createdStage] = await createStage({
       grantId: createdGrant.id,

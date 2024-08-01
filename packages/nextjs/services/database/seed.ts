@@ -22,6 +22,25 @@ async function seed() {
   await db.delete(grants).execute(); // Delete grants
   await db.delete(users).execute();
 
+  await db.insert(users).values([
+    {
+      address: "0x55b9CB0bCf56057010b9c471e7D42d60e1111EEa",
+      role: "admin",
+    },
+    {
+      address: "0x60583563d5879c2e59973e5718c7de2147971807",
+      role: "admin",
+    },
+    {
+      address: "0xB4F53bd85c00EF22946d24Ae26BC38Ac64F5E7B1",
+      role: "admin",
+    },
+    {
+      address: "0xb8224dfCf3C174331a8e6a841AEEa7dF321f6D8E",
+      role: "admin",
+    },
+  ]);
+
   const insertedGrants = await db
     .insert(grants)
     .values([
@@ -91,17 +110,6 @@ async function seed() {
       },
     ])
     .execute();
-
-  await db.insert(users).values([
-    {
-      address: "0xadmin",
-      role: "admin",
-    },
-    {
-      address: "0xgrantee",
-      role: "grantee",
-    },
-  ]);
 
   console.log("Database seeded successfully");
 }

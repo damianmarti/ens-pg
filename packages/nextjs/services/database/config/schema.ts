@@ -16,7 +16,9 @@ export const grants = pgTable("grants", {
   twitter: text("twitter"),
   telegram: text("telegram"),
   submitedAt: timestamp("submited_at").default(sql`now()`),
-  builderAddress: varchar("builder_address", { length: 42 }).notNull(),
+  builderAddress: varchar("builder_address", { length: 42 })
+    .references(() => users.address)
+    .notNull(),
 });
 
 export const grantsRelations = relations(grants, ({ many, one }) => ({

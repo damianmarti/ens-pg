@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { NewStageModal } from "../_components/NewStageModal";
+import { NewStageModal } from "./NewStageModal";
 import { useStageReview } from "~~/app/admin/_hooks/useStageReview";
 import { Grant } from "~~/services/database/repositories/grants";
 import { Stage } from "~~/services/database/repositories/stages";
@@ -23,7 +23,7 @@ export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["i
   return (
     <>
       {reversedStages.map(stage => (
-        <div key={stage.id} className="card bg-primary text-primary-content w-96">
+        <div key={stage.id} className="card bg-primary text-primary-content w-full max-w-96">
           <div className="card-body">
             <h2 className="card-title p-0">Stage {stage.stageNumber}</h2>
             {stage.status === "approved" && (

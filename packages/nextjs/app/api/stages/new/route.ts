@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { recoverTypedDataAddress } from "viem";
+import { newStageModalFormSchema } from "~~/app/grants/[grantId]/_components/CurrentStage/NewStageModal/schema";
 import { getGrantById } from "~~/services/database/repositories/grants";
 import { StageInsert, createStage } from "~~/services/database/repositories/stages";
 import { authOptions } from "~~/utils/auth";
@@ -13,8 +14,11 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     const body = (await req.json()) as CreateNewStageReqBody;
 
-    if (!body.milestone || !body.signature)
+    try {
+      newStageModalFormSchema.parse(body.milestone);
+    } catch (err) {
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
+    }
 
     const { signature, ...newStage } = body;
 
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
       domain: EIP_712_DOMAIN,
       types: EIP_712_TYPES__APPLY_FOR_STAGE,
       primaryType: "Message",
-      message: { stage_number: (latestStage.stageNumber + 1).toString(), milestone: body.milestone },
+      message: { stage_number: (latestStage.stageNumber + 1).toString(), milestone: body.milestone as string },
       signature,
     });
 

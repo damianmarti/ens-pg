@@ -1,6 +1,6 @@
 import { CurrentStage } from "./_components/CurrentStage";
 import { GrantDetails } from "./_components/GrantDetails";
-import { Stages } from "./_components/Stages";
+import { ProjectTimeline } from "./_components/ProjectTimeline";
 import { getServerSession } from "next-auth";
 import { getGrantById } from "~~/services/database/repositories/grants";
 import { authOptions } from "~~/utils/auth";
@@ -28,7 +28,7 @@ const Grant = async ({ params }: { params: { grantId: string } }) => {
       <h1 className="text-3xl font-extrabold">{grant.title}</h1>
       <GrantDetails grant={grant} />
       <CurrentStage grant={grant} />
-      <Stages stages={grant.stages} grantId={grant.id} />
+      <ProjectTimeline stages={grant.stages} grantId={grant.id} />
     </div>
   );
 };

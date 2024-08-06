@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { BuilderGrantsResponse } from "../api/builders/[builderAddress]/grants/route";
 import { useQuery } from "@tanstack/react-query";
-import { Tooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Badge } from "~~/components/pg-ens/Badge";
+import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 import { fetcher } from "~~/utils/react-query";
 
@@ -55,13 +55,9 @@ export const MyGrantsList = () => {
                     <span data-tooltip-id={`tooltip-${grant.id}`} className="ml-2">
                       <QuestionMarkCircleIcon className="h-7 w-7 text-gray-400" />
                     </span>
-                    <Tooltip
-                      id={`tooltip-${grant.id}`}
-                      className="!bg-white !text-[#212638] shadow-lg"
-                      classNameArrow="hidden"
-                    >
+                    <StyledTooltip id={`tooltip-${grant.id}`}>
                       {multilineStringToTsx(latestStage.statusNote)}
-                    </Tooltip>
+                    </StyledTooltip>
                   </>
                 )}
               </div>

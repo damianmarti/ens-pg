@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { recoverTypedDataAddress } from "viem";
+import { parseEther, recoverTypedDataAddress } from "viem";
 import { StageUpdate, getStageById, updateStage } from "~~/services/database/repositories/stages";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_STAGE } from "~~/utils/eip712";
@@ -8,6 +8,8 @@ import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_STAGE } from "~~/utils/eip712";
 export type ReviewStageBody = {
   status: Required<StageUpdate>["status"];
   approvedTx?: StageUpdate["approvedTx"];
+  statusNote?: StageUpdate["statusNote"];
+  grantAmount?: string;
   signature: `0x${string}`;
 };
 
@@ -25,7 +27,9 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
       message: {
         stageId,
         action: body.status,
-        txHash: body.approvedTx ?? "",
+        txHash: body.approvedTx || "",
+        statusNote: body.statusNote || "",
+        grantAmount: body.grantAmount || "",
       },
       signature: body.signature,
     });
@@ -46,9 +50,17 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
       return NextResponse.json({ error: "Approved grants must have a transaction hash" }, { status: 400 });
     }
 
-    const approvedObj = body.approvedTx ? { approvedTx: body.approvedTx, approvedAt: new Date() } : {};
+    const approvedObj = body.approvedTx
+      ? {
+          approvedTx: body.approvedTx,
+          approvedAt: new Date(),
+          grantAmount: parseEther(body.grantAmount as string),
+        }
+      : {};
+
     await updateStage(Number(stageId), {
       status: body.status,
+      statusNote: body.statusNote,
       ...approvedObj,
     });
 

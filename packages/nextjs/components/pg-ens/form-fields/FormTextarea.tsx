@@ -1,11 +1,10 @@
-import { DEFAULT_TEXTAREA_MAX_LENGTH } from "../consts";
-import { FormValues } from "../schema";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { useFormContext, useWatch } from "react-hook-form";
+import { DEFAULT_TEXTAREA_MAX_LENGTH } from "~~/utils/forms";
 
 type FormTextareaProps = {
   label?: string;
-  name: keyof FormValues;
+  name: string;
   showMessageLength?: boolean;
   error?: string;
   required?: boolean;
@@ -26,7 +25,7 @@ export const FormTextarea = ({ error, label, name, showMessageLength, required }
         )}
         <textarea
           {...register(name)}
-          className={`textarea mt-1 w-full${error ? " textarea-error" : ""}`}
+          className={`textarea textarea-bordered mt-1 w-full${error ? " textarea-error" : ""}`}
           autoComplete="off"
           maxLength={DEFAULT_TEXTAREA_MAX_LENGTH}
         />

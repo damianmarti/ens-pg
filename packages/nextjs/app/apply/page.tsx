@@ -2,16 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { CreateNewGrantReqBody } from "../api/grants/new/route";
-import { FormInput } from "./_components/FormInput";
-import { FormSelect } from "./_components/FormSelect";
-import { FormTextarea } from "./_components/FormTextarea";
-import { FormValues, applyFormRequiredFields, applyFormSchema } from "./schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { ApplyFormValues, applyFormSchema } from "./schema";
 import { useMutation } from "@tanstack/react-query";
 import type { NextPage } from "next";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import { useAccount, useSignTypedData } from "wagmi";
 import { Button } from "~~/components/pg-ens/Button";
+import { FormInput } from "~~/components/pg-ens/form-fields/FormInput";
+import { FormSelect } from "~~/components/pg-ens/form-fields/FormSelect";
+import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
+import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_GRANT } from "~~/utils/eip712";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
@@ -20,24 +20,14 @@ const Apply: NextPage = () => {
   const { signTypedDataAsync, isPending: isSigning } = useSignTypedData();
   const { address: connectedAddress } = useAccount();
   const router = useRouter();
-  const useFormMethods = useForm<FormValues>({ resolver: zodResolver(applyFormSchema) });
-
-  const {
-    handleSubmit,
-    formState: { errors },
-  } = useFormMethods;
-
-  const getCommonOptions = (name: keyof FormValues) => ({
-    name,
-    error: errors[name]?.message,
-    required: applyFormRequiredFields.includes(name),
-  });
+  const { formMethods, getCommonOptions } = useFormMethods<ApplyFormValues>({ schema: applyFormSchema });
+  const { handleSubmit } = formMethods;
 
   const { mutateAsync: postNewGrant, isPending: isPostingNewGrant } = useMutation({
     mutationFn: (newGrant: CreateNewGrantReqBody) => postMutationFetcher("/api/grants/new", { body: newGrant }),
   });
 
-  const onSubmit = async (fieldValues: FormValues) => {
+  const onSubmit = async (fieldValues: ApplyFormValues) => {
     try {
       if (!connectedAddress) return notification.error("Please connect your wallet");
 
@@ -68,7 +58,7 @@ const Apply: NextPage = () => {
     <div className="flex flex-col w-full items-center justify-center p-12">
       <h2 className="text-3xl font-extrabold !mb-0">Apply for a grant</h2>
 
-      <FormProvider {...useFormMethods}>
+      <FormProvider {...formMethods}>
         <div className="mt-10 card card-compact rounded-xl max-w-4xl w-full bg-secondary shadow-lg mb-12 p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="card-body gap-1">
             <FormInput label="Title" {...getCommonOptions("title")} />

@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { NewStageModal } from "./NewStageModal";
-import { useStageReview } from "~~/app/admin/_hooks/useStageReview";
+import { useStageReview } from "~~/hooks/pg-ens/useStageReview";
 import { Grant } from "~~/services/database/repositories/grants";
 import { Stage } from "~~/services/database/repositories/stages";
 
@@ -31,7 +31,7 @@ export const Stages = ({ stages, grantId }: { stages: Stage[]; grantId: Grant["i
                 className="btn btn-success btn-sm"
                 disabled={isPostingStageReview || isSigning}
                 onClick={async () => {
-                  await reviewStage("completed");
+                  await reviewStage({ status: "completed" });
                   router.refresh();
                 }}
               >

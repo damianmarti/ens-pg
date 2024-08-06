@@ -17,7 +17,17 @@ export const useStageReview = (stageId?: number) => {
       postMutationFetcher(`/api/stages/${stageId}/review`, { body: reviewedStage }),
   });
 
-  const reviewStage = async (status: Status, txHash?: string) => {
+  const reviewStage = async ({
+    status,
+    txHash,
+    statusNote,
+    grantAmount,
+  }: {
+    status: Status;
+    txHash?: string;
+    statusNote?: string;
+    grantAmount?: string;
+  }) => {
     if (!stageId) return;
     let notificationId;
     try {
@@ -39,6 +49,8 @@ export const useStageReview = (stageId?: number) => {
           stageId: stageId.toString(),
           action: status,
           txHash: txHash || "",
+          statusNote: statusNote || "",
+          grantAmount: grantAmount || "",
         },
       });
 
@@ -47,6 +59,8 @@ export const useStageReview = (stageId?: number) => {
         status,
         approvedTx: txHash,
         signature,
+        statusNote,
+        grantAmount,
       });
       notification.remove(notificationId);
       notification.success(`Grant ${status}`);

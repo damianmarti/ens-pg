@@ -39,7 +39,9 @@ export const stages = pgTable("stages", {
   grantId: integer("grant_id")
     .references(() => grants.id)
     .notNull(),
+  grantAmount: bigint("grantAmount", { mode: "bigint" }),
   status: stagesStatusEnum("status").notNull().default("proposed"),
+  statusNote: text("statusNote"),
   approvedTx: varchar("approved_tx", { length: 66 }),
   approvedAt: timestamp("approved_at"),
 });

@@ -10,9 +10,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { signOut } from "next-auth/react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
+import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useAuthSession } from "~~/hooks/useAuthSession";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
 /**

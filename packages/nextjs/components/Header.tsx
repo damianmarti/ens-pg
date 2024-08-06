@@ -6,8 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bars3Icon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-import { useAuthSession } from "~~/hooks/useAuthSession";
 
 type HeaderMenuLink = {
   label: string;

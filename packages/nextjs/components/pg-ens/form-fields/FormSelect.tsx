@@ -1,10 +1,9 @@
-import { FormValues } from "../schema";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { useFormContext, useWatch } from "react-hook-form";
 
 type FormSelectProps = {
   label?: string;
-  name: keyof FormValues;
+  name: string;
   error?: string;
   required?: boolean;
   options: string[];

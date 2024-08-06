@@ -2,8 +2,9 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { useStageReview } from "../_hooks/useStageReview";
 import { ApproveModal } from "./ApproveModal";
+import { RejectModal } from "./RejectModal";
+import { Button } from "~~/components/pg-ens/Button";
 import { Address } from "~~/components/scaffold-eth";
 import { getAllGrants } from "~~/services/database/repositories/grants";
 
@@ -11,7 +12,8 @@ type Grant = Awaited<ReturnType<typeof getAllGrants>>[0];
 
 export const GrantCard = ({ grant }: { grant: Grant }) => {
   const approveModalRef = useRef<HTMLDialogElement>(null);
-  const { reviewStage, isSigning, isPostingStageReview } = useStageReview(grant.stages[0].id);
+  const rejectModalRef = useRef<HTMLDialogElement>(null);
+
   const latestStage = grant.stages[0];
 
   return (
@@ -35,22 +37,24 @@ export const GrantCard = ({ grant }: { grant: Grant }) => {
         </Link>
 
         <div className="flex gap-3 mt-2">
-          <button
-            className="btn btn-success btn-sm"
+          <Button
+            variant="green-secondary"
+            size="sm"
             onClick={() => approveModalRef && approveModalRef.current?.showModal()}
           >
             Approve
-          </button>
-          <button
-            className="btn btn-error btn-sm"
-            onClick={() => reviewStage("rejected")}
-            disabled={isPostingStageReview || isSigning}
+          </Button>
+          <Button
+            variant="red-secondary"
+            size="sm"
+            onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
           >
             Reject
-          </button>
+          </Button>
         </div>
       </div>
-      <ApproveModal ref={approveModalRef} stage={grant.stages[0]} />
+      <ApproveModal ref={approveModalRef} stage={grant.stages[0]} grantName={grant.title} />
+      <RejectModal ref={rejectModalRef} stage={grant.stages[0]} grantName={grant.title} />
     </div>
   );
 };

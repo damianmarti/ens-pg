@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as CreateNewStageReqBody;
 
     try {
-      newStageModalFormSchema.parse(body.milestone);
+      newStageModalFormSchema.parse({ milestone: body.milestone });
     } catch (err) {
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
     }

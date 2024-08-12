@@ -1,10 +1,11 @@
 import { MockStage } from ".";
 import { TimelineCompleteButton } from "./TimelineCompleteButton";
 import { formatEther } from "viem";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
 import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
 import { Stage } from "~~/services/database/repositories/stages";
+import { Withdrawal } from "~~/services/database/repositories/withdrawals";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 function getFormattedDate(date: Date) {
@@ -15,7 +16,7 @@ function getFormattedDate(date: Date) {
   return `${month}/${day}/${year}`;
 }
 
-type TimelineStageProps = { stage: Stage | MockStage };
+type TimelineStageProps = { stage: (Stage & { withdrawals: Withdrawal[] }) | MockStage };
 
 export const TimelineStage = ({ stage }: TimelineStageProps) => {
   const isOdd = stage.stageNumber % 2;
@@ -42,28 +43,46 @@ export const TimelineStage = ({ stage }: TimelineStageProps) => {
         {isRealStage ? (
           <>
             {stage.submitedAt && <div>{getFormattedDate(stage.submitedAt)}</div>}
-            <div className={`font-bold text-2xl mt-1 flex items-center ${isOdd ? "" : "sm:justify-end"}`}>
-              <span>
-                Stage {stage.stageNumber} {stage.status}: {formatEther(stage.grantAmount || 0n)} ETH grant
-              </span>
-              {stage.statusNote && (
-                <>
-                  <span data-tooltip-id={`tooltip-${stage.stageNumber}`} className="ml-2">
-                    <QuestionMarkCircleIcon className="h-7 w-7 text-gray-400" />
-                  </span>
-                  <StyledTooltip id={`tooltip-${stage.stageNumber}`}>
-                    {multilineStringToTsx(stage.statusNote)}
-                  </StyledTooltip>
-                </>
-              )}
-            </div>
-            {stage.milestone && (
-              <div className="mt-3 text-gray-500">
-                <div className="font-bold text-lg">Planned Milestones:</div>
-                {/* TODO: stage milestones */}
-                {multilineStringToTsx(stage.milestone)}
+            <div className={`flex flex-col font-bold text-2xl mt-1`}>
+              <div className={`flex gap-1 items-center ${isOdd ? "" : "sm:flex-row-reverse"}`}>
+                <span>
+                  Stage {stage.stageNumber} {stage.status}
+                </span>
+                {stage.statusNote && (
+                  <>
+                    <span data-tooltip-id={`tooltip-note-${stage.stageNumber}`} className="">
+                      <QuestionMarkCircleIcon className="h-7 w-7 text-gray-400" />
+                    </span>
+                    <StyledTooltip id={`tooltip-note-${stage.stageNumber}`}>
+                      {multilineStringToTsx(stage.statusNote)}
+                    </StyledTooltip>
+                  </>
+                )}
+
+                {stage.milestone && (
+                  <>
+                    <span data-tooltip-id={`tooltip-milestone-${stage.stageNumber}`} className="ml-2">
+                      <MagnifyingGlassIcon className="h-7 w-7 text-gray-400" />
+                    </span>
+                    <StyledTooltip id={`tooltip-milestone-${stage.stageNumber}`}>
+                      {multilineStringToTsx(stage.milestone)}
+                    </StyledTooltip>
+                  </>
+                )}
               </div>
-            )}
+
+              {stage.grantAmount ? <span>Grant: {formatEther(stage.grantAmount)} ETH</span> : null}
+            </div>
+
+            {stage.withdrawals.map((withdrawal, idx) => (
+              <div key={`withdrawal-${withdrawal.id}`} className="mt-3 text-gray-500">
+                <div className="font-bold text-lg">
+                  Milestone {idx + 1} ({formatEther(withdrawal.withdrawAmount as bigint)} Eth withdraw)
+                </div>
+
+                {multilineStringToTsx(withdrawal.milestones || "-")}
+              </div>
+            ))}
             {stage.status === "approved" && <TimelineCompleteButton stage={stage} />}
           </>
         ) : (

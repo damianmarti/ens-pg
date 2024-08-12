@@ -46,10 +46,28 @@ export const stages = pgTable("stages", {
   approvedAt: timestamp("approved_at"),
 });
 
-export const stagesRelations = relations(stages, ({ one }) => ({
+export const stagesRelations = relations(stages, ({ one, many }) => ({
   grant: one(grants, {
     fields: [stages.grantId],
     references: [grants.id],
+  }),
+  withdrawals: many(withdrawals),
+}));
+
+export const withdrawals = pgTable("withdrawals", {
+  id: serial("id").primaryKey(),
+  milestones: text("milestones"),
+  withdrewAt: timestamp("withdrew_at").default(sql`now()`),
+  stageId: integer("stage_id")
+    .references(() => stages.id)
+    .notNull(),
+  withdrawAmount: bigint("grantAmount", { mode: "bigint" }),
+});
+
+export const withdrawalsRelations = relations(withdrawals, ({ one }) => ({
+  stage: one(stages, {
+    fields: [withdrawals.stageId],
+    references: [stages.id],
   }),
 }));
 

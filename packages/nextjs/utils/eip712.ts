@@ -24,6 +24,14 @@ export const EIP_712_TYPES__APPLY_FOR_STAGE = {
   ],
 } as const;
 
+export const EIP_712_TYPES__WITHDRAW_FROM_STAGE = {
+  Message: [
+    { name: "stageId", type: "string" },
+    { name: "completedMilestones", type: "string" },
+    { name: "withdrawAmount", type: "string" },
+  ],
+} as const;
+
 export const EIP_712_TYPES__REVIEW_STAGE = {
   Message: [
     { name: "stageId", type: "string" },

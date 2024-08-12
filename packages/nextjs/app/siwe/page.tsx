@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { Button } from "~~/components/pg-ens/Button";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useHandleLogin } from "~~/hooks/pg-ens/useHandleLogin";
 
@@ -21,10 +22,10 @@ export default function Siwe() {
   }, [router, isAuthenticated]);
 
   return (
-    <button
-      className="btn btn-primary my-10 self-center"
+    <Button
+      className="mt-10 self-center"
       onClick={e => {
-        e.preventDefault();
+        e?.preventDefault();
         if (!isConnected) {
           openConnectModal?.();
         } else {
@@ -33,6 +34,6 @@ export default function Siwe() {
       }}
     >
       Sign in with Ethereum
-    </button>
+    </Button>
   );
 }

@@ -51,18 +51,17 @@ export const Button = ({
     variantClassNames = "bg-error hover:bg-error text-primary-red";
   }
 
+  const allClassNames = `btn border-none ${sharedButtonClassNames} ${sizeClassNames} ${variantClassNames} ${className}`;
+
   if (link && href) {
     return (
-      <Link href={href} className={`btn ${sharedButtonClassNames} ${variantClassNames}`}>
+      <Link href={href} className={allClassNames}>
         {children}
       </Link>
     );
   }
   return (
-    <button
-      className={`btn ${sharedButtonClassNames} ${sizeClassNames} ${variantClassNames} ${className}`}
-      onClick={onClick}
-    >
+    <button className={allClassNames} onClick={onClick}>
       {children}
     </button>
   );

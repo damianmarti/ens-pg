@@ -28,7 +28,7 @@ async function seed() {
       role: "admin",
     },
     {
-      address: "0x60583563d5879c2e59973e5718c7de2147971807",
+      address: "0x60583563D5879C2E59973E5718c7DE2147971807",
       role: "admin",
     },
     {
@@ -59,7 +59,7 @@ async function seed() {
       {
         title: "Grant 2",
         description: "Description for grant 2",
-        builderAddress: "0x60583563d5879c2e59973e5718c7de2147971807",
+        builderAddress: "0x60583563D5879C2E59973E5718c7DE2147971807",
         milestones: "Milestones 2",
         showcaseVideoUrl: "Video url 2",
         requestedFunds: parseEther("0.5"),

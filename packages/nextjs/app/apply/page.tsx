@@ -55,7 +55,7 @@ const Apply: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full items-center justify-center p-12">
+    <div className="flex flex-col w-full items-center justify-center p-10">
       <h2 className="text-3xl font-extrabold !mb-0">Apply for a grant</h2>
 
       <FormProvider {...formMethods}>

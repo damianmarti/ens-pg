@@ -21,7 +21,7 @@ export const GrantCard = ({ grant }: { grant: Grant }) => {
       <div className="card-body">
         <h2 className="card-title p-0">Title: {grant.title}</h2>
         {latestStage.stageNumber === 1 ? (
-          <p className="p-0 m-1">{grant.description}</p>
+          <p className="p-0 m-1 line-clamp-4">{grant.description}</p>
         ) : (
           <p className="p-0 m-1">Stage number: {latestStage.stageNumber}</p>
         )}

@@ -1,3 +1,5 @@
+"use client";
+
 import { ButtonHTMLAttributes, MouseEvent, ReactNode } from "react";
 import Link from "next/link";
 

@@ -11,6 +11,9 @@ export async function getAllGrants() {
       stages: {
         // this makes sure latest stage is first
         orderBy: [desc(stages.stageNumber)],
+        with: {
+          withdrawals: true,
+        },
       },
     },
   });

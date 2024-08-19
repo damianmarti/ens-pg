@@ -1,3 +1,4 @@
+import { ApprovedGrants } from "./_components/ApprovedGrants";
 import { WorkflowItem } from "./_components/WorkflowItem";
 import { Stats } from "./_components/stats";
 import type { NextPage } from "next";
@@ -43,7 +44,7 @@ const Home: NextPage = () => {
       <div className="bg-secondary py-10 sm:py-20 px-4 flex flex-col items-center w-full">
         <h2 className="text-3xl font-black !mb-0">How does it work</h2>
 
-        <div className="my-12 grid text-sm sm:grid-cols-2 xl:grid-cols-4 max-w-7xl gap-8">
+        <div className="my-12 grid text-sm sm:grid-cols-2 xl:grid-cols-4 max-w-screen-2xl gap-8">
           {workflowItems.map(({ title, description }, idx) => (
             <WorkflowItem key={title} step={idx + 1} title={title} description={description} />
           ))}
@@ -52,6 +53,8 @@ const Home: NextPage = () => {
           Apply for a grant
         </Button>
       </div>
+
+      <ApprovedGrants />
     </div>
   );
 };

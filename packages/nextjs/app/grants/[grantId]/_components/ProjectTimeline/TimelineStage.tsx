@@ -6,15 +6,8 @@ import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/sol
 import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
 import { Stage } from "~~/services/database/repositories/stages";
 import { Withdrawal } from "~~/services/database/repositories/withdrawals";
+import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
-
-function getFormattedDate(date: Date) {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${month}/${day}/${year}`;
-}
 
 type TimelineStageProps = { stage: (Stage & { withdrawals: Withdrawal[] }) | MockStage };
 

@@ -4,7 +4,7 @@ import { BuilderGrantsResponse } from "../api/builders/[builderAddress]/grants/r
 import { useQuery } from "@tanstack/react-query";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 import { Badge } from "~~/components/pg-ens/Badge";
 import { Button } from "~~/components/pg-ens/Button";
 import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
@@ -58,7 +58,7 @@ export const GrantsList = ({ address }: GrantsListProps) => {
                   {latestStage.statusNote && (
                     <>
                       <span data-tooltip-id={`tooltip-${grant.id}`} className="ml-2">
-                        <QuestionMarkCircleIcon className="h-7 w-7 text-gray-400" />
+                        <ChatBubbleOvalLeftEllipsisIcon className="h-7 w-7 text-gray-400" />
                       </span>
                       <StyledTooltip id={`tooltip-${grant.id}`}>
                         {multilineStringToTsx(latestStage.statusNote)}

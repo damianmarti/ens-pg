@@ -1,4 +1,4 @@
-import { grants, stages, users } from "./config/schema";
+import { grants, privateNotes, stages, users } from "./config/schema";
 import * as schema from "./config/schema";
 import * as dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -18,6 +18,7 @@ async function seed() {
   await client.connect();
   const db = drizzle(client, { schema });
 
+  await db.delete(privateNotes).execute(); // Delete private notes first
   await db.delete(stages).execute(); // Ensure stages are deleted before grants
   await db.delete(grants).execute(); // Delete grants
   await db.delete(users).execute();

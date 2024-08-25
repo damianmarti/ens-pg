@@ -19,6 +19,21 @@ export async function getAllGrants() {
   });
 }
 
+// Note: use only for admin pages
+export async function getAllGrantsWithStagesAndPrivateNotes() {
+  return await db.query.grants.findMany({
+    with: {
+      stages: {
+        // this makes sure latest stage is first
+        orderBy: [desc(stages.stageNumber)],
+        with: {
+          privateNotes: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getBuilderGrants(builderAddress: string) {
   return await db.query.grants.findMany({
     where: eq(grants.builderAddress, builderAddress),

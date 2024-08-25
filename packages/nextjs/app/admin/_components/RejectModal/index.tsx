@@ -28,7 +28,7 @@ export const RejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(({ st
         <form method="dialog" className="bg-secondary -mx-6 -mt-6 px-6 py-4 flex items-center justify-between">
           <div className="flex justify-between items-center">
             <p className="font-bold text-xl m-0">
-              Reject Stage {stage.stageNumber} for {grantName}
+              Reject stage {stage.stageNumber} for {grantName}
             </p>
           </div>
           {/* if there is a button in form, it will close the modal */}

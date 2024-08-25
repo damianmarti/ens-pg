@@ -52,6 +52,7 @@ export const stagesRelations = relations(stages, ({ one, many }) => ({
     references: [grants.id],
   }),
   withdrawals: many(withdrawals),
+  privateNotes: many(privateNotes),
 }));
 
 export const withdrawals = pgTable("withdrawals", {
@@ -67,6 +68,25 @@ export const withdrawals = pgTable("withdrawals", {
 export const withdrawalsRelations = relations(withdrawals, ({ one }) => ({
   stage: one(stages, {
     fields: [withdrawals.stageId],
+    references: [stages.id],
+  }),
+}));
+
+export const privateNotes = pgTable("private_notes", {
+  id: serial("id").primaryKey(),
+  note: text("note").notNull(),
+  writtenAt: timestamp("written_at").default(sql`now()`),
+  stageId: integer("stage_id")
+    .references(() => stages.id)
+    .notNull(),
+  authorAddress: varchar("author_address", { length: 42 })
+    .references(() => users.address)
+    .notNull(),
+});
+
+export const privateNotesRelations = relations(privateNotes, ({ one }) => ({
+  stage: one(stages, {
+    fields: [privateNotes.stageId],
     references: [stages.id],
   }),
 }));

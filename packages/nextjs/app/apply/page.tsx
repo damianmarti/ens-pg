@@ -47,6 +47,7 @@ const Apply: NextPage = () => {
         ...fieldValues,
         signature,
       });
+      notification.success(`The grant proposal has been created`);
       router.push("/my-grants");
     } catch (error) {
       const errorMessage = getParsedError(error);

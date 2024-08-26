@@ -56,7 +56,7 @@ const Admin: NextPage = async () => {
 
         <div className="flex flex-col items-center p-4 sm:p-6 bg-[#F3E6FB] rounded-xl">
           <h2 className="text-2xl font-bold !m-0">New Stage Proposals ({stageProposals.length})</h2>
-          <div className="mt-4 sm:mt-6 space-y-4 w-full">
+          <div className="mt-4 sm:mt-6 space-y-4 w-full flex flex-col items-center">
             {stageProposals.map(grant => (
               <Proposal
                 key={grant.id}

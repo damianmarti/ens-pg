@@ -30,11 +30,10 @@ export const GrantDetails = async ({ grant }: GrantDetailsProps) => {
           <GrantDetailsField title="Title" description={grant.title} />
           <GrantDetailsField title="Description" description={grant.description} />
           <GrantDetailsField title="Project milestones" description={grant.milestones} />
-          <GrantDetailsField title="Showcase Video Url" description={grant.showcaseVideoUrl || "-"} />
-          {/* TODO: change for stage milestones */}
           <GrantDetailsField title="Stage milestones" description={grant.stages} />
-          <GrantDetailsField title="Requested Funds" description={`${formatEther(grant.requestedFunds)} ETH`} />
           <div className="grid sm:grid-cols-2 sm:gap-x-16 gap-y-4">
+            <GrantDetailsField title="Requested Funds" description={`${formatEther(grant.requestedFunds)} ETH`} />
+            <GrantDetailsField title="Showcase Video Url" description={grant.showcaseVideoUrl || "-"} />
             <GrantDetailsField title="Github" description={grant.github} />
             <GrantDetailsField title="Email address" description={grant.email} />
             <GrantDetailsField title="Project or personal twitter" description={grant.twitter || "-"} />

@@ -56,30 +56,30 @@ const Apply: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full items-center justify-center p-10">
-      <h2 className="text-3xl font-extrabold !mb-0">Apply for a grant</h2>
+    <div className="flex flex-col w-full items-center justify-center p-6 sm:p-10">
+      <h2 className="text-2xl sm:text-3xl font-extrabold !mb-0">Apply for a grant</h2>
 
       <FormProvider {...formMethods}>
-        <div className="mt-10 card card-compact rounded-xl max-w-4xl w-full bg-secondary shadow-lg mb-12 p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="card-body gap-1">
+        <div className="mt-6 sm:mt-10 card card-compact rounded-xl w-full max-w-4xl bg-secondary shadow-lg mb-8 sm:mb-12 p-4 sm:p-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="card-body gap-3 sm:gap-1">
             <FormInput label="Title" {...getCommonOptions("title")} />
             <FormTextarea label="Description" showMessageLength {...getCommonOptions("description")} />
             <FormTextarea label="Planned Milestones" showMessageLength {...getCommonOptions("milestones")} />
-            <FormInput label="Showcase Video Url" {...getCommonOptions("showcaseVideoUrl")} />
-            <FormSelect
-              label="Requested Funds (in ETH)"
-              options={["0.25", "0.5", "1", "2"]}
-              {...getCommonOptions("requestedFunds")}
-            />
-            <div className="grid grid-cols-2 gap-x-16 gap-y-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-16 sm:gap-y-1">
+              <FormSelect
+                label="Requested Funds (in ETH)"
+                options={["0.25", "0.5", "1", "2"]}
+                {...getCommonOptions("requestedFunds")}
+              />
+              <FormInput label="Showcase Video Url" {...getCommonOptions("showcaseVideoUrl")} />
               <FormInput label="Github" {...getCommonOptions("github")} />
               <FormInput label="Email address" {...getCommonOptions("email")} />
               <FormInput label="Project or personal twitter" {...getCommonOptions("twitter")} />
               <FormInput label="Telegram handle" {...getCommonOptions("telegram")} />
             </div>
-            <Button type="submit" disabled={isPostingNewGrant || isSigning} className="mt-4 self-center">
+            <Button type="submit" disabled={isPostingNewGrant || isSigning} className="mt-4 self-center ">
               {(isPostingNewGrant || isSigning) && <span className="loading loading-spinner"></span>}
-              APPLY FOR A GRANT
+              Submit
             </Button>
           </form>
         </div>

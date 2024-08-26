@@ -24,7 +24,7 @@ export const FormSelect = ({ error, label, name, required, options }: FormSelect
         )}
         <select
           {...register(name)}
-          className={`block select select-bordered mt-1 w-full max-w-xs${error ? " select-error" : ""}`}
+          className={`block select select-bordered mt-1 w-full max-w-[10rem]${error ? " select-error" : ""}`}
           autoComplete="off"
         >
           {options?.map(opt => (

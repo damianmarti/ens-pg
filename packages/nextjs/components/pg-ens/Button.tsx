@@ -20,6 +20,8 @@ export const Button = ({
   onClick,
   link,
   href,
+  type,
+  disabled,
   className = "",
   children,
 }: ButtonProps) => {
@@ -53,7 +55,9 @@ export const Button = ({
     variantClassNames = "bg-error hover:bg-error text-primary-red";
   }
 
-  const allClassNames = `btn border-none ${sharedButtonClassNames} ${sizeClassNames} ${variantClassNames} ${className}`;
+  const allClassNames = `btn border-none ${sharedButtonClassNames} ${sizeClassNames} ${variantClassNames} ${className} ${
+    disabled ? "disabled" : ""
+  }`;
 
   if (link && href) {
     return (
@@ -63,7 +67,7 @@ export const Button = ({
     );
   }
   return (
-    <button className={allClassNames} onClick={onClick}>
+    <button disabled={disabled} className={allClassNames} type={type} onClick={onClick}>
       {children}
     </button>
   );

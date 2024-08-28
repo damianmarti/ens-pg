@@ -20,9 +20,13 @@ function isElementClamped(element: HTMLElement | null) {
 
 export type GrantWithStagesAndPrivateNotes = Awaited<ReturnType<typeof getAllGrantsWithStagesAndPrivateNotes>>[0];
 
-type ProposalProps = { proposal: GrantWithStagesAndPrivateNotes; userSubmissionsAmount: number };
+type ProposalProps = {
+  proposal: GrantWithStagesAndPrivateNotes;
+  userSubmissionsAmount: number;
+  isGrant?: boolean;
+};
 
-export const Proposal = ({ proposal, userSubmissionsAmount }: ProposalProps) => {
+export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalProps) => {
   const milesonesRef = useRef<HTMLDivElement>(null);
   const [isDefaultExpanded, setIsDefaultExpanded] = useState(true);
   const [isExpandedByClick, setIsExpandedByClick] = useState(false);
@@ -128,7 +132,14 @@ export const Proposal = ({ proposal, userSubmissionsAmount }: ProposalProps) => 
         )}
       </div>
 
-      <ApproveModal ref={approveModalRef} stage={latestStage} grantName={proposal.title} />
+      <ApproveModal
+        ref={approveModalRef}
+        stage={proposal.stages[0]}
+        builderAddress={proposal.builderAddress}
+        grantName={proposal.title}
+        isGrant={isGrant}
+        grantNumber={proposal.grantNumber}
+      />
       <RejectModal ref={rejectModalRef} stage={latestStage} grantName={proposal.title} />
       <PrivateNoteModal
         ref={privateNoteModalRef}

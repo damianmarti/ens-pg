@@ -22,11 +22,13 @@ export const useStageReview = (stageId?: number) => {
     txHash,
     statusNote,
     grantAmount,
+    grantNumber,
   }: {
     status: Status;
     txHash?: string;
     statusNote?: string;
     grantAmount?: string;
+    grantNumber?: string;
   }) => {
     if (!stageId) return;
     let notificationId;
@@ -51,6 +53,7 @@ export const useStageReview = (stageId?: number) => {
           txHash: txHash || "",
           statusNote: statusNote || "",
           grantAmount: grantAmount || "",
+          grantNumber: grantNumber || "",
         },
       });
 
@@ -61,6 +64,7 @@ export const useStageReview = (stageId?: number) => {
         signature,
         statusNote,
         grantAmount,
+        grantNumber,
       });
       notification.remove(notificationId);
       notification.success(`Grant ${status}`);

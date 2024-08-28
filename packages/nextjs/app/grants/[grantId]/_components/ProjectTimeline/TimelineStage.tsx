@@ -1,5 +1,4 @@
 import { MockStage } from ".";
-import { TimelineCompleteButton } from "./TimelineCompleteButton";
 import { formatEther } from "viem";
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
@@ -85,7 +84,6 @@ export const TimelineStage = ({ stage }: TimelineStageProps) => {
                 {multilineStringToTsx(withdrawal.milestones || "-")}
               </div>
             ))}
-            {stage.status === "approved" && <TimelineCompleteButton stage={stage} />}
           </>
         ) : (
           <div className="font-bold text-2xl -mt-1.5 text-gray-500">Stage {stage.stageNumber} (locked)</div>

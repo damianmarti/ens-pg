@@ -49,6 +49,7 @@ const Admin: NextPage = async () => {
                 key={grant.id}
                 proposal={grant}
                 userSubmissionsAmount={submissionsByBuilderAddress[grant.builderAddress]}
+                isGrant
               />
             ))}
           </div>

@@ -6,6 +6,7 @@ import { bigint, integer, pgEnum, pgTable, serial, text, timestamp, varchar } fr
 export const grants = pgTable("grants", {
   // TODO: Should ID be a UUID? Or is it fine as a serial?
   id: serial("id").primaryKey(),
+  grantNumber: integer("grant_number").notNull().default(1),
   title: varchar("title").notNull(),
   description: text("description").notNull(),
   milestones: text("milestones").notNull(),

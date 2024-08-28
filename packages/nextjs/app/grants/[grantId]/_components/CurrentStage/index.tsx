@@ -2,11 +2,14 @@
 
 import { useRef } from "react";
 import { GrantWithStages } from "../../page";
+import { TimelineCompleteButton } from "../ProjectTimeline/TimelineCompleteButton";
 import { NewStageModal } from "./NewStageModal";
 import { WithdrawModal } from "./WithdrawModal";
+import { formatEther } from "viem";
 import { Badge } from "~~/components/pg-ens/Badge";
 import { Button } from "~~/components/pg-ens/Button";
 import { GrantProgressBar } from "~~/components/pg-ens/GrantProgressBar";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 type CurrentStageProps = {
   grant: NonNullable<GrantWithStages>;
@@ -14,6 +17,29 @@ type CurrentStageProps = {
 
 export const CurrentStage = ({ grant }: CurrentStageProps) => {
   const latestStage = grant.stages[0];
+
+  const { data: contractGrantId } = useScaffoldReadContract({
+    contractName: "Stream",
+    functionName: "builderGrants",
+    args: [grant.builderAddress, BigInt(grant.grantNumber - 1)],
+  });
+
+  const { data: contractGrantInfo, isLoading: isBuilderInfoLoading } = useScaffoldReadContract({
+    contractName: "Stream",
+    functionName: "grantStreams",
+    args: [contractGrantId],
+  });
+
+  const { data: unlockedAmount, isLoading: isUnlockedAmountLoading } = useScaffoldReadContract({
+    contractName: "Stream",
+    functionName: "unlockedGrantAmount",
+    args: [contractGrantId],
+  });
+
+  const isBtnLoading = isBuilderInfoLoading || isUnlockedAmountLoading;
+
+  const [cap = BigInt(0), , amountLeft = BigInt(0)] = contractGrantInfo ?? [];
+  const amountWithdrawn = cap - amountLeft;
 
   const newStageModalRef = useRef<HTMLDialogElement>(null);
   const withdrawModalRef = useRef<HTMLDialogElement>(null);
@@ -30,13 +56,20 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
             <Button onClick={() => newStageModalRef && newStageModalRef.current?.showModal()}>
               Apply for new stage
             </Button>
+          ) : contractGrantInfo && amountLeft === BigInt(0) ? (
+            <TimelineCompleteButton stage={latestStage} />
           ) : (
-            <Button onClick={() => withdrawModalRef && withdrawModalRef.current?.showModal()}>
+            <Button disabled={isBtnLoading} onClick={() => withdrawModalRef && withdrawModalRef.current?.showModal()}>
               Withdraw milestone
             </Button>
           )}
 
-          <GrantProgressBar className="w-full sm:w-1/2" amount={2} withdrawn={1.5} available={0.2} />
+          <GrantProgressBar
+            className="w-full sm:w-1/2"
+            amount={Number(formatEther(cap))}
+            withdrawn={Number(formatEther(amountWithdrawn as unknown as bigint))}
+            available={Number(formatEther(unlockedAmount ?? BigInt(0)))}
+          />
         </div>
       )}
 
@@ -47,7 +80,12 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
         closeModal={() => newStageModalRef.current?.close()}
       />
 
-      <WithdrawModal ref={withdrawModalRef} stage={latestStage} closeModal={() => withdrawModalRef.current?.close()} />
+      <WithdrawModal
+        ref={withdrawModalRef}
+        stage={latestStage}
+        closeModal={() => withdrawModalRef.current?.close()}
+        contractGrantId={contractGrantId}
+      />
     </div>
   );
 };

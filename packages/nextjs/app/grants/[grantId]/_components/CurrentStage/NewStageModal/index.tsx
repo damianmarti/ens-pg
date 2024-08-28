@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { NewStageModalFormValues, newStageModalFormSchema } from "./schema";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
 import { useSignTypedData } from "wagmi";
 import { CreateNewStageReqBody } from "~~/app/api/stages/new/route";
 import { Button } from "~~/components/pg-ens/Button";
@@ -82,6 +83,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
             </form>
           </FormProvider>
         </div>
+        <Toaster />
       </dialog>
     );
   },

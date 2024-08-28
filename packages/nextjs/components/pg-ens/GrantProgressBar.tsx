@@ -6,8 +6,8 @@ export type GrantProgressBarProps = {
 };
 
 export const GrantProgressBar = ({ amount, withdrawn = 0, available = 0, className = "" }: GrantProgressBarProps) => {
-  const availablePercentage = (((available + withdrawn) % amount) / amount) * 100;
-  const withdrawnPercentage = ((withdrawn % amount) / amount) * 100;
+  const availablePercentage = ((available + withdrawn) / amount) * 100;
+  const withdrawnPercentage = (withdrawn / amount) * 100;
 
   if (!amount) {
     return null;

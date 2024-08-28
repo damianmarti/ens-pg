@@ -39,6 +39,7 @@ export const EIP_712_TYPES__REVIEW_STAGE = {
     { name: "txHash", type: "string" },
     { name: "statusNote", type: "string" },
     { name: "grantAmount", type: "string" },
+    { name: "grantNumber", type: "string" },
   ],
 } as const;
 

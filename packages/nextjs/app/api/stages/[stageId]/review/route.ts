@@ -11,6 +11,7 @@ export type ReviewStageBody = {
   statusNote?: StageUpdate["statusNote"];
   grantAmount?: string;
   signature: `0x${string}`;
+  grantNumber?: string;
 };
 
 export async function POST(req: NextRequest, { params }: { params: { stageId: string } }) {
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
         txHash: body.approvedTx || "",
         statusNote: body.statusNote || "",
         grantAmount: body.grantAmount || "",
+        grantNumber: body.grantNumber || "",
       },
       signature: body.signature,
     });

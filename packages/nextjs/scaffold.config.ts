@@ -5,12 +5,13 @@ export type ScaffoldConfig = {
   pollingInterval: number;
   alchemyApiKey: string;
   walletConnectProjectId: string;
+  disableBurnerWalletOnLocal: boolean;
   onlyLocalBurnerWallet: boolean;
 };
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.sepolia],
+  targetNetworks: [chains.hardhat],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
@@ -30,6 +31,9 @@ const scaffoldConfig = {
 
   // Only show the Burner Wallet when running on hardhat network
   onlyLocalBurnerWallet: true,
+
+  // disable burner wallet for all networks
+  disableBurnerWalletOnLocal: false,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

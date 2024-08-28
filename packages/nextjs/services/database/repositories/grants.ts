@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel, asc, desc, eq } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, asc, desc, eq, max } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { grants, stages, withdrawals } from "~~/services/database/config/schema";
 
@@ -46,7 +46,18 @@ export async function getBuilderGrants(builderAddress: string) {
 }
 
 export async function createGrant(grant: GrantInsert) {
-  return await db.insert(grants).values(grant).returning({ id: grants.id });
+  const maxGrantNumber = await db
+    .select({ maxNumber: max(grants.grantNumber) })
+    .from(grants)
+    .where(eq(grants.builderAddress, grant.builderAddress))
+    .then(result => result[0]?.maxNumber ?? 0);
+
+  const newGrantNumber = maxGrantNumber + 1;
+
+  return await db
+    .insert(grants)
+    .values({ ...grant, grantNumber: newGrantNumber })
+    .returning({ id: grants.id, grantNumber: grants.grantNumber });
 }
 
 export async function getGrantById(grantId: number) {

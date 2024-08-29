@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation";
 import { GrantWithStagesAndPrivateNotes, Proposal } from "./_components/Proposal";
 import type { NextPage } from "next";
 import { getServerSession } from "next-auth";
+import { SignInBtn } from "~~/components/pg-ens/SignInBtn";
 import { getAllGrantsWithStagesAndPrivateNotes } from "~~/services/database/repositories/grants";
 import { authOptions } from "~~/utils/auth";
 
@@ -9,8 +11,18 @@ export const revalidate = 0;
 const Admin: NextPage = async () => {
   const session = await getServerSession(authOptions);
 
+  if (!session?.user) {
+    return (
+      <div className="flex flex-col items-center px-4 py-10 sm:py-20">
+        <h1 className="text-3xl text-center font-extrabold mb-1">Sign In</h1>
+        <p className="mb-6">You need to sign in to access the admin dashboard.</p>
+        <SignInBtn />
+      </div>
+    );
+  }
+
   if (session?.user?.role !== "admin") {
-    return <div className="flex items-center text-xl flex-col flex-grow pt-10 space-y-4">Access denied</div>;
+    return redirect("/");
   }
 
   const allGrants = await getAllGrantsWithStagesAndPrivateNotes();
@@ -37,7 +49,7 @@ const Admin: NextPage = async () => {
   });
 
   return (
-    <div className="flex flex-col flex-grow  px-4 py-10 sm:py-20">
+    <div className="flex flex-col flex-grow px-4 py-10 sm:py-20">
       <h1 className="text-3xl text-center font-extrabold !mb-0">Pending proposals</h1>
 
       <div className="mt-10 mx-auto grid md:grid-cols-2 gap-4 sm:gap-8 w-full sm:max-w-6xl">

@@ -30,28 +30,20 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/admin",
     icon: <LockClosedIcon className="h-4 w-4" />,
   },
-  {
-    label: "Siwe",
-    href: "/siwe",
-  },
 ];
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
-  const { isAdmin, data: session, isAuthenticated } = useAuthSession();
+  const { isAdmin, data } = useAuthSession();
 
   return (
     <>
       {menuLinks.map(({ label, href, icon }) => {
-        if (!session && label !== "Siwe") {
-          return null;
-        }
-
-        if (isAuthenticated && label === "Siwe") {
-          return null;
-        }
-
         if (label === "Admin" && !isAdmin) {
+          return null;
+        }
+
+        if (label === "My grants" && !data) {
           return null;
         }
 

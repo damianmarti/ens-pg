@@ -1,27 +1,38 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateNewGrantReqBody } from "../api/grants/new/route";
 import { ApplyFormValues, applyFormSchema } from "./schema";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { FormProvider } from "react-hook-form";
-import { useAccount, useSignTypedData } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormInput } from "~~/components/pg-ens/form-fields/FormInput";
 import { FormSelect } from "~~/components/pg-ens/form-fields/FormSelect";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
+import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
-import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_GRANT } from "~~/utils/eip712";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 const Apply: NextPage = () => {
-  const { signTypedDataAsync, isPending: isSigning } = useSignTypedData();
   const { address: connectedAddress } = useAccount();
+  const { data: session } = useAuthSession();
   const router = useRouter();
   const { formMethods, getCommonOptions } = useFormMethods<ApplyFormValues>({ schema: applyFormSchema });
   const { handleSubmit } = formMethods;
+
+  const { openConnectModal } = useConnectModal();
+  const { isAuthenticated } = useAuthSession();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.refresh();
+    }
+  }, [router, isAuthenticated]);
 
   const { mutateAsync: postNewGrant, isPending: isPostingNewGrant } = useMutation({
     mutationFn: (newGrant: CreateNewGrantReqBody) => postMutationFetcher("/api/grants/new", { body: newGrant }),
@@ -31,21 +42,8 @@ const Apply: NextPage = () => {
     try {
       if (!connectedAddress) return notification.error("Please connect your wallet");
 
-      const signature = await signTypedDataAsync({
-        domain: EIP_712_DOMAIN,
-        types: EIP_712_TYPES__APPLY_FOR_GRANT,
-        primaryType: "Message",
-        message: {
-          ...fieldValues,
-          showcaseVideoUrl: fieldValues.showcaseVideoUrl || "",
-          twitter: fieldValues.twitter || "",
-          telegram: fieldValues.telegram || "",
-        },
-      });
-
       await postNewGrant({
         ...fieldValues,
-        signature,
       });
       notification.success(`The grant proposal has been created`);
       router.push("/my-grants");
@@ -77,10 +75,24 @@ const Apply: NextPage = () => {
               <FormInput label="Project or personal twitter" {...getCommonOptions("twitter")} />
               <FormInput label="Telegram handle" {...getCommonOptions("telegram")} />
             </div>
-            <Button type="submit" disabled={isPostingNewGrant || isSigning} className="mt-4 self-center ">
-              {(isPostingNewGrant || isSigning) && <span className="loading loading-spinner"></span>}
-              Submit
-            </Button>
+            {!session ? (
+              <Button
+                variant="primary"
+                className="mt-4 self-center"
+                type="button"
+                onClick={e => {
+                  e?.preventDefault();
+                  openConnectModal?.();
+                }}
+              >
+                Connect wallet
+              </Button>
+            ) : (
+              <Button type="submit" disabled={isPostingNewGrant} className="mt-4 self-center ">
+                {isPostingNewGrant && <span className="loading loading-spinner"></span>}
+                Submit
+              </Button>
+            )}
           </form>
         </div>
       </FormProvider>

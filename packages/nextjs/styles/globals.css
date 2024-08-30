@@ -2,6 +2,22 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Variable.ttf") format("truetype");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-VariableItalic.ttf") format("truetype");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root,
 [data-theme] {
   background: oklch(var(--b2));
@@ -9,6 +25,7 @@
 
 body {
   min-height: 100vh;
+  font-family: "Satoshi", sans-serif;
 }
 
 h1,

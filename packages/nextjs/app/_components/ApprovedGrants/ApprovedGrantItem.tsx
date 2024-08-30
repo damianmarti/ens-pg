@@ -28,19 +28,17 @@ export const ApprovedGrantItem = ({ grant }: ApprovedGrantItemProps) => {
     .reduce((acc, current) => BigInt(acc || 0n) + BigInt(current || 0n), 0n);
 
   return (
-    <div className="card flex flex-col bg-white text-primary-content w-full max-w-96 shadow-center">
+    <div className="card flex flex-col bg-white text-primary-content w-full max-w-96 shadow-lg rounded-lg overflow-hidden">
       <div className="px-5 py-3 flex justify-between items-center w-full">
         <div className="font-bold text-xl">Stage {latestApprovedStage.stageNumber}</div>
         <div>{getFormattedDate(latestApprovedStage.submitedAt as Date)}</div>
       </div>
-      <h2 className="px-5 py-8 text-2xl font-bold bg-gray-100 mb-0">{grant.title}</h2>
+      <h2 className="px-5 py-8 text-2xl font-bold bg-gray-100 mb-0 shadow-sm">{grant.title}</h2>
       <div className="px-5 py-4 w-full">
         <GrantProgressBar
           className="w-full"
           amount={Number(formatEther(allStagesGrantAmount))}
           withdrawn={Number(formatEther(withdrawnFromAllStages || 0n))}
-          // TODO: change to real data
-          available={0.01}
         />
       </div>
       <div className="px-5 pb-5 flex flex-col justify-between flex-grow">

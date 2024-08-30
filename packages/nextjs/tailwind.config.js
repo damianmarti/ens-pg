@@ -16,7 +16,7 @@ module.exports = {
           neutral: "#212638",
           "neutral-content": "#ffffff",
           "base-100": "#ffffff",
-          "base-200": "#f4f8ff",
+          "base-200": "#F5F4F6",
           "base-300": "#DAE8FF",
           "base-content": "#212638",
           info: "#F3E6FB",
@@ -41,6 +41,9 @@ module.exports = {
   },
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Satoshi', 'sans-serif'],
+      },
       colors: {
         "primary-green": "#33AD46",
         "primary-orange": "#F08C00",
@@ -55,4 +58,4 @@ module.exports = {
       },
     },
   },
-};
+}

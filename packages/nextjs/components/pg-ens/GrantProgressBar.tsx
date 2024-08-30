@@ -15,8 +15,7 @@ export const GrantProgressBar = ({ amount, withdrawn = 0, available = 0, classNa
 
   return (
     <div className={className}>
-      {/* "\u00A0" is to prevent component jump on updating */}
-      <div className="text-end">{available ? `${available} ETH available to withdraw` : "\u00A0"}</div>
+      <div className="text-end">{available ? `${available} ETH available to withdraw` : ""}</div>
       <div className="bg-gray-300 h-4 rounded relative mt-2">
         <div
           className="bg-primary rounded absolute z-[2] inset-y-0 left-0"

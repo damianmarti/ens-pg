@@ -9,7 +9,7 @@ import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { signOut } from "next-auth/react";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
@@ -20,6 +20,7 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const router = useRouter();
   const { address: sessionAddress, isAuthenticated } = useAuthSession();
 
@@ -32,13 +33,16 @@ export const RainbowKitCustomConnectButton = () => {
   useEffect(() => {
     if (isConnected && sessionAddress && sessionAddress !== address) {
       signOut();
+      disconnect();
     }
-  }, [address, isConnected, sessionAddress]);
+  }, [address, disconnect, isConnected, sessionAddress]);
 
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openConnectModal, mounted }) => {
-        const connected = mounted && account && chain;
+      {({ account, chain, openConnectModal, mounted, authenticationStatus }) => {
+        const connected =
+          mounted && account && chain && (!authenticationStatus || authenticationStatus === "authenticated");
+
         const blockExplorerAddressLink = account
           ? getBlockExplorerAddressLink(targetNetwork, account.address)
           : undefined;

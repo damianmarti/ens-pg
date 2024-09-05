@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
+import { LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
-import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
   label: string;
@@ -16,10 +15,6 @@ type HeaderMenuLink = {
 };
 
 export const menuLinks: HeaderMenuLink[] = [
-  {
-    label: "Home",
-    href: "/",
-  },
   {
     label: "My grants",
     href: "/my-grants",
@@ -36,34 +31,27 @@ export const HeaderMenuLinks = () => {
   const pathname = usePathname();
   const { isAdmin, data } = useAuthSession();
 
+  const linkToShow = isAdmin ? menuLinks[1] : menuLinks[0];
+
+  if ((linkToShow.label === "My grants" && !data) || (linkToShow.label === "Admin" && !isAdmin)) {
+    return null;
+  }
+
+  const isActive = pathname === linkToShow.href;
+
   return (
-    <>
-      {menuLinks.map(({ label, href, icon }) => {
-        if (label === "Admin" && !isAdmin) {
-          return null;
-        }
-
-        if (label === "My grants" && !data) {
-          return null;
-        }
-
-        const isActive = pathname === href;
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              passHref
-              className={`${
-                isActive ? "bg-secondary" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-            >
-              {icon}
-              <span>{label}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </>
+    <li>
+      <Link
+        href={linkToShow.href}
+        passHref
+        className={`${
+          isActive ? "bg-secondary" : ""
+        } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+      >
+        {linkToShow.icon}
+        <span>{linkToShow.label}</span>
+      </Link>
+    </li>
   );
 };
 
@@ -71,40 +59,14 @@ export const HeaderMenuLinks = () => {
  * Site header
  */
 export const Header = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const burgerMenuRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(
-    burgerMenuRef,
-    useCallback(() => setIsDrawerOpen(false), []),
-  );
-
   return (
     <div className="sticky lg:static top-0 navbar bg-base-200 min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <div className="lg:hidden dropdown" ref={burgerMenuRef}>
-          <label
-            tabIndex={0}
-            className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
-            onClick={() => {
-              setIsDrawerOpen(prevIsOpenState => !prevIsOpenState);
-            }}
-          >
-            <Bars3Icon className="h-1/2" />
-          </label>
-          {isDrawerOpen && (
-            <ul
-              tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-              onClick={() => {
-                setIsDrawerOpen(false);
-              }}
-            >
-              <HeaderMenuLinks />
-            </ul>
-          )}
-        </div>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6">
-          <div className="w-64 h-20 relative">
+      <div className="navbar-start w-auto lg:w-1/2 flex items-center">
+        <Link href="/" passHref className="flex items-center gap-2 ml-4 mr-2 lg:mr-6">
+          <div className="relative w-10 h-10 sm:hidden mt-1">
+            <Image alt="ENS logo" className="object-contain" fill sizes="40px" priority src="/ens-vector.svg" />
+          </div>
+          <div className="relative hidden sm:block w-64 h-20 ">
             <Image
               alt="ENS Builder Grants logo"
               className="object-contain"
@@ -115,7 +77,7 @@ export const Header = () => {
             />
           </div>
         </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
+        <ul className="flex flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
         </ul>
       </div>

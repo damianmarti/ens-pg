@@ -3,7 +3,6 @@
 // @refresh reset
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
 import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
@@ -12,7 +11,6 @@ import { signOut } from "next-auth/react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
-import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
@@ -20,7 +18,6 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
-  const networkColor = useNetworkColor();
   const { targetNetwork } = useTargetNetwork();
   const { address, isConnected } = useAccount();
   const router = useRouter();
@@ -63,12 +60,6 @@ export const RainbowKitCustomConnectButton = () => {
 
               return (
                 <>
-                  <div className="flex flex-col items-center mr-1">
-                    <Balance address={account.address as Address} className="min-h-0 h-auto" />
-                    <span className="text-xs" style={{ color: networkColor }}>
-                      {chain.name}
-                    </span>
-                  </div>
                   <AddressInfoDropdown
                     address={account.address as Address}
                     displayName={account.displayName}

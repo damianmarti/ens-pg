@@ -1,39 +1,33 @@
 import { forwardRef } from "react";
 import { useRouter } from "next/navigation";
 import { WithdrawModalFormValues, withdrawModalFormSchema } from "./schema";
-import { useMutation } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { Toaster } from "react-hot-toast";
 import { parseEther } from "viem";
-import { useSignTypedData } from "wagmi";
-import { StageWithdrawReqBody } from "~~/app/api/stages/[stageId]/withdraw/route";
+import { apolloClient } from "~~/components/ScaffoldEthAppWithProviders";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormInput } from "~~/components/pg-ens/form-fields/FormInput";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { Stage } from "~~/services/database/repositories/stages";
-import { EIP_712_DOMAIN, EIP_712_TYPES__WITHDRAW_FROM_STAGE } from "~~/utils/eip712";
-import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
-type WithdrawModalProps = { stage: Stage; closeModal: () => void; contractGrantId?: bigint };
+type WithdrawModalProps = {
+  stage: Stage;
+  closeModal: () => void;
+  contractGrantId?: bigint;
+  refetchContractInfo: () => Promise<any>;
+};
 
 export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
-  ({ stage, closeModal, contractGrantId }, ref) => {
+  ({ closeModal, contractGrantId, refetchContractInfo }, ref) => {
     const router = useRouter();
 
     const { formMethods, getCommonOptions } = useFormMethods<WithdrawModalFormValues>({
       schema: withdrawModalFormSchema,
     });
     const { handleSubmit, reset: clearFormValues } = formMethods;
-
-    const { signTypedDataAsync, isPending: isSigning } = useSignTypedData();
-
-    const { mutateAsync: postWithdraw, isPending: isPostingWithdraw } = useMutation({
-      mutationFn: (stageWithdrawBody: StageWithdrawReqBody) =>
-        postMutationFetcher(`/api/stages/${stage.id}/withdraw`, { body: stageWithdrawBody }),
-    });
 
     const { writeContractAsync, isPending: isWritingWithOnChain } = useScaffoldWriteContract("Stream");
 
@@ -47,18 +41,11 @@ export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
           args: [contractGrantId, parseEther(withdrawAmount), completedMilestones],
         });
 
-        const signature = await signTypedDataAsync({
-          domain: EIP_712_DOMAIN,
-          types: EIP_712_TYPES__WITHDRAW_FROM_STAGE,
-          primaryType: "Message",
-          message: {
-            completedMilestones,
-            withdrawAmount,
-            stageId: String(stage.id),
-          },
+        await apolloClient.refetchQueries({
+          include: "active",
         });
+        await refetchContractInfo();
 
-        await postWithdraw({ signature, completedMilestones, withdrawAmount });
         closeModal();
         clearFormValues();
         router.refresh();
@@ -85,19 +72,18 @@ export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
           <FormProvider {...formMethods}>
             <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col space-y-1">
               <FormInput label="Amount (in ETH)" {...getCommonOptions("withdrawAmount")} />
-              <FormTextarea
-                label="Completed Milestone and proof of completion"
-                showMessageLength
-                {...getCommonOptions("completedMilestones")}
-              />
-              <Button
-                type="submit"
-                disabled={isPostingWithdraw || isSigning || isWritingWithOnChain}
-                className="self-center"
-              >
-                {(isPostingWithdraw || isSigning || isWritingWithOnChain) && (
-                  <span className="loading loading-spinner"></span>
-                )}
+              <div className="flex flex-col">
+                <FormTextarea
+                  label="Completed Milestone and proof of completion"
+                  showMessageLength
+                  {...getCommonOptions("completedMilestones")}
+                />
+                <span className="text-sm italic text-right pb-4">
+                  *Video walkthrough, GitHub repo or other deliverables
+                </span>
+              </div>
+              <Button type="submit" disabled={isWritingWithOnChain} className="self-center">
+                {isWritingWithOnChain && <span className="loading loading-spinner"></span>}
                 Withdraw
               </Button>
             </form>

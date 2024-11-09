@@ -3,14 +3,22 @@ import { formatEther } from "viem";
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
 import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
+import { useWithdrawals } from "~~/hooks/pg-ens/useWithdrawals";
+import { Grant } from "~~/services/database/repositories/grants";
 import { Stage } from "~~/services/database/repositories/stages";
-import { Withdrawal } from "~~/services/database/repositories/withdrawals";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
-type TimelineStageProps = { stage: (Stage & { withdrawals: Withdrawal[] }) | MockStage };
+type TimelineStageProps = { stage: Stage | MockStage; grant: Grant };
 
-export const TimelineStage = ({ stage }: TimelineStageProps) => {
+export const TimelineStage = ({ stage, grant }: TimelineStageProps) => {
+  const { builderAddress, grantNumber } = grant;
+  const { stageNumber } = stage;
+
+  const { data: withdrawalData } = useWithdrawals({ filter: { to: builderAddress, grantNumber, stageNumber } });
+
+  const withdrawals = withdrawalData?.withdrawals?.items || [];
+
   const isOdd = stage.stageNumber % 2;
 
   const isRealStage = "id" in stage;
@@ -75,13 +83,13 @@ export const TimelineStage = ({ stage }: TimelineStageProps) => {
               </div>
             )}
 
-            {stage.withdrawals.map((withdrawal, idx) => (
+            {withdrawals.map((withdrawal, idx) => (
               <div key={`withdrawal-${withdrawal.id}`} className="mt-3 text-gray-500">
                 <div className="font-bold text-lg">
-                  Milestone {idx + 1} ({formatEther(withdrawal.withdrawAmount as bigint)} Eth withdraw)
+                  Milestone {idx + 1} ({formatEther(BigInt(withdrawal.amount))} Eth withdraw)
                 </div>
 
-                {multilineStringToTsx(withdrawal.milestones || "-")}
+                {multilineStringToTsx(withdrawal.reason || "-")}
               </div>
             ))}
           </>

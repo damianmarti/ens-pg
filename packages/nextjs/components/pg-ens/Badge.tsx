@@ -7,21 +7,32 @@ const badgeBgColor: Record<Status, string> = {
   approved: "bg-success",
 };
 
-export const badgeTextColor: Record<Status, string> = {
+const badgeTextColor: Record<Status, string> = {
   proposed: "text-primary-orange",
   rejected: "text-primary-red",
   completed: "text-primary",
   approved: "text-primary-green",
 };
 
+type BadgeSize = "sm" | "md";
+
 type BadgeProps = {
   status: Status;
+  size?: BadgeSize;
+  className?: string;
 };
 
-export const Badge = ({ status }: BadgeProps) => {
+const badgeSizeClassNames: Record<BadgeSize, string> = {
+  sm: "text-xs px-2 py-1.5",
+  md: "text-sm px-4 py-1.5",
+};
+
+export const Badge = ({ status, size = "md", className = "" }: BadgeProps) => {
+  const sizeClasses = badgeSizeClassNames[size];
+
   return (
     <div
-      className={`px-4 py-1.5 m-0 h-auto capitalize font-bold badge rounded-lg ${badgeBgColor[status]} ${badgeTextColor[status]} max-w-fit`}
+      className={`badge font-bold rounded-lg capitalize h-auto ${badgeBgColor[status]} ${badgeTextColor[status]} ${sizeClasses} ${className}`}
     >
       {status}
     </div>

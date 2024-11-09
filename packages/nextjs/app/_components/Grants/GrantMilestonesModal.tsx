@@ -1,11 +1,11 @@
 import { forwardRef } from "react";
 import { formatEther } from "viem";
-import { Withdrawal } from "~~/services/database/repositories/withdrawals";
+import { WithdrawalItems } from "~~/hooks/pg-ens/useWithdrawals";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 type GrantMilestonesModalProps = {
-  withdrawals: Withdrawal[];
+  withdrawals: WithdrawalItems;
   id: number;
 };
 
@@ -30,12 +30,12 @@ export const GrantMilestonesModal = forwardRef<HTMLDialogElement, GrantMilestone
                 <div className="flex gap-2 items-center">
                   <div className="text-lg font-bold">Milestone {index + 1}</div>
                   <div className="bg-secondary px-2 py-1 rounded font-semibold">
-                    {formatEther(withdrawal.withdrawAmount as bigint)} ETH
+                    {formatEther(BigInt(withdrawal.amount))} ETH
                   </div>
                 </div>
-                <div>{getFormattedDate(withdrawal.withdrewAt as Date)}</div>
+                <div>{getFormattedDate(new Date(+withdrawal.timestamp * 1000)) || "-"}</div>
               </div>
-              <div className="mt-2">{multilineStringToTsx(withdrawal.milestones || "-")}</div>
+              <div className="mt-2">{multilineStringToTsx(withdrawal.reason || "-")}</div>
             </div>
           ))}
         </div>

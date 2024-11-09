@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 
@@ -21,6 +21,11 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <UserIcon className="h-4 w-4" />,
   },
   {
+    label: "All Grants",
+    href: "/all-grants",
+    icon: <DocumentTextIcon className="h-4 w-4" />,
+  },
+  {
     label: "Admin",
     href: "/admin",
     icon: <LockClosedIcon className="h-4 w-4" />,
@@ -31,27 +36,33 @@ export const HeaderMenuLinks = () => {
   const pathname = usePathname();
   const { isAdmin, data } = useAuthSession();
 
-  const linkToShow = isAdmin ? menuLinks[1] : menuLinks[0];
-
-  if ((linkToShow.label === "My grants" && !data) || (linkToShow.label === "Admin" && !isAdmin)) {
-    return null;
-  }
-
-  const isActive = pathname === linkToShow.href;
+  const linksToShow = isAdmin ? [menuLinks[1], menuLinks[2]] : [menuLinks[0]];
 
   return (
-    <li>
-      <Link
-        href={linkToShow.href}
-        passHref
-        className={`${
-          isActive ? "bg-secondary" : ""
-        } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-      >
-        {linkToShow.icon}
-        <span>{linkToShow.label}</span>
-      </Link>
-    </li>
+    <>
+      {linksToShow.map((linkToShow, index) => {
+        if ((linkToShow.label === "My grants" && !data) || (linkToShow.label !== "My grants" && !isAdmin)) {
+          return null;
+        }
+
+        const isActive = pathname === linkToShow.href;
+
+        return (
+          <li key={index}>
+            <Link
+              href={linkToShow.href}
+              passHref
+              className={`${
+                isActive ? "bg-secondary" : ""
+              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+            >
+              {linkToShow.icon}
+              <span>{linkToShow.label}</span>
+            </Link>
+          </li>
+        );
+      })}
+    </>
   );
 };
 

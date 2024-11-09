@@ -1,24 +1,31 @@
 import { forwardRef, useState } from "react";
-import { ApproveModalFormValues, approveModalFormSchema } from "./schema";
+import { GrantWithStagesAndPrivateNotes } from "../Proposal";
+import { FinalApproveModalFormValues, finalApproveModalFormSchema } from "./schema";
 import { FormProvider } from "react-hook-form";
 import { Toaster } from "react-hot-toast";
-import { parseEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormInput } from "~~/components/pg-ens/form-fields/FormInput";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
+import { Address } from "~~/components/scaffold-eth";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
 import { useStageReview } from "~~/hooks/pg-ens/useStageReview";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { Stage } from "~~/services/database/repositories/stages";
 import { notification } from "~~/utils/scaffold-eth";
 
-export const ApproveModal = forwardRef<
+export const FinalApproveModal = forwardRef<
   HTMLDialogElement,
-  { stage: Stage; grantName: string; builderAddress: string; isGrant?: boolean; grantNumber: number }
+  {
+    stage: GrantWithStagesAndPrivateNotes["stages"][number];
+    grantName: string;
+    builderAddress: string;
+    isGrant?: boolean;
+    grantNumber: number;
+  }
 >(({ stage, grantName, builderAddress, isGrant, grantNumber }, ref) => {
   const { reviewStage, isSigning, isPostingStageReview } = useStageReview(stage.id);
-  const isApproveButtonLoading = isPostingStageReview || isSigning;
-
+  const isFinalApproveButtonLoading = isPostingStageReview || isSigning;
+  const { approvalVotes } = stage;
   const [isAmountValidationEnabled, setIsAmountValidationEnabled] = useState(false);
   const enableAmountValidation = () => {
     if (!isAmountValidationEnabled) {
@@ -26,8 +33,8 @@ export const ApproveModal = forwardRef<
     }
   };
 
-  const { getCommonOptions, formMethods } = useFormMethods<ApproveModalFormValues>({
-    schema: approveModalFormSchema,
+  const { getCommonOptions, formMethods } = useFormMethods<FinalApproveModalFormValues>({
+    schema: finalApproveModalFormSchema,
   });
 
   const { handleSubmit, getValues, setValue, trigger } = formMethods;
@@ -78,7 +85,7 @@ export const ApproveModal = forwardRef<
     }
   };
 
-  const onSubmit = async (fieldValues: ApproveModalFormValues) => {
+  const onSubmit = async (fieldValues: FinalApproveModalFormValues) => {
     await reviewStage({ status: "approved", ...fieldValues, grantNumber: grantNumber.toString() });
   };
 
@@ -94,6 +101,19 @@ export const ApproveModal = forwardRef<
           <button className="btn btn-sm btn-circle btn-ghost text-xl h-auto">✕</button>
         </form>
         <FormProvider {...formMethods}>
+          {approvalVotes.length > 0 && (
+            <>
+              <div className="font-bold">Pre-approved by:</div>
+
+              {approvalVotes.map(approvalVote => (
+                <div key={approvalVote.id} className="flex items-center gap-2">
+                  <Address address={approvalVote.authorAddress} />
+                  <span>({formatEther(approvalVote.amount)} ETH suggested)</span>
+                </div>
+              ))}
+              <div className="divider" />
+            </>
+          )}
           <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-1">
             <FormInput
               label={`Grant amount for stage ${stage.stageNumber} (in ETH)`}
@@ -106,12 +126,12 @@ export const ApproveModal = forwardRef<
             />
             <FormTextarea label="Note (visible to grantee)" {...getCommonOptions("statusNote")} />
             <FormInput label="Tx hash" {...getCommonOptions("txHash")} />
-            <div className="flex gap-2 mt-4 items-center justify-center">
+            <div className="grid grid-cols-2 gap-2 mt-4 items-center justify-center">
               <Button
                 variant="green-secondary"
-                disabled={isWriteContractPending || isApproveButtonLoading}
+                disabled={isWriteContractPending || isFinalApproveButtonLoading}
                 onClick={handleSetupStream}
-                className="self-center"
+                className="!px-4"
                 type="button"
               >
                 {isWriteContractPending && <span className="loading loading-spinner" />}
@@ -120,12 +140,12 @@ export const ApproveModal = forwardRef<
               <Button
                 variant="green"
                 type="submit"
-                className="self-center"
-                disabled={isWriteContractPending || isApproveButtonLoading}
+                className="!px-4"
+                disabled={isWriteContractPending || isFinalApproveButtonLoading}
                 onClick={enableAmountValidation}
               >
-                {isApproveButtonLoading && <span className="loading loading-spinner" />}
-                <span>Approve</span>
+                {isFinalApproveButtonLoading && <span className="loading loading-spinner" />}
+                <span>Final Approve</span>
               </Button>
             </div>
           </form>
@@ -136,4 +156,4 @@ export const ApproveModal = forwardRef<
   );
 });
 
-ApproveModal.displayName = "ApproveModal";
+FinalApproveModal.displayName = "FinalApproveModal";

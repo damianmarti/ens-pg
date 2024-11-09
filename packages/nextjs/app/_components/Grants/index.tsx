@@ -10,7 +10,7 @@ export const ApprovedGrants = async () => {
 
   return (
     <div className="py-10 px-4 flex flex-col items-center w-full">
-      <h2 className="text-3xl font-black !mb-0">Approved grants</h2>
+      <h2 className="text-3xl font-black !mb-0">Grantees</h2>
       <ApprovedGrantsList approvedGrants={approvedGrants} />
     </div>
   );

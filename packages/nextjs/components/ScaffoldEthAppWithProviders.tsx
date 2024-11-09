@@ -1,5 +1,6 @@
 "use client";
 
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -41,17 +42,24 @@ export const queryClient = new QueryClient({
   },
 });
 
+export const apolloClient = new ApolloClient({
+  uri: process.env.NEXT_PUBLIC_PONDER_URL || "http://localhost:42069/",
+  cache: new InMemoryCache(),
+});
+
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={wagmiConfig}>
       <SessionProvider>
         <QueryClientProvider client={queryClient}>
-          <ProgressBar />
-          <RainbowKitSiweNextAuthProvider>
-            <RainbowKitProvider avatar={BlockieAvatar} theme={lightTheme()}>
-              <ScaffoldEthApp>{children}</ScaffoldEthApp>
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
+          <ApolloProvider client={apolloClient}>
+            <ProgressBar />
+            <RainbowKitSiweNextAuthProvider>
+              <RainbowKitProvider avatar={BlockieAvatar} theme={lightTheme()}>
+                <ScaffoldEthApp>{children}</ScaffoldEthApp>
+              </RainbowKitProvider>
+            </RainbowKitSiweNextAuthProvider>
+          </ApolloProvider>
         </QueryClientProvider>
       </SessionProvider>
     </WagmiProvider>

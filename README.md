@@ -59,3 +59,13 @@ To iterate on the database:
 - You can explore the database with `yarn drizzle-kit studio`
 
 After the initial iterations, we can start using migrations (`yarn drizzle-kit generate` & `yarn drizzle-kit migrate`)
+
+## Ponder info
+
+After deploying contract on testnet/mainnet update `packages/ponder/ponder.config.ts` with respective network, contract address and startBlock.
+
+To run ponder dev server:
+
+```bash
+yarn ponder:dev
+```

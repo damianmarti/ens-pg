@@ -1,7 +1,8 @@
 export function getFormattedDate(date: Date) {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const year = date.getFullYear();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  return `${day}/${month}/${year}`;
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear().toString().slice(-2);
+
+  return `${month} ${year}`;
 }

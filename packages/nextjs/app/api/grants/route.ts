@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { getAllGrants } from "~~/services/database/repositories/grants";
 import { authOptions } from "~~/utils/auth";
 
+// https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006086291
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);

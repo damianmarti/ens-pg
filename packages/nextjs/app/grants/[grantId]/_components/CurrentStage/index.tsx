@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { GrantWithStages } from "../../page";
-import { TimelineCompleteButton } from "../ProjectTimeline/TimelineCompleteButton";
 import { NewStageModal } from "./NewStageModal";
 import { WithdrawModal } from "./WithdrawModal";
 import { formatEther } from "viem";
@@ -13,18 +12,23 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 type CurrentStageProps = {
   grant: NonNullable<GrantWithStages>;
+  rejectedCount: number;
 };
 
-export const CurrentStage = ({ grant }: CurrentStageProps) => {
+export const CurrentStage = ({ grant, rejectedCount }: CurrentStageProps) => {
   const latestStage = grant.stages[0];
 
   const { data: contractGrantId } = useScaffoldReadContract({
     contractName: "Stream",
     functionName: "builderGrants",
-    args: [grant.builderAddress, BigInt(grant.grantNumber - 1)],
+    args: [grant.builderAddress, BigInt(grant.grantNumber - rejectedCount - 1)],
   });
 
-  const { data: contractGrantInfo, isLoading: isBuilderInfoLoading } = useScaffoldReadContract({
+  const {
+    data: contractGrantInfo,
+    isLoading: isBuilderInfoLoading,
+    refetch: refetchContractInfo,
+  } = useScaffoldReadContract({
     contractName: "Stream",
     functionName: "grantStreams",
     args: [contractGrantId],
@@ -52,12 +56,10 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
       </div>
       {(latestStage.status === "approved" || latestStage.status === "completed") && (
         <div className="bg-white px-4 sm:px-12 py-4 sm:py-10 mt-6 flex flex-col sm:flex-row gap-4 justify-between items-center rounded-xl">
-          {latestStage.status === "completed" ? (
+          {(contractGrantInfo && amountLeft === BigInt(0)) || latestStage.status === "completed" ? (
             <Button onClick={() => newStageModalRef && newStageModalRef.current?.showModal()}>
               Apply for new stage
             </Button>
-          ) : contractGrantInfo && amountLeft === BigInt(0) ? (
-            <TimelineCompleteButton stage={latestStage} />
           ) : (
             <Button disabled={isBtnLoading} onClick={() => withdrawModalRef && withdrawModalRef.current?.showModal()}>
               Withdraw milestone
@@ -85,6 +87,7 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
         stage={latestStage}
         closeModal={() => withdrawModalRef.current?.close()}
         contractGrantId={contractGrantId}
+        refetchContractInfo={refetchContractInfo}
       />
     </div>
   );

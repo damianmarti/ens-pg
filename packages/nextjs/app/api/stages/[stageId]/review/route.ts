@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { parseEther, recoverTypedDataAddress } from "viem";
-import { StageUpdate, getStageById, updateStage } from "~~/services/database/repositories/stages";
+import { StageUpdate, getStageByIdWithGrantAndVotes, updateStage } from "~~/services/database/repositories/stages";
+import { MINIMAL_VOTES_FOR_FINAL_APPROVAL } from "~~/utils/approval-votes";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_STAGE } from "~~/utils/eip712";
 
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
     const { stageId } = params;
     const body = (await req.json()) as ReviewStageBody;
     const session = await getServerSession(authOptions);
-    const stage = await getStageById(Number(stageId));
+    const stage = await getStageByIdWithGrantAndVotes(Number(stageId));
 
     const recoveredAddress = await recoverTypedDataAddress({
       domain: EIP_712_DOMAIN,
@@ -50,6 +51,13 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
 
     if (body.status === "approved" && !body.approvedTx) {
       return NextResponse.json({ error: "Approved grants must have a transaction hash" }, { status: 400 });
+    }
+
+    if (
+      body.status === "approved" &&
+      (!stage?.approvalVotes || stage.approvalVotes.length < MINIMAL_VOTES_FOR_FINAL_APPROVAL)
+    ) {
+      return NextResponse.json({ error: "Not enough votes for final approval" }, { status: 400 });
     }
 
     const approvedObj = body.approvedTx

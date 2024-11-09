@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ApprovedGrantItem } from "./ApprovedGrantItem";
+import { GrantItem } from "./GrantItem";
 import { GrantWithStages } from "~~/app/grants/[grantId]/page";
 import { Pagination } from "~~/components/pg-ens/Pagination";
 
@@ -23,7 +23,7 @@ export const ApprovedGrantsList = ({ approvedGrants }: ApprovedGrantsListProps) 
     <>
       <div className="my-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full max-w-96 sm:max-w-[50rem] xl:max-w-screen-2xl">
         {currentListApprovedGrants.map(grant => (
-          <ApprovedGrantItem key={grant.id} grant={grant} />
+          <GrantItem key={grant.id} grant={grant} latestsShownStatus="approved" />
         ))}
       </div>
 

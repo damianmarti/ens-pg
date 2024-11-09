@@ -20,7 +20,7 @@ export const Stats = async () => {
 
   return (
     <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-6">
-      <StatsItem value={Number(formatEther(ethGranted as bigint))} description="ETH granted" />
+      <StatsItem value={Number(Number(formatEther(ethGranted as bigint)).toFixed(2))} description="ETH granted" />
       <StatsItem value={grants.length} description="Grants" />
       <StatsItem value={allGrants.length} description="Proposals" />
     </div>

@@ -2,14 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ApproveModal } from "./ApproveModal";
+import { ApprovalVoteModal } from "./ApprovalVoteModal";
+import { FinalApproveModal } from "./FinalApproveModal";
 import { PrivateNoteModal } from "./PrivateNoteModal";
 import { RejectModal } from "./RejectModal";
 import { formatEther } from "viem";
+import { useAccount } from "wagmi";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Button } from "~~/components/pg-ens/Button";
+import { FormErrorMessage } from "~~/components/pg-ens/form-fields/FormErrorMessage";
 import { Address } from "~~/components/scaffold-eth";
 import { getAllGrantsWithStagesAndPrivateNotes } from "~~/services/database/repositories/grants";
+import { MINIMAL_VOTES_FOR_FINAL_APPROVAL } from "~~/utils/approval-votes";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
@@ -30,13 +34,20 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
   const milesonesRef = useRef<HTMLDivElement>(null);
   const [isDefaultExpanded, setIsDefaultExpanded] = useState(true);
   const [isExpandedByClick, setIsExpandedByClick] = useState(false);
+  const { address } = useAccount();
 
   const privateNoteModalRef = useRef<HTMLDialogElement>(null);
-  const approveModalRef = useRef<HTMLDialogElement>(null);
+  const finalApproveModalRef = useRef<HTMLDialogElement>(null);
+  const approvalVoteModalRef = useRef<HTMLDialogElement>(null);
   const rejectModalRef = useRef<HTMLDialogElement>(null);
 
   const latestStage = proposal.stages[0];
-  const { privateNotes } = latestStage;
+  const { privateNotes, approvalVotes } = latestStage;
+  const canVote = !approvalVotes || approvalVotes.every(vote => vote.authorAddress !== address);
+
+  const isFinalApproveAvailable = approvalVotes && approvalVotes.length >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
+
+  const milestonesToShow = latestStage.stageNumber > 1 ? latestStage.milestone : proposal.milestones;
 
   useEffect(() => {
     // waits for render to calculate
@@ -80,19 +91,21 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
         </div>
 
         <div className="mt-2">
-          <div className="font-semibold">Planned milestones:</div>
-          <div className={isExpandedByClick ? "" : "line-clamp-4"} ref={milesonesRef}>
-            {multilineStringToTsx(proposal.milestones)}
+          <div className="font-semibold">
+            {latestStage.stageNumber > 1 ? "Stage milestones:" : "Planned milestones:"}
           </div>
-          {!isDefaultExpanded && !isExpandedByClick && (
+          <div className={isExpandedByClick ? "" : "line-clamp-4"} ref={milesonesRef}>
+            {milestonesToShow ? multilineStringToTsx(milestonesToShow) : "-"}
+          </div>
+          {!isDefaultExpanded && !isExpandedByClick && milestonesToShow && (
             <button className="bg-transparent font-semibold underline" onClick={() => setIsExpandedByClick(true)}>
               Read more
             </button>
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row-reverse justify-between gap-3 mt-4">
-          <div className="flex flex-col lg:flex-row gap-3">
+        <div className="flex flex-col lg:flex-row-reverse lg:items-start justify-between gap-3 mt-4">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-3">
             <Button
               variant="secondary"
               size="sm"
@@ -101,13 +114,27 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
               Set private note
             </Button>
 
-            <Button
-              variant="green-secondary"
-              size="sm"
-              onClick={() => approveModalRef && approveModalRef.current?.showModal()}
-            >
-              Approve
-            </Button>
+            {isFinalApproveAvailable ? (
+              <Button
+                variant="green"
+                size="sm"
+                onClick={() => finalApproveModalRef && finalApproveModalRef.current?.showModal()}
+              >
+                Final Approve
+              </Button>
+            ) : (
+              <div className="flex flex-col gap-1">
+                <Button
+                  variant="green-secondary"
+                  size="sm"
+                  onClick={() => approvalVoteModalRef && approvalVoteModalRef.current?.showModal()}
+                  disabled={!canVote}
+                >
+                  Vote for approval
+                </Button>
+                {!canVote && <FormErrorMessage error="Already voted" className="text-center" />}
+              </div>
+            )}
           </div>
           <Button
             variant="red-secondary"
@@ -132,13 +159,19 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
         )}
       </div>
 
-      <ApproveModal
-        ref={approveModalRef}
+      <FinalApproveModal
+        ref={finalApproveModalRef}
         stage={proposal.stages[0]}
         builderAddress={proposal.builderAddress}
         grantName={proposal.title}
         isGrant={isGrant}
         grantNumber={proposal.grantNumber}
+      />
+      <ApprovalVoteModal
+        ref={approvalVoteModalRef}
+        stage={latestStage}
+        grantName={proposal.title}
+        closeModal={() => approvalVoteModalRef.current?.close()}
       />
       <RejectModal ref={rejectModalRef} stage={latestStage} grantName={proposal.title} />
       <PrivateNoteModal

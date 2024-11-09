@@ -35,6 +35,17 @@ export const GrantsList = ({ address }: GrantsListProps) => {
     return <div className="text-2xl">Loading...</div>;
   }
 
+  if (!builderGrants?.length) {
+    return (
+      <div className="text-xl text-gray-500">
+        No grants found. You can{" "}
+        <a href="/apply" className="text-primary hover:underline">
+          apply for a grant
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-4xl grid sm:grid-cols-2 gap-8 mb-10">
       {builderGrants.map((grant, grantIdx) => {

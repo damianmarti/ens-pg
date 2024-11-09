@@ -9,8 +9,8 @@ export const applyFormSchema = z.object({
   requestedFunds: z.string().max(DEFAULT_INPUT_MAX_LENGTH),
   github: z.string().min(1, { message: "Required" }).max(DEFAULT_INPUT_MAX_LENGTH),
   email: z.string().email().max(DEFAULT_INPUT_MAX_LENGTH),
-  twitter: z.string().max(DEFAULT_INPUT_MAX_LENGTH).optional(),
-  telegram: z.string().max(DEFAULT_INPUT_MAX_LENGTH).optional(),
+  twitter: z.string().min(1, { message: "Required" }).max(DEFAULT_INPUT_MAX_LENGTH),
+  telegram: z.string().min(1, { message: "Required" }).max(DEFAULT_INPUT_MAX_LENGTH),
 });
 
 export type ApplyFormValues = z.infer<typeof applyFormSchema>;

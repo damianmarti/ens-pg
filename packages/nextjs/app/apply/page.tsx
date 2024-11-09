@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CreateNewGrantReqBody } from "../api/grants/new/route";
 import { ApplyFormValues, applyFormSchema } from "./schema";
@@ -93,6 +94,13 @@ const Apply: NextPage = () => {
                 Submit
               </Button>
             )}
+            <p className="text-center text-lg text-base-content/80 mt-4">
+              We assess grants on a rolling basis, you can check the status of your grant in{" "}
+              <Link href="/my-grants" target="_blank" className="text-primary hover:underline">
+                /my-grants
+              </Link>{" "}
+              page, after the application is submitted.
+            </p>
           </form>
         </div>
       </FormProvider>

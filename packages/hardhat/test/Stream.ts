@@ -7,7 +7,9 @@ import { expect } from "chai";
 describe("Stream", async () => {
   let stream: Stream;
   let deployer: SignerWithAddress;
+  let owner2: SignerWithAddress;
   let builder: SignerWithAddress;
+  let nonOwner: SignerWithAddress;
   let accounts: SignerWithAddress[];
   const initialFund = ethers.parseEther("1000");
   const cap = ethers.parseEther("100");
@@ -16,8 +18,13 @@ describe("Stream", async () => {
   beforeEach(async () => {
     await deployments.fixture(["Stream"]);
     accounts = await ethers.getSigners();
-    [deployer, builder] = accounts;
-    stream = await ethers.getContract("Stream", deployer);
+    [deployer, owner2, builder, nonOwner] = accounts;
+
+    // Deploy with multiple initial owners
+    const StreamFactory = await ethers.getContractFactory("Stream");
+    stream = await StreamFactory.deploy([deployer.address, owner2.address]);
+    await stream.waitForDeployment();
+
     const contractAddress = await stream.getAddress();
     await deployer.sendTransaction({
       to: contractAddress,
@@ -220,5 +227,34 @@ describe("Stream", async () => {
     const grantInfo = await stream.grantStreams(grantId);
     expect(grantInfo.cap).to.equal(0);
     expect(grantInfo.amountLeft).to.equal(0);
+  });
+
+  it("Should allow an owner to add a new owner", async function () {
+    const newOwner = accounts[5];
+    await expect(stream.connect(deployer).addOwner(newOwner.address))
+      .to.emit(stream, "AddOwner")
+      .withArgs(newOwner.address, deployer.address);
+
+    // Check if the new owner can perform owner actions
+    await expect(stream.connect(newOwner).addGrantStream(accounts[6].address, cap, 2)).to.not.be.reverted;
+  });
+
+  it("Should allow an owner to remove another owner", async function () {
+    await expect(stream.connect(deployer).removeOwner(owner2.address))
+      .to.emit(stream, "RemoveOwner")
+      .withArgs(owner2.address, deployer.address);
+
+    // Check if the removed owner can no longer perform owner actions
+    await expect(stream.connect(owner2).addGrantStream(accounts[5].address, cap, 2)).to.be.reverted;
+  });
+
+  it("Should not allow non-owners to add or remove owners", async function () {
+    await expect(stream.connect(builder).addOwner(accounts[5].address)).to.be.reverted;
+
+    await expect(stream.connect(builder).removeOwner(owner2.address)).to.be.reverted;
+  });
+
+  it("Should not allow non-owners to create a stream", async function () {
+    await expect(stream.connect(nonOwner).addGrantStream(accounts[5].address, cap, 2)).to.be.reverted;
   });
 });

@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { recoverTypedDataAddress } from "viem";
+import { createPublicClient, http, recoverTypedDataAddress } from "viem";
 import { newStageModalFormSchema } from "~~/app/grants/[grantId]/_components/CurrentStage/NewStageModal/schema";
+import deployedContracts from "~~/contracts/deployedContracts";
+import scaffoldConfig from "~~/scaffold.config";
 import { getGrantById } from "~~/services/database/repositories/grants";
-import { StageInsert, createStage } from "~~/services/database/repositories/stages";
+import { StageInsert, createStage, updateStageStatusToCompleted } from "~~/services/database/repositories/stages";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_STAGE } from "~~/utils/eip712";
+import { getAlchemyHttpUrl } from "~~/utils/scaffold-eth";
 
 export type CreateNewStageReqBody = StageInsert & { signature: `0x${string}` };
 
@@ -42,10 +45,45 @@ export async function POST(req: Request) {
 
     // check if previous stage was completed
     if (latestStage.status !== "completed") {
-      return NextResponse.json(
-        { error: `Previous stage ${latestStage.stageNumber} must be completed before creating a new stage` },
-        { status: 400 },
-      );
+      const targetNetwork = scaffoldConfig.targetNetworks[0];
+
+      // try if the contract amount left is 0, if so mark the stage as completed
+      // We have this check incase ponder fails to hit `/revalidate-status`
+      const publicClient = createPublicClient({
+        chain: targetNetwork,
+        cacheTime: 0,
+        transport: http(getAlchemyHttpUrl(targetNetwork.id)),
+      });
+
+      const contractConfig = {
+        address: deployedContracts[targetNetwork.id].Stream.address,
+        abi: deployedContracts[targetNetwork.id].Stream.abi,
+      } as const;
+
+      const contractGrantId = await publicClient.readContract({
+        ...contractConfig,
+        functionName: "builderGrants",
+        args: [grant.builderAddress, BigInt(grant.grantNumber - 1)],
+      });
+
+      const grantInfo = await publicClient.readContract({
+        ...contractConfig,
+        functionName: "grantStreams",
+        args: [contractGrantId],
+      });
+
+      const amountLeft = grantInfo[2];
+      const grantBuilderAddress = grantInfo[5];
+
+      if (grantBuilderAddress !== grant.builderAddress || amountLeft !== 0n) {
+        console.log("Cannot complete stage, it has some amount left");
+        return NextResponse.json(
+          { error: `Previous stage ${latestStage.stageNumber} must be completed before creating a new stage` },
+          { status: 400 },
+        );
+      }
+
+      await updateStageStatusToCompleted(latestStage.id);
     }
 
     const [createdStage] = await createStage({

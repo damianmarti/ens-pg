@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { DEFAULT_TEXTAREA_MAX_LENGTH } from "~~/utils/forms";
 
-export const approveModalFormSchema = z.object({
+export const finalApproveModalFormSchema = z.object({
   grantAmount: z.string().refine(val => Number(val) > 0, {
     message: "Enter valid number",
   }),
@@ -9,4 +9,4 @@ export const approveModalFormSchema = z.object({
   txHash: z.string().length(66),
 });
 
-export type ApproveModalFormValues = z.infer<typeof approveModalFormSchema>;
+export type FinalApproveModalFormValues = z.infer<typeof finalApproveModalFormSchema>;

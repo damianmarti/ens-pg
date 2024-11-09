@@ -1,42 +1,49 @@
-import { ApprovedGrants } from "./_components/ApprovedGrants";
+import { ApprovedGrants } from "./_components/Grants";
 import { WorkflowItem } from "./_components/WorkflowItem";
 import { Stats } from "./_components/stats";
 import type { NextPage } from "next";
 import { Button } from "~~/components/pg-ens/Button";
 
-// TODO: descriptions
 const workflowItems = [
   {
     title: "Apply for a grant",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut metus eget ipsum dapibus imperdiet. Phasellus varius enim  in est ornare, non bibendum purus",
+      "Start by sharing details of your project with us! Ensure your submission aligns with our eligibility criteria and clearly communicates the impact and usefulness of your project within the Ethereum or broader web3 ecosystem.",
   },
   {
     title: "Review process",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut metus eget ipsum dapibus imperdiet. Phasellus varius enim  in est ornare, non bibendum purus",
+      "Once submitted, your application will be reviewed by the Public Goods Working Group stewards on a rolling basis. The stewards will evaluate your project based on its usefulness and impact.",
   },
   {
     title: "Deliver your milestones",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut metus eget ipsum dapibus imperdiet. Phasellus varius enim  in est ornare, non bibendum purus",
+      "If your project is selected, you will begin working on the milestones outlined in your submission. While withdrawals do not need approval, each grant stage and its milestones will be reviewed by our stewards. Please ensure proof of completion is clear.",
   },
   {
     title: "Apply for another stage",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut metus eget ipsum dapibus imperdiet. Phasellus varius enim  in est ornare, non bibendum purus",
+      "After you successfully complete your milestones, you may be eligible to apply for additional funding or future grant opportunities to continue developing and scaling your public good.",
   },
 ];
 
 const Home: NextPage = () => {
   return (
     <div className="flex items-center flex-col flex-grow">
-      <div className="max-w-4xl text-center px-4 py-10 sm:py-20">
+      <div className="max-w-4xl text-center px-4 py-8 sm:py-16">
         <h1 className="text-3xl font-extrabold !mb-0">ENS PG Builder Grants</h1>
-        <div className="mt-4 text-gray-400 max-w-lg">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut metus eget ipsum dapibus imperdiet. Phasellus
-          varius enim in est ornare, non bibendum purus venenatis. Proin consequat elit leo. Nunc maximus mauris id
-          luctus tristique.
+        <div className="mt-4 text-gray-400 max-w-2xl mx-auto space-y-4">
+          <p>
+            The ENS PG Builder Grants program is designed to support foundational public goods in the Ethereum and Web3
+            ecosystems. The program aims to empower projects that have demonstrated exceptional usefulness and impact
+            for developers and users alike.
+          </p>
+          <p>
+            By providing significant financial support, we help projects continue to drive innovation and growth within
+            the ecosystem. Whether you&apos;re building infrastructure, developing tools, or creating educational
+            resources, the ENS PG Builder Grants offer a pathway to secure the funding you need to make a lasting
+            difference.
+          </p>
         </div>
         <Stats />
       </div>

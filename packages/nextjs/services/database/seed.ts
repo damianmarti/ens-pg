@@ -1,24 +1,24 @@
-import { grants, privateNotes, stages, users, withdrawals } from "./config/schema";
+import { approvalVotes, grants, privateNotes, stages, users, withdrawals } from "./config/schema";
 import * as schema from "./config/schema";
 import * as dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import * as path from "path";
-import { Client } from "pg";
+import { Pool } from "pg";
 import { parseEther } from "viem";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env.development") });
 
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+});
+
 // TODO: protect, only for dev.
 // TODO: fix: When you seed again, the ids start from previous deleted databse
 async function seed() {
-  const client = new Client({
-    connectionString: process.env.POSTGRES_URL,
-  });
-
-  await client.connect();
-  const db = drizzle(client, { schema });
+  const db = drizzle(pool, { schema });
 
   await db.delete(privateNotes).execute(); // Delete private notes first
+  await db.delete(approvalVotes).execute();
   await db.delete(withdrawals).execute();
   await db.delete(stages).execute(); // Ensure stages are deleted before grants
   await db.delete(grants).execute(); // Delete grants
@@ -120,6 +120,7 @@ seed()
   .catch(error => {
     console.error("Error seeding database:", error);
   })
-  .finally(() => {
+  .finally(async () => {
+    await pool.end();
     process.exit();
   });

@@ -5,6 +5,11 @@ import { authOptions } from "~~/utils/auth";
 
 export type BuilderGrantsResponse = Awaited<ReturnType<typeof getBuilderGrants>>;
 
+// https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006086291
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export async function GET(_request: Request, { params }: { params: { builderAddress: string } }) {
   try {
     const session = await getServerSession(authOptions);

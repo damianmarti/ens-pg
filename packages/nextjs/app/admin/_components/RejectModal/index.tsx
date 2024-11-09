@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { RejectModalFormValues, rejectModalFormSchema } from "./schema";
 import { FormProvider } from "react-hook-form";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
@@ -35,6 +36,10 @@ export const RejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(({ st
           <button className="btn btn-sm btn-circle btn-ghost text-xl h-auto">✕</button>
         </form>
         <FormProvider {...formMethods}>
+          <div className="flex items-center gap-1">
+            <ExclamationTriangleIcon className="w-6 h-6 text-primary-orange" />
+            <span>Clicking Reject will change the status of this grant to Rejected</span>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col space-y-1">
             <FormTextarea label="Note (visible to grantee)" {...getCommonOptions("statusNote")} />
             <Button variant="red" type="submit" disabled={isPostingStageReview || isSigning} className="self-center">

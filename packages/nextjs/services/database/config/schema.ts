@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { bigint, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { bigint, integer, pgEnum, pgTable, serial, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
 
 // TODO: Define the right schema.
 
@@ -47,13 +47,30 @@ export const stages = pgTable("stages", {
   approvedAt: timestamp("approved_at"),
 });
 
-export const stagesRelations = relations(stages, ({ one, many }) => ({
-  grant: one(grants, {
-    fields: [stages.grantId],
-    references: [grants.id],
+export const approvalVotes = pgTable(
+  "approval_votes",
+  {
+    id: serial("id").primaryKey(),
+    amount: bigint("amount", { mode: "bigint" }).notNull(),
+    votedAt: timestamp("voted_at").default(sql`now()`),
+    stageId: integer("stage_id")
+      .references(() => stages.id)
+      .notNull(),
+    authorAddress: varchar("author_address", { length: 42 })
+      .references(() => users.address)
+      .notNull(),
+  },
+  table => ({
+    // Ensure each author can only vote once per stage
+    uniqueVotePerStage: unique().on(table.stageId, table.authorAddress),
   }),
-  withdrawals: many(withdrawals),
-  privateNotes: many(privateNotes),
+);
+
+export const approvalVotesRelations = relations(approvalVotes, ({ one }) => ({
+  stage: one(stages, {
+    fields: [approvalVotes.stageId],
+    references: [stages.id],
+  }),
 }));
 
 export const withdrawals = pgTable("withdrawals", {
@@ -90,6 +107,16 @@ export const privateNotesRelations = relations(privateNotes, ({ one }) => ({
     fields: [privateNotes.stageId],
     references: [stages.id],
   }),
+}));
+
+export const stagesRelations = relations(stages, ({ one, many }) => ({
+  grant: one(grants, {
+    fields: [stages.grantId],
+    references: [grants.id],
+  }),
+  withdrawals: many(withdrawals),
+  privateNotes: many(privateNotes),
+  approvalVotes: many(approvalVotes),
 }));
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "grantee"]);

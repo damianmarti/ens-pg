@@ -5,6 +5,11 @@ import { authOptions } from "~~/utils/auth";
 
 export type BuilderGrantResponse = Awaited<ReturnType<typeof getGrantById>>;
 
+// https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006086291
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 // TODO: Currenly not in use. Recheck later, remove if not needed
 export async function GET(_request: Request, { params }: { params: { builderAddress: string; id: string } }) {
   try {

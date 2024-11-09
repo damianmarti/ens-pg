@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-// TODO: Add comments
-contract Stream is Ownable {
+contract Stream is AccessControl {
+	bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
+
 	struct GrantStream {
 		uint256 cap;
 		uint256 last;
@@ -21,7 +22,6 @@ contract Stream is Ownable {
 
 	// uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 180; // 3 minutes
 	uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 2592000; // 30 days
-	// TODO: remove the logic of DUST_THRESHOLD if not needed
 	uint256 public constant DUST_THRESHOLD = 1000000000000000; // 0.001 ETH
 
 	event Withdraw(
@@ -49,6 +49,8 @@ contract Stream is Ownable {
 		uint8 grantNumber,
 		uint8 stageNumber
 	);
+	event AddOwner(address indexed newOwner, address indexed addedBy);
+	event RemoveOwner(address indexed removedOwner, address indexed removedBy);
 
 	// Custom errors
 	error NoActiveStream();
@@ -58,8 +60,11 @@ contract Stream is Ownable {
 	error FailedToSendEther();
 	error PreviousAmountNotFullyWithdrawn();
 
-	constructor(address _owner) {
-		_transferOwnership(_owner);
+	constructor(address[] memory _initialOwners) {
+		_setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
+		for (uint i = 0; i < _initialOwners.length; i++) {
+			_grantRole(OWNER_ROLE, _initialOwners[i]);
+		}
 	}
 
 	function unlockedGrantAmount(
@@ -86,7 +91,7 @@ contract Stream is Ownable {
 		address _builder,
 		uint256 _cap,
 		uint8 _grantNumber
-	) public onlyOwner returns (uint256) {
+	) public onlyRole(OWNER_ROLE) returns (uint256) {
 		uint256 grantId = nextGrantId++;
 		grantStreams[grantId] = GrantStream({
 			cap: _cap,
@@ -104,7 +109,7 @@ contract Stream is Ownable {
 	function moveGrantToNextStage(
 		uint256 _grantId,
 		uint256 _cap
-	) public onlyOwner {
+	) public onlyRole(OWNER_ROLE) {
 		GrantStream storage grantStream = grantStreams[_grantId];
 		if (grantStream.cap == 0) revert NoActiveStream();
 
@@ -138,7 +143,7 @@ contract Stream is Ownable {
 		uint256 _last,
 		uint256 _amountLeft,
 		uint8 _stageNumber
-	) public onlyOwner {
+	) public onlyRole(OWNER_ROLE) {
 		GrantStream storage grantStream = grantStreams[_grantId];
 		if (grantStream.cap == 0) revert NoActiveStream();
 		grantStream.cap = _cap;
@@ -193,6 +198,16 @@ contract Stream is Ownable {
 		address _builder
 	) public view returns (uint256) {
 		return builderGrants[_builder].length;
+	}
+
+	function addOwner(address newOwner) public onlyRole(OWNER_ROLE) {
+		grantRole(OWNER_ROLE, newOwner);
+		emit AddOwner(newOwner, msg.sender);
+	}
+
+	function removeOwner(address owner) public onlyRole(OWNER_ROLE) {
+		revokeRole(OWNER_ROLE, owner);
+		emit RemoveOwner(owner, msg.sender);
 	}
 
 	receive() external payable {}

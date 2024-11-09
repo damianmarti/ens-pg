@@ -1,6 +1,6 @@
-import { InferInsertModel, InferSelectModel, eq } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, and, eq } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
-import { stages, stagesStatusEnum } from "~~/services/database/config/schema";
+import { grants, stages, stagesStatusEnum } from "~~/services/database/config/schema";
 
 export type StageInsert = InferInsertModel<typeof stages>;
 export type StageUpdate = Partial<StageInsert>;
@@ -15,11 +15,38 @@ export async function updateStage(stageId: Required<StageUpdate>["id"], stage: S
   return await db.update(stages).set(stage).where(eq(stages.id, stageId));
 }
 
-export async function getStageById(stageId: number) {
+export async function getStageByIdWithGrantAndVotes(stageId: number) {
   return await db.query.stages.findFirst({
     where: eq(stages.id, stageId),
     with: {
       grant: true,
+      approvalVotes: true,
     },
   });
+}
+
+export async function updateStageStatusToCompleted(stageId: number) {
+  return await db.update(stages).set({ status: "completed" }).where(eq(stages.id, stageId));
+}
+
+export async function findStageByGrantNumberStageNumberAndBuilderAddress(
+  grantNumber: number,
+  stageNumber: number,
+  builderAddress: string,
+) {
+  return await db
+    .select({
+      stage: stages,
+      grant: grants,
+    })
+    .from(stages)
+    .leftJoin(grants, eq(stages.grantId, grants.id))
+    .where(
+      and(
+        eq(stages.stageNumber, stageNumber),
+        eq(grants.grantNumber, grantNumber),
+        eq(grants.builderAddress, builderAddress),
+      ),
+    )
+    .limit(1);
 }

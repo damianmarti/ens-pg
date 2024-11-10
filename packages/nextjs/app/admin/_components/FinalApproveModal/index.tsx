@@ -141,7 +141,9 @@ export const FinalApproveModal = forwardRef<
                 variant="green"
                 type="submit"
                 className="!px-4"
-                disabled={isWriteContractPending || isFinalApproveButtonLoading}
+                // TODO: enable when ready
+                disabled={true}
+                // disabled={isWriteContractPending || isFinalApproveButtonLoading}
                 onClick={enableAmountValidation}
               >
                 {isFinalApproveButtonLoading && <span className="loading loading-spinner" />}

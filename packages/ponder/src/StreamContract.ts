@@ -1,6 +1,6 @@
 import { ponder } from "@/generated";
 
-ponder.on("StreamContract:Withdraw", async ({ event, context }) => {
+ponder.on("Stream:Withdraw", async ({ event, context }) => {
   try {
     const { db } = context;
 
@@ -30,11 +30,11 @@ ponder.on("StreamContract:Withdraw", async ({ event, context }) => {
           builderAddress: event.args.to,
           contractGrantId: event.args.grantId,
         },
-        replacer,
+        replacer
       ),
     });
   } catch (error) {
-    console.log("Error in StreamContract:Withdraw", error);
+    console.log("Error in Stream:Withdraw", error);
   }
 });
 

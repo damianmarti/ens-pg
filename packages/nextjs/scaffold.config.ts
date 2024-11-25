@@ -11,7 +11,7 @@ export type ScaffoldConfig = {
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.optimism],
+  targetNetworks: [chains.hardhat],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
@@ -33,7 +33,7 @@ const scaffoldConfig = {
   onlyLocalBurnerWallet: true,
 
   // disable burner wallet for all networks
-  disableBurnerWalletOnLocal: false,
+  disableBurnerWalletOnLocal: true,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

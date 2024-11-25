@@ -118,8 +118,6 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
               <Button
                 variant="green"
                 size="sm"
-                // TODO: enable when ready
-                disabled={true}
                 onClick={() => finalApproveModalRef && finalApproveModalRef.current?.showModal()}
               >
                 Final Approve
@@ -130,9 +128,7 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
                   variant="green-secondary"
                   size="sm"
                   onClick={() => approvalVoteModalRef && approvalVoteModalRef.current?.showModal()}
-                  // TODO: enable when ready
-                  disabled={true}
-                  // disabled={!canVote}
+                  disabled={!canVote}
                 >
                   Vote for approval
                 </Button>

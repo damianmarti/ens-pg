@@ -13,6 +13,29 @@ import { useStageReview } from "~~/hooks/pg-ens/useStageReview";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
+const LOADING_STATUS_MAP = {
+  CreatingStream: "Creating grant stream",
+  Approving: "Approving grant",
+  MovingToNextStage: "Moving grant to next stage",
+  Empty: "",
+} as const;
+
+const WAITING_FOR_SIGNATURE_POSTFIX = "waiting for signature";
+
+type LoadingStatus = (typeof LOADING_STATUS_MAP)[keyof typeof LOADING_STATUS_MAP];
+
+const getLoadingStatusText = ({ status, isWaiting }: { status: LoadingStatus; isWaiting: boolean }) => {
+  if (status === LOADING_STATUS_MAP.Empty) {
+    return status;
+  }
+
+  if (isWaiting) {
+    return `${status}, ${WAITING_FOR_SIGNATURE_POSTFIX}...`;
+  }
+
+  return `${status}...`;
+};
+
 export const FinalApproveModal = forwardRef<
   HTMLDialogElement,
   {
@@ -23,21 +46,15 @@ export const FinalApproveModal = forwardRef<
     grantNumber: number;
   }
 >(({ stage, grantName, builderAddress, isGrant, grantNumber }, ref) => {
-  const { reviewStage, isSigning, isPostingStageReview } = useStageReview(stage.id);
-  const isFinalApproveButtonLoading = isPostingStageReview || isSigning;
+  const { reviewStage, isSigning } = useStageReview(stage.id);
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(LOADING_STATUS_MAP.Empty);
   const { approvalVotes } = stage;
-  const [isAmountValidationEnabled, setIsAmountValidationEnabled] = useState(false);
-  const enableAmountValidation = () => {
-    if (!isAmountValidationEnabled) {
-      setIsAmountValidationEnabled(true);
-    }
-  };
 
   const { getCommonOptions, formMethods } = useFormMethods<FinalApproveModalFormValues>({
     schema: finalApproveModalFormSchema,
   });
 
-  const { handleSubmit, getValues, setValue, trigger } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const { writeContractAsync, isPending: isWriteContractPending } = useScaffoldWriteContract("Stream");
 
@@ -51,43 +68,51 @@ export const FinalApproveModal = forwardRef<
     },
   });
 
-  const handleSetupStream = async () => {
-    enableAmountValidation();
-
+  const handleSetupStream = async (fieldValues: FinalApproveModalFormValues) => {
     try {
-      const fieldValues = getValues();
-      const isGrantAmountValid = await trigger("grantAmount", { shouldFocus: true });
-      if (!isGrantAmountValid) {
-        return;
-      }
-
       let txHash;
 
       if (isGrant) {
+        setLoadingStatus(LOADING_STATUS_MAP.CreatingStream);
         txHash = await writeContractAsync({
           functionName: "addGrantStream",
           args: [builderAddress, parseEther(fieldValues.grantAmount), grantNumber],
         });
       } else {
-        if (!contractGrantIdForBuilder)
+        if (!contractGrantIdForBuilder) {
+          setLoadingStatus(LOADING_STATUS_MAP.Empty);
+
           return notification.error("Error getting grant for corresponding builder in contract");
+        }
+        setLoadingStatus(LOADING_STATUS_MAP.MovingToNextStage);
+
         txHash = await writeContractAsync({
           functionName: "moveGrantToNextStage",
           args: [contractGrantIdForBuilder, parseEther(fieldValues.grantAmount)],
         });
       }
 
-      if (txHash) {
-        setValue("txHash", txHash, { shouldValidate: false });
-      }
+      return txHash;
     } catch (e) {
       console.error("Error sending setup transaction", e);
     }
   };
 
   const onSubmit = async (fieldValues: FinalApproveModalFormValues) => {
-    await reviewStage({ status: "approved", ...fieldValues, grantNumber: grantNumber.toString() });
+    const txHash = await handleSetupStream(fieldValues);
+    if (!txHash) {
+      setLoadingStatus(LOADING_STATUS_MAP.Empty);
+      return notification.error("Error setting up stream");
+    }
+    setLoadingStatus(LOADING_STATUS_MAP.Approving);
+    await reviewStage({ status: "approved", ...fieldValues, txHash, grantNumber: grantNumber.toString() });
+    setLoadingStatus(LOADING_STATUS_MAP.Empty);
   };
+
+  const loadingStatusText = getLoadingStatusText({
+    status: loadingStatus,
+    isWaiting: isSigning || isWriteContractPending,
+  });
 
   return (
     <dialog id="action_modal" className="modal" ref={ref}>
@@ -118,38 +143,18 @@ export const FinalApproveModal = forwardRef<
             <FormInput
               label={`Grant amount for stage ${stage.stageNumber} (in ETH)`}
               {...getCommonOptions("grantAmount")}
-              onChange={async e => {
-                if (isAmountValidationEnabled) {
-                  setValue("grantAmount", e.target.value, { shouldValidate: true });
-                }
-              }}
             />
             <FormTextarea label="Note (visible to grantee)" {...getCommonOptions("statusNote")} />
-            <FormInput label="Tx hash" {...getCommonOptions("txHash")} />
-            <div className="grid grid-cols-2 gap-2 mt-4 items-center justify-center">
-              <Button
-                variant="green-secondary"
-                disabled={isWriteContractPending || isFinalApproveButtonLoading}
-                onClick={handleSetupStream}
-                className="!px-4"
-                type="button"
-              >
-                {isWriteContractPending && <span className="loading loading-spinner" />}
-                <span>Setup stream</span>
-              </Button>
-              <Button
-                variant="green"
-                type="submit"
-                className="!px-4"
-                // TODO: enable when ready
-                disabled={true}
-                // disabled={isWriteContractPending || isFinalApproveButtonLoading}
-                onClick={enableAmountValidation}
-              >
-                {isFinalApproveButtonLoading && <span className="loading loading-spinner" />}
-                <span>Final Approve</span>
-              </Button>
-            </div>
+
+            {loadingStatusText && (
+              <div className="text-xl flex justify-center items-center gap-2 my-2">
+                <span className="loading loading-spinner" />
+                {loadingStatusText}
+              </div>
+            )}
+            <Button variant="green" type="submit" className="!px-4 self-center" disabled={Boolean(loadingStatus)}>
+              <span>Final Approve</span>
+            </Button>
           </form>
         </FormProvider>
       </div>

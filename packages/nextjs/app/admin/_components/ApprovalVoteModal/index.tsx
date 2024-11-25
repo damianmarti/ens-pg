@@ -81,9 +81,7 @@ export const ApprovalVoteModal = forwardRef<HTMLDialogElement, ApprovalVoteModal
               <Button
                 type="submit"
                 variant="green-secondary"
-                // TODO: enable when ready
-                disabled={true}
-                // disabled={isPostingApprovalVote || isSigning}
+                disabled={isPostingApprovalVote || isSigning}
                 className="self-center"
               >
                 {(isPostingApprovalVote || isSigning) && <span className="loading loading-spinner"></span>}

@@ -58,11 +58,11 @@ export const FinalApproveModal = forwardRef<
 
   const { writeContractAsync, isPending: isWriteContractPending } = useScaffoldWriteContract("Stream");
 
-  // we could write more robust logic to handle some edge cases. Being optimistic for now and assuming grantNumbers will be linear
   const { data: contractGrantIdForBuilder } = useScaffoldReadContract({
     contractName: "Stream",
-    functionName: "builderGrants",
-    args: [builderAddress, BigInt(grantNumber - 1)],
+    functionName: "getGrantIdByBuilderAndGrantNumber",
+    // @ts-expect-error: grantNumber is safe to convert to BigInt
+    args: [builderAddress, BigInt(grantNumber)],
     query: {
       enabled: !isGrant,
     },
@@ -145,7 +145,6 @@ export const FinalApproveModal = forwardRef<
               {...getCommonOptions("grantAmount")}
             />
             <FormTextarea label="Note (visible to grantee)" {...getCommonOptions("statusNote")} />
-
             {loadingStatusText && (
               <div className="text-xl flex justify-center items-center gap-2 my-2">
                 <span className="loading loading-spinner" />

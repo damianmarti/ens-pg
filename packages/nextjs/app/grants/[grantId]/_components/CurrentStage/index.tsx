@@ -12,16 +12,16 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 type CurrentStageProps = {
   grant: NonNullable<GrantWithStages>;
-  rejectedCount: number;
 };
 
-export const CurrentStage = ({ grant, rejectedCount }: CurrentStageProps) => {
+export const CurrentStage = ({ grant }: CurrentStageProps) => {
   const latestStage = grant.stages[0];
 
   const { data: contractGrantId } = useScaffoldReadContract({
     contractName: "Stream",
-    functionName: "builderGrants",
-    args: [grant.builderAddress, BigInt(grant.grantNumber - rejectedCount - 1)],
+    functionName: "getGrantIdByBuilderAndGrantNumber",
+    // @ts-expect-error: grantNumber is safe to convert to BigInt
+    args: [grant.builderAddress, BigInt(grant.grantNumber)],
   });
 
   const {

@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel, and, count, desc, eq, lt, max } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, desc, eq, max } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { grants, stages } from "~~/services/database/config/schema";
 
@@ -72,28 +72,4 @@ export async function getGrantById(grantId: number) {
       },
     },
   });
-}
-
-export async function getRejectedGrantsCountLessThanGrantNumber(grantId: number) {
-  const grant = await db.query.grants.findFirst({
-    where: eq(grants.id, grantId),
-  });
-
-  if (!grant) return 0;
-
-  const result = await db
-    .select({
-      count: count(),
-    })
-    .from(grants)
-    .leftJoin(stages, eq(grants.id, stages.grantId))
-    .where(
-      and(
-        eq(stages.status, "rejected"),
-        lt(grants.grantNumber, grant.grantNumber),
-        eq(grants.builderAddress, grant.builderAddress),
-      ),
-    );
-
-  return result[0].count;
 }

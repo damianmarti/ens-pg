@@ -73,23 +73,6 @@ export const approvalVotesRelations = relations(approvalVotes, ({ one }) => ({
   }),
 }));
 
-export const withdrawals = pgTable("withdrawals", {
-  id: serial("id").primaryKey(),
-  milestones: text("milestones"),
-  withdrewAt: timestamp("withdrew_at").default(sql`now()`),
-  stageId: integer("stage_id")
-    .references(() => stages.id)
-    .notNull(),
-  withdrawAmount: bigint("grantAmount", { mode: "bigint" }),
-});
-
-export const withdrawalsRelations = relations(withdrawals, ({ one }) => ({
-  stage: one(stages, {
-    fields: [withdrawals.stageId],
-    references: [stages.id],
-  }),
-}));
-
 export const privateNotes = pgTable("private_notes", {
   id: serial("id").primaryKey(),
   note: text("note").notNull(),
@@ -114,7 +97,6 @@ export const stagesRelations = relations(stages, ({ one, many }) => ({
     fields: [stages.grantId],
     references: [grants.id],
   }),
-  withdrawals: many(withdrawals),
   privateNotes: many(privateNotes),
   approvalVotes: many(approvalVotes),
 }));

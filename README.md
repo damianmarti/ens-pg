@@ -45,7 +45,7 @@ yarn deploy
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`.
+Visit your app on: `http://localhost:3000`
 
 ## Database (dev info)
 

@@ -4,6 +4,8 @@ import { Stats } from "./_components/stats";
 import type { NextPage } from "next";
 import { Button } from "~~/components/pg-ens/Button";
 
+export const revalidate = 21600; // 6 hours
+
 const workflowItems = [
   {
     title: "Apply for a grant",

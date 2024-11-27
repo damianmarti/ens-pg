@@ -27,14 +27,18 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
   const {
     data: contractGrantInfo,
     isLoading: isBuilderInfoLoading,
-    refetch: refetchContractInfo,
+    refetch: refetchGrantInfo,
   } = useScaffoldReadContract({
     contractName: "Stream",
     functionName: "grantStreams",
     args: [contractGrantId],
   });
 
-  const { data: unlockedAmount, isLoading: isUnlockedAmountLoading } = useScaffoldReadContract({
+  const {
+    data: unlockedAmount,
+    isLoading: isUnlockedAmountLoading,
+    refetch: refetchUnlockedAmount,
+  } = useScaffoldReadContract({
     contractName: "Stream",
     functionName: "unlockedGrantAmount",
     args: [contractGrantId],
@@ -87,7 +91,9 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
         stage={latestStage}
         closeModal={() => withdrawModalRef.current?.close()}
         contractGrantId={contractGrantId}
-        refetchContractInfo={refetchContractInfo}
+        refetchContractInfo={async () => {
+          await Promise.all([refetchGrantInfo(), refetchUnlockedAmount()]);
+        }}
       />
     </div>
   );

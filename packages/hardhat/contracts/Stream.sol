@@ -25,7 +25,6 @@ contract Stream is AccessControl {
 
 	mapping(address => BuilderGrantData[]) public builderGrants;
 
-	// uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 180; // 3 minutes
 	uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 2592000; // 30 days
 	uint256 public constant DUST_THRESHOLD = 1000000000000000; // 0.001 ETH
 

@@ -6,7 +6,6 @@ export const finalApproveModalFormSchema = z.object({
     message: "Enter valid number",
   }),
   statusNote: z.string().max(DEFAULT_TEXTAREA_MAX_LENGTH).optional(),
-  txHash: z.string().length(66),
 });
 
 export type FinalApproveModalFormValues = z.infer<typeof finalApproveModalFormSchema>;

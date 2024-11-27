@@ -62,8 +62,9 @@ export async function POST(req: Request) {
 
       const contractGrantId = await publicClient.readContract({
         ...contractConfig,
-        functionName: "builderGrants",
-        args: [grant.builderAddress, BigInt(grant.grantNumber - 1)],
+        functionName: "getGrantIdByBuilderAndGrantNumber",
+        // @ts-expect-error: grantNumber is safe to convert to BigInt
+        args: [grant.builderAddress, BigInt(grant.grantNumber)],
       });
 
       const grantInfo = await publicClient.readContract({

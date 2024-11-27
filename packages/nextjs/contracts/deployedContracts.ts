@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   10: {
     Stream: {
-      address: "0xDcc5DF3Ca0ECa3B78c56b9134Df293B616f26371",
+      address: "0x72704F28704fe9dF50516e0Fc29FbD9261a3DE64",
       abi: [
         {
           inputs: [
@@ -19,6 +19,11 @@ const deployedContracts = {
           ],
           stateMutability: "nonpayable",
           type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "AlreadyWithdrawnFromGrant",
+          type: "error",
         },
         {
           inputs: [],
@@ -129,6 +134,68 @@ const deployedContracts = {
             },
           ],
           name: "MoveGrantToNextStage",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "grantId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "ReinitializeGrant",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "grantId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "builder",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint8",
+              name: "grantNumber",
+              type: "uint8",
+            },
+            {
+              indexed: false,
+              internalType: "uint8",
+              name: "stageNumber",
+              type: "uint8",
+            },
+          ],
+          name: "ReinitializeNextStage",
           type: "event",
         },
         {
@@ -432,8 +499,13 @@ const deployedContracts = {
           outputs: [
             {
               internalType: "uint256",
-              name: "",
+              name: "grantId",
               type: "uint256",
+            },
+            {
+              internalType: "uint8",
+              name: "grantNumber",
+              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -448,6 +520,30 @@ const deployedContracts = {
             },
           ],
           name: "getBuilderGrantCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_builder",
+              type: "address",
+            },
+            {
+              internalType: "uint8",
+              name: "_grantNumber",
+              type: "uint8",
+            },
+          ],
+          name: "getGrantIdByBuilderAndGrantNumber",
           outputs: [
             {
               internalType: "uint256",

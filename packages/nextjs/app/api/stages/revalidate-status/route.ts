@@ -35,7 +35,6 @@ export async function POST(request: Request) {
 
     const targetNetwork = scaffoldConfig.targetNetworks[0];
     const publicClient = createPublicClient({
-      // TODO: Change this while deploying
       chain: targetNetwork,
       cacheTime: 0,
       transport: http(getAlchemyHttpUrl(targetNetwork.id)),

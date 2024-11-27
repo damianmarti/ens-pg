@@ -202,10 +202,10 @@ describe("Stream", async () => {
     expect(grantCount).to.equal(2);
 
     // Access each grant
-    const firstGrantId = await stream.builderGrants(builder.address, 0);
+    const firstGrantId = await stream.getGrantIdByBuilderAndGrantNumber(builder.address, 1);
     expect(firstGrantId).to.equal(grantId);
 
-    const secondGrantId = await stream.builderGrants(builder.address, 1);
+    const secondGrantId = await stream.getGrantIdByBuilderAndGrantNumber(builder.address, 2);
     expect(secondGrantId).to.equal(grantId + 1n);
 
     // Trying to access a non-existent index should revert

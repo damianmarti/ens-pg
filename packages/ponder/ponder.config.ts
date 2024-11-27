@@ -1,24 +1,35 @@
 import { createConfig } from "@ponder/core";
 import { http } from "viem";
-import { StreamAbi } from "./abis/StreamAbi";
-import { optimism } from "viem/chains";
+import deployedContracts from "../nextjs/contracts/deployedContracts";
+import scaffoldConfig from "../nextjs/scaffold.config";
 
-// TODO: Use acltual env var for this
-const providerApiKey = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
+const targetNetwork = scaffoldConfig.targetNetworks[0];
+
+const networks = {
+  [targetNetwork.name]: {
+    chainId: targetNetwork.id,
+    transport: http(process.env[`PONDER_RPC_URL_${targetNetwork.id}`]),
+  },
+};
+
+const contractNames = Object.keys(deployedContracts[targetNetwork.id]);
+
+const contracts = Object.fromEntries(
+  contractNames.map((contractName) => {
+    return [
+      contractName,
+      {
+        network: targetNetwork.name as string,
+        abi: deployedContracts[targetNetwork.id][contractName].abi,
+        address: deployedContracts[targetNetwork.id][contractName].address,
+        // TODO: Change startBlock when deploying
+        startBlock: scaffoldConfig.startBlock || 0,
+      },
+    ];
+  }),
+);
 
 export default createConfig({
-  networks: {
-    optimism: {
-      chainId: optimism.id,
-      transport: http(`https://opt-mainnet.g.alchemy.com/v2/${providerApiKey}`),
-    },
-  },
-  contracts: {
-    StreamContract: {
-      abi: StreamAbi,
-      address: "0xDcc5DF3Ca0ECa3B78c56b9134Df293B616f26371",
-      network: "optimism",
-      startBlock: 127774736,
-    },
-  },
+  networks: networks,
+  contracts: contracts,
 });

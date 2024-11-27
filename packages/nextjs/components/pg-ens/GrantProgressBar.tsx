@@ -6,7 +6,7 @@ export type GrantProgressBarProps = {
 };
 
 export const GrantProgressBar = ({ amount, withdrawn = 0, available = 0, className = "" }: GrantProgressBarProps) => {
-  const availablePercentage = ((available + withdrawn) / amount) * 100;
+  const availablePercentage = (available / amount) * 100;
   const withdrawnPercentage = (withdrawn / amount) * 100;
 
   if (!amount) {
@@ -23,7 +23,7 @@ export const GrantProgressBar = ({ amount, withdrawn = 0, available = 0, classNa
         />
         <div
           className="bg-medium-purple rounded absolute z-[1] inset-y-0 left-0"
-          style={{ width: `${availablePercentage}%` }}
+          style={{ width: `${Math.min(withdrawnPercentage + availablePercentage, 100)}%` }}
         />
       </div>
       <div className="flex justify-between font-semibold mt-2">

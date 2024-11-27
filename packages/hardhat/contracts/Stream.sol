@@ -15,12 +15,16 @@ contract Stream is AccessControl {
 		address builder;
 	}
 
+	struct BuilderGrantData {
+		uint256 grantId;
+		uint8 grantNumber;
+	}
+
 	mapping(uint256 => GrantStream) public grantStreams;
 	uint256 public nextGrantId = 1;
 
-	mapping(address => uint256[]) public builderGrants;
+	mapping(address => BuilderGrantData[]) public builderGrants;
 
-	// uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 180; // 3 minutes
 	uint256 public constant FULL_STREAM_UNLOCK_PERIOD = 2592000; // 30 days
 	uint256 public constant DUST_THRESHOLD = 1000000000000000; // 0.001 ETH
 
@@ -33,9 +37,21 @@ contract Stream is AccessControl {
 		uint8 stageNumber
 	);
 	event AddGrant(uint256 indexed grantId, address indexed to, uint256 amount);
+	event ReinitializeGrant(
+		uint256 indexed grantId,
+		address indexed to,
+		uint256 amount
+	);
 	event MoveGrantToNextStage(
 		uint256 indexed grantId,
 		address indexed to,
+		uint256 amount,
+		uint8 grantNumber,
+		uint8 stageNumber
+	);
+	event ReinitializeNextStage(
+		uint256 indexed grantId,
+		address indexed builder,
 		uint256 amount,
 		uint8 grantNumber,
 		uint8 stageNumber
@@ -59,6 +75,7 @@ contract Stream is AccessControl {
 	error InsufficientStreamFunds();
 	error FailedToSendEther();
 	error PreviousAmountNotFullyWithdrawn();
+	error AlreadyWithdrawnFromGrant();
 
 	constructor(address[] memory _initialOwners) {
 		_setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
@@ -92,7 +109,29 @@ contract Stream is AccessControl {
 		uint256 _cap,
 		uint8 _grantNumber
 	) public onlyRole(OWNER_ROLE) returns (uint256) {
-		uint256 grantId = nextGrantId++;
+		// check if grantStream with same grantNumber already exists
+		uint256 existingGrantId;
+		BuilderGrantData[] memory existingBuilderGrants = builderGrants[
+			_builder
+		];
+		for (uint i = 0; i < existingBuilderGrants.length; i++) {
+			GrantStream memory existingGrant = grantStreams[
+				existingBuilderGrants[i].grantId
+			];
+			if (existingGrant.grantNumber == _grantNumber) {
+				if (existingGrant.cap != existingGrant.amountLeft) {
+					revert AlreadyWithdrawnFromGrant();
+				}
+				existingGrantId = existingBuilderGrants[i].grantId;
+				break;
+			}
+		}
+
+		// update existing grant or create new one
+		uint256 grantId = existingGrantId != 0
+			? existingGrantId
+			: nextGrantId++;
+
 		grantStreams[grantId] = GrantStream({
 			cap: _cap,
 			last: block.timestamp,
@@ -101,8 +140,18 @@ contract Stream is AccessControl {
 			stageNumber: 1,
 			builder: _builder
 		});
-		builderGrants[_builder].push(grantId);
-		emit AddGrant(grantId, _builder, _cap);
+
+		if (existingGrantId == 0) {
+			builderGrants[_builder].push(
+				BuilderGrantData({
+					grantId: grantId,
+					grantNumber: _grantNumber
+				})
+			);
+			emit AddGrant(grantId, _builder, _cap);
+		} else {
+			emit ReinitializeGrant(grantId, _builder, _cap);
+		}
 		return grantId;
 	}
 
@@ -113,28 +162,43 @@ contract Stream is AccessControl {
 		GrantStream storage grantStream = grantStreams[_grantId];
 		if (grantStream.cap == 0) revert NoActiveStream();
 
-		if (grantStream.amountLeft > DUST_THRESHOLD)
-			revert PreviousAmountNotFullyWithdrawn();
+		// If amountLeft equals cap, reinitialize with same stage number
+		if (grantStream.amountLeft == grantStream.cap) {
+			grantStream.cap = _cap;
+			grantStream.last = block.timestamp;
+			grantStream.amountLeft = _cap;
+			// Stage number remains the same
+			emit ReinitializeNextStage(
+				_grantId,
+				grantStream.builder,
+				_cap,
+				grantStream.grantNumber,
+				grantStream.stageNumber
+			);
+		} else {
+			if (grantStream.amountLeft > DUST_THRESHOLD)
+				revert PreviousAmountNotFullyWithdrawn();
 
-		if (grantStream.amountLeft > 0) {
-			(bool sent, ) = payable(grantStream.builder).call{
-				value: grantStream.amountLeft
-			}("");
-			if (!sent) revert FailedToSendEther();
+			if (grantStream.amountLeft > 0) {
+				(bool sent, ) = payable(grantStream.builder).call{
+					value: grantStream.amountLeft
+				}("");
+				if (!sent) revert FailedToSendEther();
+			}
+
+			grantStream.cap = _cap;
+			grantStream.last = block.timestamp;
+			grantStream.amountLeft = _cap;
+			grantStream.stageNumber += 1;
+
+			emit MoveGrantToNextStage(
+				_grantId,
+				grantStream.builder,
+				_cap,
+				grantStream.grantNumber,
+				grantStream.stageNumber
+			);
 		}
-
-		grantStream.cap = _cap;
-		grantStream.last = block.timestamp;
-		grantStream.amountLeft = _cap;
-		grantStream.stageNumber += 1;
-
-		emit MoveGrantToNextStage(
-			_grantId,
-			grantStream.builder,
-			_cap,
-			grantStream.grantNumber,
-			grantStream.stageNumber
-		);
 	}
 
 	function updateGrant(
@@ -208,6 +272,18 @@ contract Stream is AccessControl {
 	function removeOwner(address owner) public onlyRole(OWNER_ROLE) {
 		revokeRole(OWNER_ROLE, owner);
 		emit RemoveOwner(owner, msg.sender);
+	}
+
+	function getGrantIdByBuilderAndGrantNumber(
+		address _builder,
+		uint8 _grantNumber
+	) public view returns (uint256) {
+		for (uint256 i = 0; i < builderGrants[_builder].length; i++) {
+			if (builderGrants[_builder][i].grantNumber == _grantNumber) {
+				return builderGrants[_builder][i].grantId;
+			}
+		}
+		return 0;
 	}
 
 	receive() external payable {}

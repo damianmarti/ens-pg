@@ -18,7 +18,8 @@ export const AllGrantsList = ({ allGrants }: AllGrantsListProps) => {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const maxStage = useMemo(() => {
-    return Math.max(...allGrants.flatMap(grant => grant.stages.map(stage => stage.stageNumber)));
+    const stageNumbers = allGrants.flatMap(grant => grant.stages.map(stage => stage.stageNumber));
+    return stageNumbers.length > 0 ? Math.max(...stageNumbers) : 0;
   }, [allGrants]);
 
   const filteredGrants = useMemo(() => {

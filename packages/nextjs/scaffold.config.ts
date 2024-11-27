@@ -7,6 +7,7 @@ export type ScaffoldConfig = {
   walletConnectProjectId: string;
   disableBurnerWalletOnLocal: boolean;
   onlyLocalBurnerWallet: boolean;
+  startBlock: number;
 };
 
 const scaffoldConfig = {
@@ -34,6 +35,9 @@ const scaffoldConfig = {
 
   // disable burner wallet for all networks
   disableBurnerWalletOnLocal: true,
+
+  // start blocknumber for contract deployment indexing
+  startBlock: 0,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

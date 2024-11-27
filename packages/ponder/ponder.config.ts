@@ -23,11 +23,10 @@ const contracts = Object.fromEntries(
         abi: deployedContracts[targetNetwork.id][contractName].abi,
         address: deployedContracts[targetNetwork.id][contractName].address,
         // TODO: Change startBlock when deploying
-        startBlock:
-          deployedContracts[targetNetwork.id][contractName].startBlock || 0,
+        startBlock: scaffoldConfig.startBlock || 0,
       },
     ];
-  })
+  }),
 );
 
 export default createConfig({

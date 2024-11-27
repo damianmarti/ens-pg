@@ -1,5 +1,7 @@
 import { ponder } from "@/generated";
 
+const APP_URL = process.env.APP_URL || "http://localhost:3000";
+
 ponder.on("Stream:Withdraw", async ({ event, context }) => {
   try {
     const { db } = context;
@@ -17,8 +19,7 @@ ponder.on("Stream:Withdraw", async ({ event, context }) => {
       },
     });
 
-    // TODO: Change url before deploying
-    await fetch("http://localhost:3000/api/stages/revalidate-status", {
+    await fetch(`${APP_URL}/api/stages/revalidate-status`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,7 +31,7 @@ ponder.on("Stream:Withdraw", async ({ event, context }) => {
           builderAddress: event.args.to,
           contractGrantId: event.args.grantId,
         },
-        replacer
+        replacer,
       ),
     });
   } catch (error) {

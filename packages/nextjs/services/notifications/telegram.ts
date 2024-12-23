@@ -1,7 +1,21 @@
+import { CreateNewGrantReqBody } from "~~/app/api/grants/new/route";
+import { CreateNewStageReqBody } from "~~/app/api/stages/new/route";
+import { GrantWithStages } from "~~/app/grants/[grantId]/page";
+
 const TELEGRAM_BOT_URL = process.env.TELEGRAM_BOT_URL;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
-export async function notifyTelegramBot(endpoint: "grant" | "stage", data: unknown) {
+type StageData = {
+  newStage: CreateNewStageReqBody;
+  grant: GrantWithStages;
+};
+
+type GrantData = CreateNewGrantReqBody & { builderAddress: string };
+
+export async function notifyTelegramBot<T extends "grant" | "stage">(
+  endpoint: T,
+  data: T extends "grant" ? GrantData : StageData,
+) {
   if (!TELEGRAM_BOT_URL || !TELEGRAM_WEBHOOK_SECRET) {
     if (!TELEGRAM_BOT_URL) {
       console.warn("TELEGRAM_BOT_URL is not set. Telegram notifications will be disabled.");

@@ -3,19 +3,19 @@ import Link from "next/link";
 import { GrantMilestonesModal } from "./GrantMilestonesModal";
 import { formatEther } from "viem";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { GrantWithStages } from "~~/app/grants/[grantId]/page";
 import { Badge } from "~~/components/pg-ens/Badge";
 import { Button } from "~~/components/pg-ens/Button";
 import { GrantProgressBar } from "~~/components/pg-ens/GrantProgressBar";
 import { Address } from "~~/components/scaffold-eth";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 import { useWithdrawals } from "~~/hooks/pg-ens/useWithdrawals";
+import { PublicGrant } from "~~/services/database/repositories/grants";
 import { Stage } from "~~/services/database/repositories/stages";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 type GrantItemProps = {
-  grant: NonNullable<GrantWithStages>;
+  grant: PublicGrant;
   latestsShownStatus: "all" | "approved";
 };
 

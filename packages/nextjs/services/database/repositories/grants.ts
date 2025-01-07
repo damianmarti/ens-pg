@@ -4,6 +4,7 @@ import { grants, stages } from "~~/services/database/config/schema";
 
 export type GrantInsert = InferInsertModel<typeof grants>;
 export type Grant = InferSelectModel<typeof grants>;
+export type PublicGrant = Awaited<ReturnType<typeof getPublicGrants>>[number];
 
 export async function getAllGrants() {
   return await db.query.grants.findMany({
@@ -12,6 +13,33 @@ export async function getAllGrants() {
       stages: {
         // this makes sure latest stage is first
         orderBy: [desc(stages.stageNumber)],
+      },
+    },
+  });
+}
+
+// Excludes sensitive information for public pages
+export async function getPublicGrants() {
+  return await db.query.grants.findMany({
+    orderBy: [desc(grants.submitedAt)],
+    columns: {
+      id: true,
+      grantNumber: true,
+      title: true,
+      description: true,
+      builderAddress: true,
+      requestedFunds: true,
+    },
+    with: {
+      stages: {
+        orderBy: [desc(stages.stageNumber)],
+        columns: {
+          id: true,
+          stageNumber: true,
+          submitedAt: true,
+          grantAmount: true,
+          status: true,
+        },
       },
     },
   });

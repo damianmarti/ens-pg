@@ -1,12 +1,11 @@
 import { ApprovedGrantsList } from "./ApprovedGrantsList";
-import { GrantWithStages } from "~~/app/grants/[grantId]/page";
-import { getAllGrants } from "~~/services/database/repositories/grants";
+import { getPublicGrants } from "~~/services/database/repositories/grants";
 
 export const ApprovedGrants = async () => {
-  const allGrants = await getAllGrants();
+  const allGrants = await getPublicGrants();
   const approvedGrants = allGrants.filter(grant =>
     grant.stages.some(stage => stage.status === "approved" || stage.status === "completed"),
-  ) as NonNullable<GrantWithStages>[];
+  );
 
   if (approvedGrants.length === 0) return null;
 

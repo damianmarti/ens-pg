@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { GrantItem } from "./GrantItem";
-import { GrantWithStages } from "~~/app/grants/[grantId]/page";
 import { Pagination } from "~~/components/pg-ens/Pagination";
+import { PublicGrant } from "~~/services/database/repositories/grants";
 
 const GRANTS_PER_PAGE = 8;
 
 type ApprovedGrantsListProps = {
-  approvedGrants: NonNullable<GrantWithStages>[];
+  approvedGrants: PublicGrant[];
 };
 
 export const ApprovedGrantsList = ({ approvedGrants }: ApprovedGrantsListProps) => {

@@ -3,12 +3,9 @@ import { getPublicGrants } from "~~/services/database/repositories/grants";
 
 export const ApprovedGrants = async () => {
   const allGrants = await getPublicGrants();
-  const approvedGrants = allGrants
-    .filter(grant => grant.stages.some(stage => stage.status === "approved" || stage.status === "completed"))
-    .map(grant => ({
-      ...grant,
-      builderAddress: grant.builderAddress as `0x${string}`,
-    }));
+  const approvedGrants = allGrants.filter(grant =>
+    grant.stages.some(stage => stage.status === "approved" || stage.status === "completed"),
+  );
 
   if (approvedGrants.length === 0) return null;
 

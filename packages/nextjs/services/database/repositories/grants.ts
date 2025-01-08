@@ -28,7 +28,6 @@ export async function getPublicGrants() {
       title: true,
       description: true,
       builderAddress: true,
-      requestedFunds: true,
     },
     with: {
       stages: {

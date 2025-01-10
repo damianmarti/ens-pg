@@ -91,6 +91,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
               </form>
             </FormProvider>
           </div>
+          <Toaster />
         </dialog>
 
         <dialog ref={feedbackModalRef} className="modal">
@@ -111,11 +112,8 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
               </div>
             </div>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={handleFeedbackModalClose}>close</button>
-          </form>
+          <Toaster />
         </dialog>
-        <Toaster />
       </>
     );
   },

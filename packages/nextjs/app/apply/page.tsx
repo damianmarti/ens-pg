@@ -9,6 +9,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { FormProvider } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
 import { useAccount } from "wagmi";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormInput } from "~~/components/pg-ens/form-fields/FormInput";
@@ -87,9 +88,7 @@ const Apply: NextPage = () => {
             </div>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button onClick={handleModalClose}>close</button>
-        </form>
+        <Toaster />
       </dialog>
 
       <FormProvider {...formMethods}>

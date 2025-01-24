@@ -41,20 +41,19 @@ export const HeaderMenuLinks = () => {
   const pathname = usePathname();
   const { isAdmin, data } = useAuthSession();
 
-  const linksToShow = [...(isAdmin ? [menuLinks[1], menuLinks[2]] : [menuLinks[0]]), menuLinks[3]];
+  const linksToShow = [
+    ...(isAdmin
+      ? [menuLinks[1], menuLinks[2]] // All Grants, Admin
+      : Boolean(data)
+      ? [menuLinks[0]] // My Grants if user has auth data
+      : []), // empty if no data
+    menuLinks[3], // Show FAQ always
+  ];
 
   return (
     <>
       {linksToShow.map((linkToShow, index) => {
-        if (
-          (linkToShow.label === "My grants" && !data) ||
-          (linkToShow.label !== "My grants" && !isAdmin && linkToShow.label !== "FAQ")
-        ) {
-          return null;
-        }
-
         const isActive = pathname === linkToShow.href;
-
         return (
           <li key={index}>
             <Link

@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DocumentTextIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, LockClosedIcon, QuestionMarkCircleIcon, UserIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useAuthSession } from "~~/hooks/pg-ens/useAuthSession";
 
@@ -30,23 +30,30 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/admin",
     icon: <LockClosedIcon className="h-4 w-4" />,
   },
+  {
+    label: "FAQ",
+    href: "/faq",
+    icon: <QuestionMarkCircleIcon className="h-4 w-4" />,
+  },
 ];
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
   const { isAdmin, data } = useAuthSession();
 
-  const linksToShow = isAdmin ? [menuLinks[1], menuLinks[2]] : [menuLinks[0]];
+  const linksToShow = [
+    ...(isAdmin
+      ? [menuLinks[1], menuLinks[2]] // All Grants, Admin
+      : Boolean(data)
+      ? [menuLinks[0]] // My Grants if user has auth data
+      : []), // empty if no data
+    menuLinks[3], // Show FAQ always
+  ];
 
   return (
     <>
       {linksToShow.map((linkToShow, index) => {
-        if ((linkToShow.label === "My grants" && !data) || (linkToShow.label !== "My grants" && !isAdmin)) {
-          return null;
-        }
-
         const isActive = pathname === linkToShow.href;
-
         return (
           <li key={index}>
             <Link

@@ -1,4 +1,15 @@
-import { approvalVotes, grants, privateNotes, stages, users } from "./config/schema";
+import {
+  approvalVotes,
+  grants,
+  largeApprovalVotes,
+  largeGrants,
+  largeMilestones,
+  largePrivateNotes,
+  largeStages,
+  privateNotes,
+  stages,
+  users,
+} from "./config/schema";
 import * as schema from "./config/schema";
 import * as dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -21,6 +32,13 @@ async function seed() {
   await db.delete(approvalVotes).execute();
   await db.delete(stages).execute(); // Ensure stages are deleted before grants
   await db.delete(grants).execute(); // Delete grants
+
+  await db.delete(largeMilestones).execute();
+  await db.delete(largePrivateNotes).execute();
+  await db.delete(largeApprovalVotes).execute();
+  await db.delete(largeStages).execute();
+  await db.delete(largeGrants).execute();
+
   await db.delete(users).execute();
 
   await db.insert(users).values([
@@ -108,6 +126,149 @@ async function seed() {
         milestone: "Milestone of stage 1 for Grant 3",
         stageNumber: 1,
         grantId: insertedGrants[2].id,
+      },
+    ])
+    .execute();
+
+  const insertedLargeGrants = await db
+    .insert(largeGrants)
+    .values([
+      {
+        title: "Large Grant 1",
+        description: "Description for grant 1",
+        builderAddress: "0x5dCb5f4F39Caa6Ca25380cfc42280330b49d3c93",
+        showcaseVideoUrl: "Video url 1",
+        requestedFunds: parseEther("0.25"),
+        github: "github-account-1",
+        twitter: "twitter-account-1",
+        telegram: "telegram-account-1",
+        email: "email1@email.com",
+      },
+      {
+        title: "Large Grant 2",
+        description: "Description for grant 2",
+        builderAddress: "0x60583563D5879C2E59973E5718c7DE2147971807",
+        showcaseVideoUrl: "Video url 2",
+        requestedFunds: parseEther("0.5"),
+        github: "github-account-2",
+        twitter: "twitter-account-2",
+        telegram: null,
+        email: "email2@email.com",
+      },
+      {
+        title: "Large Grant 3",
+        description: "Description for grant 3",
+        builderAddress: "0xB4F53bd85c00EF22946d24Ae26BC38Ac64F5E7B1",
+        showcaseVideoUrl: null,
+        requestedFunds: parseEther("1"),
+        github: "github-account-3",
+        twitter: null,
+        telegram: "telegram-account-3",
+        email: "email3@email.com",
+      },
+    ])
+    .returning({ id: grants.id })
+    .execute();
+
+  const insertedLargeStages = await db
+    .insert(largeStages)
+    .values([
+      {
+        name: "Stage 1 for Large Grant 1",
+        stageNumber: 1,
+        grantId: insertedLargeGrants[0].id,
+        status: "completed",
+      },
+      {
+        name: "Stage 2 for Large Grant 1",
+        stageNumber: 2,
+        grantId: insertedLargeGrants[0].id,
+      },
+      {
+        name: "Stage 1 for Large Grant 2",
+        stageNumber: 1,
+        grantId: insertedLargeGrants[1].id,
+      },
+      {
+        name: "Stage 2 for Large Grant 2",
+        stageNumber: 2,
+        grantId: insertedLargeGrants[1].id,
+      },
+      {
+        name: "Stage 1 for Large Grant 3",
+        stageNumber: 1,
+        grantId: insertedLargeGrants[2].id,
+      },
+      {
+        name: "Stage 2 for Large Grant 3",
+        stageNumber: 2,
+        grantId: insertedLargeGrants[2].id,
+      },
+      {
+        name: "Stage 3 for Large Grant 3",
+        stageNumber: 3,
+        grantId: insertedLargeGrants[2].id,
+      },
+    ])
+    .returning({ id: largeStages.id })
+    .execute();
+
+  await db
+    .insert(largeMilestones)
+    .values([
+      {
+        name: "Milestone 1 - Stage 1 - Large Grant 1",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[0].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 2 - Stage 1 - Large Grant 1",
+        milestoneNumber: 2,
+        stageId: insertedLargeStages[0].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 1 - Stage 2 - Large Grant 1",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[1].id,
+        status: "approved",
+      },
+      {
+        name: "Milestone 1 - Stage 1 - Large Grant 2",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[2].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 2 - Stage 1 - Large Grant 2",
+        milestoneNumber: 2,
+        stageId: insertedLargeStages[2].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 1 - Stage 2 - Large Grant 2",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[3].id,
+        status: "approved",
+      },
+      {
+        name: "Milestone 1 - Stage 1 - Large Grant 3",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[4].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 1 - Stage 2 - Large Grant 3",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[5].id,
+        status: "completed",
+      },
+      {
+        name: "Milestone 1 - Stage 3 - Large Grant 3",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[6].id,
+        status: "proposed",
       },
     ])
     .execute();

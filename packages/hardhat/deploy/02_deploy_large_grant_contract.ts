@@ -38,7 +38,6 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
         "0x60583563D5879C2E59973E5718c7DE2147971807",
         "0xb8224dfCf3C174331a8e6a841AEEa7dF321f6D8E",
         "0xB4F53bd85c00EF22946d24Ae26BC38Ac64F5E7B1",
-        "0xAbEE68AeA5ee602D981Aec85A8189B565cB5656d", // test
       ],
     ],
     log: true,

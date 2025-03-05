@@ -64,6 +64,18 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.addGrant(builder.address, 1, [100, 1000])).to.be.reverted;
   });
 
+  it("Should not allow to add a new grant with the builder zero address", async () => {
+    await expect(largeGrant.addGrant(ethers.ZeroAddress, 2, [100, 1000])).to.be.reverted;
+  });
+
+  it("Should not allow to add a new grant with a milestone with a zero amount", async () => {
+    await expect(largeGrant.addGrant(builder.address, 2, [100, 0])).to.be.reverted;
+  });
+
+  it("Should not allow to add a new grant with no milestones", async () => {
+    await expect(largeGrant.addGrant(builder.address, 2, [])).to.be.reverted;
+  });
+
   it("Should allow to add a new grant stage correctly", async () => {
     await largeGrant.addGrantStage(1, [200, 2000]);
 

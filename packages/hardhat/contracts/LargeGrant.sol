@@ -64,6 +64,9 @@ contract LargeGrant is AccessControl {
 	// Custom errors
 	error GrantAlreadyExists();
 	error GrantDoesNotExist();
+	error ZeroAddress();
+	error MilestoneZeroAmount();
+	error NoMilestones();
 	error MilestoneAlreadyCompleted();
 	error InsufficientContractFunds();
 	error WrongStageNumber();
@@ -120,6 +123,14 @@ contract LargeGrant is AccessControl {
 			revert GrantAlreadyExists();
 		}
 
+		if (_builder == address(0)) {
+			revert ZeroAddress();
+		}
+
+		if (_milestonesAmount.length == 0) {
+			revert NoMilestones();
+		}
+
 		grant.builder = _builder;
 
 		Stage storage stage = grant.stages.push();
@@ -127,6 +138,9 @@ contract LargeGrant is AccessControl {
 
 		for (uint i = 0; i < _milestonesAmount.length; i++) {
 			uint256 amount = _milestonesAmount[i];
+			if (amount == 0) {
+				revert MilestoneZeroAmount();
+			}
 			stage.milestones.push(
 				Milestone({
 					number: uint8(i + 1),
@@ -149,12 +163,19 @@ contract LargeGrant is AccessControl {
 			revert GrantDoesNotExist();
 		}
 
+		if (_milestonesAmount.length == 0) {
+			revert NoMilestones();
+		}
+
 		Stage storage stage = grant.stages.push();
 
 		stage.number = uint8(grant.stages.length);
 
 		for (uint i = 0; i < _milestonesAmount.length; i++) {
 			uint256 amount = _milestonesAmount[i];
+			if (amount == 0) {
+				revert MilestoneZeroAmount();
+			}
 			stage.milestones.push(
 				Milestone({
 					number: uint8(i + 1),

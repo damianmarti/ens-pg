@@ -164,6 +164,27 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.connect(owner2).transferAdmin(accounts[5].address)).to.be.reverted;
   });
 
+  it("Should allow the admin to pause and unpause the contract", async function () {
+    await expect(largeGrant.connect(deployer).pause()).to.not.be.reverted;
+
+    // Check if the contract is paused trying to complete a milestone
+    await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1)).to.be.reverted;
+
+    await expect(largeGrant.connect(deployer).unpause()).to.not.be.reverted;
+
+    await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1)).to.not.be.reverted;
+  });
+
+  it("Should not allow not admin to pause the contract", async function () {
+    await expect(largeGrant.connect(owner2).pause()).to.be.reverted;
+  });
+
+  it("Should not allow not admin to unpause the contract", async function () {
+    await expect(largeGrant.connect(deployer).pause()).to.not.be.reverted;
+
+    await expect(largeGrant.connect(owner2).unpause()).to.be.reverted;
+  });
+
   // Owner actions
   it("Should not allow an owner to add or remove owners", async function () {
     await expect(largeGrant.connect(owner2).addOwner(accounts[5].address)).to.be.reverted;

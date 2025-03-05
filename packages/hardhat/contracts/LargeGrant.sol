@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
 abstract contract ERC20 {
 	function transfer(
@@ -12,7 +13,7 @@ abstract contract ERC20 {
 	function balanceOf(address account) external view virtual returns (uint256);
 }
 
-contract LargeGrant is AccessControl {
+contract LargeGrant is Pausable, AccessControl {
 	bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
 
 	struct GrantData {
@@ -197,7 +198,7 @@ contract LargeGrant is AccessControl {
 		uint256 _grantId,
 		uint8 _stageNumber,
 		uint8 _milestoneNumber
-	) public onlyRole(OWNER_ROLE) {
+	) public whenNotPaused onlyRole(OWNER_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
 		if (grant.builder == address(0)) {
@@ -263,5 +264,13 @@ contract LargeGrant is AccessControl {
 
 		grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
 		renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
+	}
+
+	function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+		_pause();
+	}
+
+	function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+		_unpause();
 	}
 }

@@ -115,7 +115,7 @@ contract LargeGrant is AccessControl {
 	function addGrant(
 		address _builder,
 		uint256 _grantId,
-		uint256[] memory _milestonesAmount
+		uint256[] memory _milestoneAmounts
 	) public onlyRole(OWNER_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
@@ -127,7 +127,7 @@ contract LargeGrant is AccessControl {
 			revert ZeroAddress();
 		}
 
-		if (_milestonesAmount.length == 0) {
+		if (_milestoneAmounts.length == 0) {
 			revert NoMilestones();
 		}
 
@@ -136,8 +136,8 @@ contract LargeGrant is AccessControl {
 		Stage storage stage = grant.stages.push();
 		stage.number = 1;
 
-		for (uint i = 0; i < _milestonesAmount.length; i++) {
-			uint256 amount = _milestonesAmount[i];
+		for (uint i = 0; i < _milestoneAmounts.length; i++) {
+			uint256 amount = _milestoneAmounts[i];
 			if (amount == 0) {
 				revert MilestoneZeroAmount();
 			}
@@ -150,12 +150,12 @@ contract LargeGrant is AccessControl {
 			);
 		}
 
-		emit AddGrant(_grantId, _builder, _milestonesAmount);
+		emit AddGrant(_grantId, _builder, _milestoneAmounts);
 	}
 
 	function addGrantStage(
 		uint256 _grantId,
-		uint256[] memory _milestonesAmount
+		uint256[] memory _milestoneAmounts
 	) public onlyRole(OWNER_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
@@ -163,7 +163,7 @@ contract LargeGrant is AccessControl {
 			revert GrantDoesNotExist();
 		}
 
-		if (_milestonesAmount.length == 0) {
+		if (_milestoneAmounts.length == 0) {
 			revert NoMilestones();
 		}
 
@@ -171,8 +171,8 @@ contract LargeGrant is AccessControl {
 
 		stage.number = uint8(grant.stages.length);
 
-		for (uint i = 0; i < _milestonesAmount.length; i++) {
-			uint256 amount = _milestonesAmount[i];
+		for (uint i = 0; i < _milestoneAmounts.length; i++) {
+			uint256 amount = _milestoneAmounts[i];
 			if (amount == 0) {
 				revert MilestoneZeroAmount();
 			}
@@ -188,7 +188,7 @@ contract LargeGrant is AccessControl {
 		emit AddGrantStage(
 			_grantId,
 			uint8(grant.stages.length),
-			_milestonesAmount
+			_milestoneAmounts
 		);
 	}
 

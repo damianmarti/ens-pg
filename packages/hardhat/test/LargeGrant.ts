@@ -130,7 +130,8 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.completeMilestone(1, 1, 1)).to.be.reverted;
   });
 
-  it("Should allow an owner to add a new owner", async function () {
+  // Admin actions
+  it("Should allow the admin to add a new owner", async function () {
     const newOwner = accounts[5];
     await expect(largeGrant.connect(deployer).addOwner(newOwner.address))
       .to.emit(largeGrant, "AddOwner")
@@ -140,13 +141,34 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.connect(newOwner).addGrant(accounts[6].address, 2, [1, 10])).to.not.be.reverted;
   });
 
-  it("Should allow an owner to remove another owner", async function () {
+  it("Should allow the admin to remove an owner", async function () {
     await expect(largeGrant.connect(deployer).removeOwner(owner2.address))
       .to.emit(largeGrant, "RemoveOwner")
       .withArgs(owner2.address, deployer.address);
 
     // Check if the removed owner can no longer perform owner actions
     await expect(largeGrant.connect(owner2).addGrant(accounts[5].address, 2, [1, 10])).to.be.reverted;
+  });
+
+  it("Should allow the admin to transfer admin", async function () {
+    await expect(largeGrant.connect(deployer).transferAdmin(owner2.address)).to.not.be.reverted;
+
+    // Check if the old admin can no longer perform admin actions
+    await expect(largeGrant.connect(deployer).addOwner(accounts[5].address)).to.be.reverted;
+
+    // Check if the new admin can perform admin actions
+    await expect(largeGrant.connect(owner2).addOwner(accounts[5].address)).to.not.be.reverted;
+  });
+
+  it("Should not allow not admin to transfer admin", async function () {
+    await expect(largeGrant.connect(owner2).transferAdmin(accounts[5].address)).to.be.reverted;
+  });
+
+  // Owner actions
+  it("Should not allow an owner to add or remove owners", async function () {
+    await expect(largeGrant.connect(owner2).addOwner(accounts[5].address)).to.be.reverted;
+
+    await expect(largeGrant.connect(owner2).removeOwner(deployer.address)).to.be.reverted;
   });
 
   it("Should not allow non-owners to add or remove owners", async function () {

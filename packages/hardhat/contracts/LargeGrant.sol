@@ -71,13 +71,14 @@ contract LargeGrant is AccessControl {
 	error InsufficientContractFunds();
 	error WrongStageNumber();
 	error WrongMilestoneNumber();
+	error AlreadyAdmin();
 
 	constructor(address _tokenAddress, address[] memory _initialOwners) {
 		tokenAddress = _tokenAddress;
-		_setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
 		for (uint i = 0; i < _initialOwners.length; i++) {
 			_grantRole(OWNER_ROLE, _initialOwners[i]);
 		}
+		_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 	}
 
 	function grantData(
@@ -245,13 +246,22 @@ contract LargeGrant is AccessControl {
 		);
 	}
 
-	function addOwner(address newOwner) public onlyRole(OWNER_ROLE) {
+	function addOwner(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
 		grantRole(OWNER_ROLE, newOwner);
 		emit AddOwner(newOwner, msg.sender);
 	}
 
-	function removeOwner(address owner) public onlyRole(OWNER_ROLE) {
+	function removeOwner(address owner) public onlyRole(DEFAULT_ADMIN_ROLE) {
 		revokeRole(OWNER_ROLE, owner);
 		emit RemoveOwner(owner, msg.sender);
+	}
+
+	function transferAdmin(
+		address newAdmin
+	) public onlyRole(DEFAULT_ADMIN_ROLE) {
+		if (hasRole(DEFAULT_ADMIN_ROLE, newAdmin)) revert AlreadyAdmin();
+
+		grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+		renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
 	}
 }

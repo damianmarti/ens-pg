@@ -136,7 +136,7 @@ async function seed() {
       {
         title: "Large Grant 1",
         description: "Description for grant 1",
-        builderAddress: "0x5dCb5f4F39Caa6Ca25380cfc42280330b49d3c93",
+        builderAddress: "0x55b9CB0bCf56057010b9c471e7D42d60e1111EEa",
         showcaseVideoUrl: "Video url 1",
         requestedFunds: parseEther("0.25"),
         github: "github-account-1",
@@ -174,38 +174,31 @@ async function seed() {
     .insert(largeStages)
     .values([
       {
-        name: "Stage 1 for Large Grant 1",
         stageNumber: 1,
         grantId: insertedLargeGrants[0].id,
         status: "completed",
       },
       {
-        name: "Stage 2 for Large Grant 1",
         stageNumber: 2,
         grantId: insertedLargeGrants[0].id,
       },
       {
-        name: "Stage 1 for Large Grant 2",
         stageNumber: 1,
         grantId: insertedLargeGrants[1].id,
       },
       {
-        name: "Stage 2 for Large Grant 2",
         stageNumber: 2,
         grantId: insertedLargeGrants[1].id,
       },
       {
-        name: "Stage 1 for Large Grant 3",
         stageNumber: 1,
         grantId: insertedLargeGrants[2].id,
       },
       {
-        name: "Stage 2 for Large Grant 3",
         stageNumber: 2,
         grantId: insertedLargeGrants[2].id,
       },
       {
-        name: "Stage 3 for Large Grant 3",
         stageNumber: 3,
         grantId: insertedLargeGrants[2].id,
       },
@@ -221,54 +214,63 @@ async function seed() {
         milestoneNumber: 1,
         stageId: insertedLargeStages[0].id,
         status: "completed",
+        amount: 10000000n,
       },
       {
         name: "Milestone 2 - Stage 1 - Large Grant 1",
         milestoneNumber: 2,
         stageId: insertedLargeStages[0].id,
         status: "completed",
+        amount: 20000000n,
       },
       {
         name: "Milestone 1 - Stage 2 - Large Grant 1",
         milestoneNumber: 1,
         stageId: insertedLargeStages[1].id,
         status: "approved",
+        amount: 100000000n,
       },
       {
         name: "Milestone 1 - Stage 1 - Large Grant 2",
         milestoneNumber: 1,
         stageId: insertedLargeStages[2].id,
         status: "completed",
+        amount: 10000000n,
       },
       {
         name: "Milestone 2 - Stage 1 - Large Grant 2",
         milestoneNumber: 2,
         stageId: insertedLargeStages[2].id,
         status: "completed",
+        amount: 10000000n,
       },
       {
         name: "Milestone 1 - Stage 2 - Large Grant 2",
         milestoneNumber: 1,
         stageId: insertedLargeStages[3].id,
         status: "approved",
+        amount: 100000000n,
       },
       {
         name: "Milestone 1 - Stage 1 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[4].id,
         status: "completed",
+        amount: 20000000n,
       },
       {
         name: "Milestone 1 - Stage 2 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[5].id,
         status: "completed",
+        amount: 30000000n,
       },
       {
         name: "Milestone 1 - Stage 3 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[6].id,
         status: "proposed",
+        amount: 40000000n,
       },
     ])
     .execute();

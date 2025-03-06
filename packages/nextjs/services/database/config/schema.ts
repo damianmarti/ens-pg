@@ -127,12 +127,10 @@ export const largeGrantsRelations = relations(largeGrants, ({ many, one }) => ({
 export const largeStages = pgTable("large_stages", {
   id: serial("id").primaryKey(),
   stageNumber: integer("stage_number").notNull().default(1),
-  name: text("name"),
   submitedAt: timestamp("submited_at").default(sql`now()`),
   grantId: integer("grant_id")
     .references(() => largeGrants.id)
     .notNull(),
-  grantAmount: bigint("grantAmount", { mode: "bigint" }),
   status: stagesStatusEnum("status").notNull().default("proposed"),
   statusNote: text("statusNote"),
   approvedTx: varchar("approved_tx", { length: 66 }),
@@ -146,9 +144,11 @@ export const largeMilestones = pgTable("large_milestones", {
     .references(() => largeStages.id)
     .notNull(),
   name: text("milestone").notNull(),
-  deliverables: text("deliverables"),
-  completion_date: date("completion_date"),
-  grantAmount: bigint("grantAmount", { mode: "bigint" }),
+  proposedDeliverables: text("proposed_deliverables"),
+  proposedCompletionDate: date("proposed_completion_date"),
+  completionProof: text("completion_proof"),
+  completedAt: timestamp("completed_at"),
+  amount: bigint("amount", { mode: "bigint" }).notNull(),
   status: stagesStatusEnum("status").notNull().default("proposed"),
   statusNote: text("statusNote"),
   approvedTx: varchar("approved_tx", { length: 66 }),
@@ -193,7 +193,7 @@ export const largePrivateNotes = pgTable("large_private_notes", {
   note: text("note").notNull(),
   writtenAt: timestamp("written_at").default(sql`now()`),
   stageId: integer("stage_id")
-    .references(() => stages.id)
+    .references(() => largeStages.id)
     .notNull(),
   authorAddress: varchar("author_address", { length: 42 })
     .references(() => users.address)

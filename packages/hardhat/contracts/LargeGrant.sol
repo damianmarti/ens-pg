@@ -57,7 +57,9 @@ contract LargeGrant is Pausable, AccessControl {
 		uint256 indexed grantId,
 		uint8 stageNumber,
 		uint8 milestoneNumber,
-		uint256 amount
+		uint256 amount,
+		string description,
+		string proof
 	);
 	event AddOwner(address indexed newOwner, address indexed addedBy);
 	event RemoveOwner(address indexed removedOwner, address indexed removedBy);
@@ -197,7 +199,9 @@ contract LargeGrant is Pausable, AccessControl {
 	function completeMilestone(
 		uint256 _grantId,
 		uint8 _stageNumber,
-		uint8 _milestoneNumber
+		uint8 _milestoneNumber,
+		string memory _description,
+		string memory _proof
 	) public whenNotPaused onlyRole(OWNER_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
@@ -243,7 +247,9 @@ contract LargeGrant is Pausable, AccessControl {
 			_grantId,
 			_stageNumber,
 			_milestoneNumber,
-			amount
+			amount,
+			_description,
+			_proof
 		);
 	}
 

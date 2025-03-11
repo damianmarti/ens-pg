@@ -247,68 +247,6 @@ contract LargeGrant is Pausable, AccessControl {
 		);
 	}
 
-	function completeMilestones(
-		uint256 _grantId,
-		uint8 _stageNumber,
-		uint8[] memory _milestoneNumbers
-	) public whenNotPaused onlyRole(OWNER_ROLE) {
-		GrantData storage grant = grants[_grantId];
-
-		if (grant.builder == address(0)) {
-			revert GrantDoesNotExist();
-		}
-
-		if (_stageNumber > grant.stages.length) {
-			revert WrongStageNumber();
-		}
-
-		uint256 totalAmount = 0;
-
-		for (uint i = 0; i < _milestoneNumbers.length; i++) {
-			uint8 _milestoneNumber = _milestoneNumbers[i];
-
-			if (
-				_milestoneNumber >
-				grant.stages[_stageNumber - 1].milestones.length
-			) {
-				revert WrongMilestoneNumber();
-			}
-
-			if (
-				grant
-					.stages[_stageNumber - 1]
-					.milestones[_milestoneNumber - 1]
-					.completed
-			) {
-				revert MilestoneAlreadyCompleted();
-			}
-
-			uint256 amount = grant
-				.stages[_stageNumber - 1]
-				.milestones[_milestoneNumber - 1]
-				.amount;
-
-			totalAmount += amount;
-
-			grant
-				.stages[_stageNumber - 1]
-				.milestones[_milestoneNumber - 1]
-				.completed = true;
-
-			emit CompleteMilestone(
-				_grantId,
-				_stageNumber,
-				_milestoneNumber,
-				amount
-			);
-		}
-
-		if (ERC20(tokenAddress).balanceOf(address(this)) < totalAmount)
-			revert InsufficientContractFunds();
-
-		ERC20(tokenAddress).transfer(grant.builder, totalAmount);
-	}
-
 	function addOwner(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
 		grantRole(OWNER_ROLE, newOwner);
 		emit AddOwner(newOwner, msg.sender);

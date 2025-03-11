@@ -138,37 +138,6 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.completeMilestone(1, 1, 1)).to.be.reverted;
   });
 
-  it("Should allow to batch complete milestones correctly", async () => {
-    const initialBalance = await testToken.balanceOf(builder.address);
-
-    await largeGrant.completeMilestones(1, 1, [1, 2]);
-
-    const grantData = await largeGrant.grantData(1);
-    expect(grantData.milestones[0].completed).to.equal(true);
-    expect(grantData.milestones[1].completed).to.equal(true);
-
-    const newBalance = await testToken.balanceOf(builder.address);
-    expect(newBalance).to.equal(initialBalance + 11n);
-  });
-
-  it("Should not allow to batch complete milestones with wrong grant number", async () => {
-    await expect(largeGrant.completeMilestones(2, 1, [1, 2])).to.be.reverted;
-  });
-
-  it("Should not allow to batch complete milestones with wrong stage number", async () => {
-    await expect(largeGrant.completeMilestones(1, 2, [1, 2])).to.be.reverted;
-  });
-
-  it("Should not allow to batch complete milestones with wrong milestone number", async () => {
-    await expect(largeGrant.completeMilestones(1, 1, [3, 4])).to.be.reverted;
-  });
-
-  it("Should not allow to batch complete milestones that are already completed", async () => {
-    await largeGrant.completeMilestone(1, 1, 1);
-
-    await expect(largeGrant.completeMilestones(1, 1, [1, 2])).to.be.reverted;
-  });
-
   // Admin actions
   it("Should allow the admin to add a new owner", async function () {
     const newOwner = accounts[5];
@@ -208,12 +177,10 @@ describe("LargeGrant", async () => {
 
     // Check if the contract is paused trying to complete a milestone
     await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1)).to.be.reverted;
-    await expect(largeGrant.connect(deployer).completeMilestones(1, 1, [2, 3])).to.be.reverted;
 
     await expect(largeGrant.connect(deployer).unpause()).to.not.be.reverted;
 
     await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1)).to.not.be.reverted;
-    await expect(largeGrant.connect(deployer).completeMilestones(1, 1, [2, 3])).to.not.be.reverted;
   });
 
   it("Should not allow not admin to pause the contract", async function () {

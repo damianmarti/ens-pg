@@ -61,8 +61,6 @@ contract LargeGrant is Pausable, AccessControl {
 		string description,
 		string proof
 	);
-	event AddOwner(address indexed newOwner, address indexed addedBy);
-	event RemoveOwner(address indexed removedOwner, address indexed removedBy);
 
 	// Custom errors
 	error GrantAlreadyExists();
@@ -255,12 +253,10 @@ contract LargeGrant is Pausable, AccessControl {
 
 	function addOwner(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
 		grantRole(OWNER_ROLE, newOwner);
-		emit AddOwner(newOwner, msg.sender);
 	}
 
 	function removeOwner(address owner) public onlyRole(DEFAULT_ADMIN_ROLE) {
 		revokeRole(OWNER_ROLE, owner);
-		emit RemoveOwner(owner, msg.sender);
 	}
 
 	function transferAdmin(

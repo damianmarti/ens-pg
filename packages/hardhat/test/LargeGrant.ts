@@ -142,8 +142,8 @@ describe("LargeGrant", async () => {
   it("Should allow the admin to add a new owner", async function () {
     const newOwner = accounts[5];
     await expect(largeGrant.connect(deployer).addOwner(newOwner.address))
-      .to.emit(largeGrant, "AddOwner")
-      .withArgs(newOwner.address, deployer.address);
+      .to.emit(largeGrant, "RoleGranted")
+      .withArgs(ethers.keccak256(ethers.toUtf8Bytes("OWNER_ROLE")), newOwner.address, deployer.address);
 
     // Check if the new owner can perform owner actions
     await expect(largeGrant.connect(newOwner).addGrant(accounts[6].address, 2, [1, 10])).to.not.be.reverted;
@@ -151,8 +151,8 @@ describe("LargeGrant", async () => {
 
   it("Should allow the admin to remove an owner", async function () {
     await expect(largeGrant.connect(deployer).removeOwner(owner2.address))
-      .to.emit(largeGrant, "RemoveOwner")
-      .withArgs(owner2.address, deployer.address);
+      .to.emit(largeGrant, "RoleRevoked")
+      .withArgs(ethers.keccak256(ethers.toUtf8Bytes("OWNER_ROLE")), owner2.address, deployer.address);
 
     // Check if the removed owner can no longer perform owner actions
     await expect(largeGrant.connect(owner2).addGrant(accounts[5].address, 2, [1, 10])).to.be.reverted;

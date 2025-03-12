@@ -143,9 +143,9 @@ export const largeMilestones = pgTable("large_milestones", {
   stageId: integer("stage_id")
     .references(() => largeStages.id)
     .notNull(),
-  name: text("milestone").notNull(),
-  proposedDeliverables: text("proposed_deliverables"),
-  proposedCompletionDate: date("proposed_completion_date"),
+  description: text("description").notNull(),
+  proposedDeliverables: text("proposed_deliverables").notNull(),
+  proposedCompletionDate: date("proposed_completion_date").notNull(),
   completionProof: text("completion_proof"),
   completedAt: timestamp("completed_at"),
   amount: bigint("amount", { mode: "bigint" }).notNull(),

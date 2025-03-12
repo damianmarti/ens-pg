@@ -167,7 +167,7 @@ async function seed() {
         email: "email3@email.com",
       },
     ])
-    .returning({ id: grants.id })
+    .returning({ id: largeGrants.id })
     .execute();
 
   const insertedLargeStages = await db
@@ -210,67 +210,85 @@ async function seed() {
     .insert(largeMilestones)
     .values([
       {
-        name: "Milestone 1 - Stage 1 - Large Grant 1",
+        description: "Milestone 1 - Stage 1 - Large Grant 1",
         milestoneNumber: 1,
         stageId: insertedLargeStages[0].id,
         status: "completed",
         amount: 10000000n,
+        proposedDeliverables: "Deliverables 1",
+        proposedCompletionDate: "2025-01-01",
       },
       {
-        name: "Milestone 2 - Stage 1 - Large Grant 1",
+        description: "Milestone 2 - Stage 1 - Large Grant 1",
         milestoneNumber: 2,
         stageId: insertedLargeStages[0].id,
         status: "completed",
         amount: 20000000n,
+        proposedDeliverables: "Deliverables 2",
+        proposedCompletionDate: "2025-02-01",
       },
       {
-        name: "Milestone 1 - Stage 2 - Large Grant 1",
+        description: "Milestone 1 - Stage 2 - Large Grant 1",
         milestoneNumber: 1,
         stageId: insertedLargeStages[1].id,
         status: "approved",
         amount: 100000000n,
+        proposedDeliverables: "Deliverables 3",
+        proposedCompletionDate: "2025-03-01",
       },
       {
-        name: "Milestone 1 - Stage 1 - Large Grant 2",
+        description: "Milestone 1 - Stage 1 - Large Grant 2",
         milestoneNumber: 1,
         stageId: insertedLargeStages[2].id,
         status: "completed",
         amount: 10000000n,
+        proposedDeliverables: "Deliverables 4",
+        proposedCompletionDate: "2025-04-01",
       },
       {
-        name: "Milestone 2 - Stage 1 - Large Grant 2",
+        description: "Milestone 2 - Stage 1 - Large Grant 2",
         milestoneNumber: 2,
         stageId: insertedLargeStages[2].id,
         status: "completed",
         amount: 10000000n,
+        proposedDeliverables: "Deliverables 5",
+        proposedCompletionDate: "2025-05-01",
       },
       {
-        name: "Milestone 1 - Stage 2 - Large Grant 2",
+        description: "Milestone 1 - Stage 2 - Large Grant 2",
         milestoneNumber: 1,
         stageId: insertedLargeStages[3].id,
         status: "approved",
         amount: 100000000n,
+        proposedDeliverables: "Deliverables 6",
+        proposedCompletionDate: "2025-06-01",
       },
       {
-        name: "Milestone 1 - Stage 1 - Large Grant 3",
+        description: "Milestone 1 - Stage 1 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[4].id,
         status: "completed",
         amount: 20000000n,
+        proposedDeliverables: "Deliverables 7",
+        proposedCompletionDate: "2025-07-01",
       },
       {
-        name: "Milestone 1 - Stage 2 - Large Grant 3",
+        description: "Milestone 1 - Stage 2 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[5].id,
         status: "completed",
         amount: 30000000n,
+        proposedDeliverables: "Deliverables 8",
+        proposedCompletionDate: "2025-08-01",
       },
       {
-        name: "Milestone 1 - Stage 3 - Large Grant 3",
+        description: "Milestone 1 - Stage 3 - Large Grant 3",
         milestoneNumber: 1,
         stageId: insertedLargeStages[6].id,
         status: "proposed",
         amount: 40000000n,
+        proposedDeliverables: "Deliverables 9",
+        proposedCompletionDate: "2025-09-01",
       },
     ])
     .execute();

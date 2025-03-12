@@ -72,6 +72,7 @@ contract LargeGrant is Pausable, AccessControl {
 		string description,
 		string proof
 	);
+	event BuilderChanged(uint256 indexed grantId, address indexed newBuilder);
 
 	// Custom errors
 	error GrantAlreadyExists();
@@ -341,6 +342,25 @@ contract LargeGrant is Pausable, AccessControl {
 			_description,
 			_proof
 		);
+	}
+
+	function changeBuilderAddress(
+		uint256 _grantId,
+		address _newBuilder
+	) public onlyRole(DEFAULT_ADMIN_ROLE) {
+		if (_newBuilder == address(0)) {
+			revert ZeroAddress();
+		}
+
+		GrantData storage grant = grants[_grantId];
+
+		if (grant.builder == address(0)) {
+			revert GrantDoesNotExist();
+		}
+
+		grant.builder = _newBuilder;
+
+		emit BuilderChanged(_grantId, _newBuilder);
 	}
 
 	function addOwner(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {

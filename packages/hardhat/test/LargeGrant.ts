@@ -239,6 +239,24 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.connect(owner2).unpause()).to.be.reverted;
   });
 
+  it("Should allow admin to change builder address", async function () {
+    await largeGrant.connect(deployer).changeBuilderAddress(1, accounts[5].address);
+    const builderAddress = await largeGrant.grants(1);
+    expect(builderAddress).to.equal(accounts[5].address);
+  });
+
+  it("Should not allow admin to change builder address on a not existing grant", async function () {
+    await expect(largeGrant.connect(deployer).changeBuilderAddress(999, accounts[5].address)).to.be.reverted;
+  });
+
+  it("Should not allow admin to change builder address to zero address", async function () {
+    await expect(largeGrant.connect(deployer).changeBuilderAddress(1, ethers.ZeroAddress)).to.be.reverted;
+  });
+
+  it("Should not allow not admin to change builder address", async function () {
+    await expect(largeGrant.connect(owner2).changeBuilderAddress(1, accounts[5].address)).to.be.reverted;
+  });
+
   // Owner actions
   it("Should not allow an owner to add or remove owners", async function () {
     await expect(largeGrant.connect(owner2).addOwner(accounts[5].address)).to.be.reverted;

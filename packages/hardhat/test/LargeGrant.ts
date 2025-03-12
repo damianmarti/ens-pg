@@ -108,16 +108,47 @@ describe("LargeGrant", async () => {
     expect(grantData.milestones[4].completed).to.equal(false);
   });
 
+  it("Should allow to approve a milestone correctly", async () => {
+    await largeGrant.approveMilestone(1, 1, 1);
+
+    const grantDataAfterApproval = await largeGrant.grantData(1);
+    expect(grantDataAfterApproval.milestones[0].completed).to.equal(false);
+    expect(grantDataAfterApproval.milestones[0].approvedBy).to.equal(deployer.address);
+    expect(grantDataAfterApproval.milestones[0].completedBy).to.equal(ethers.ZeroAddress);
+  });
+
   it("Should allow to complete a milestone correctly", async () => {
     const initialBalance = await testToken.balanceOf(builder.address);
 
-    await largeGrant.completeMilestone(1, 1, 1, "Description", "Proof");
+    await largeGrant.approveMilestone(1, 1, 1);
+
+    const grantDataAfterApproval = await largeGrant.grantData(1);
+    expect(grantDataAfterApproval.milestones[0].completed).to.equal(false);
+    expect(grantDataAfterApproval.milestones[0].approvedBy).to.equal(deployer.address);
+    expect(grantDataAfterApproval.milestones[0].completedBy).to.equal(ethers.ZeroAddress);
+
+    const newBalanceAfterApproval = await testToken.balanceOf(builder.address);
+    expect(newBalanceAfterApproval).to.equal(initialBalance);
+
+    await largeGrant.connect(owner2).completeMilestone(1, 1, 1, "Description", "Proof");
 
     const grantData = await largeGrant.grantData(1);
     expect(grantData.milestones[0].completed).to.equal(true);
+    expect(grantData.milestones[0].approvedBy).to.equal(deployer.address);
+    expect(grantData.milestones[0].completedBy).to.equal(owner2.address);
 
     const newBalance = await testToken.balanceOf(builder.address);
     expect(newBalance).to.equal(initialBalance + 1n);
+  });
+
+  it("Should not allow to complete a milestone if the sender is the same as the approver", async () => {
+    await largeGrant.approveMilestone(1, 1, 1);
+
+    await expect(largeGrant.completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
+  });
+
+  it("Should not allow to complete a milestone if it's not approved yet", async () => {
+    await expect(largeGrant.completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
   });
 
   it("Should not allow to complete a milestone with wrong grant number", async () => {
@@ -128,14 +159,20 @@ describe("LargeGrant", async () => {
     await expect(largeGrant.completeMilestone(1, 2, 1, "Description", "Proof")).to.be.reverted;
   });
 
+  it("Should not allow to complete a milestone with zero as stage number", async () => {
+    await expect(largeGrant.completeMilestone(1, 0, 1, "Description", "Proof")).to.be.reverted;
+  });
+
   it("Should not allow to complete a milestone with wrong milestone number", async () => {
     await expect(largeGrant.completeMilestone(1, 1, 4, "Description", "Proof")).to.be.reverted;
   });
 
   it("Should not allow to complete a milestone twice", async () => {
-    await largeGrant.completeMilestone(1, 1, 1, "Description", "Proof");
+    await largeGrant.approveMilestone(1, 1, 1);
 
-    await expect(largeGrant.completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
+    await largeGrant.connect(owner2).completeMilestone(1, 1, 1, "Description", "Proof");
+
+    await expect(largeGrant.connect(owner2).completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
   });
 
   // Admin actions
@@ -175,12 +212,21 @@ describe("LargeGrant", async () => {
   it("Should allow the admin to pause and unpause the contract", async function () {
     await expect(largeGrant.connect(deployer).pause()).to.not.be.reverted;
 
-    // Check if the contract is paused trying to complete a milestone
-    await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
+    // Check if the contract is paused trying to approve a milestone
+    await expect(largeGrant.connect(deployer).approveMilestone(1, 1, 1)).to.be.reverted;
 
     await expect(largeGrant.connect(deployer).unpause()).to.not.be.reverted;
 
-    await expect(largeGrant.connect(deployer).completeMilestone(1, 1, 1, "Description", "Proof")).to.not.be.reverted;
+    await expect(largeGrant.connect(deployer).approveMilestone(1, 1, 1)).to.not.be.reverted;
+
+    await expect(largeGrant.connect(deployer).pause()).to.not.be.reverted;
+
+    // Check if the contract is paused trying to complete a milestone
+    await expect(largeGrant.connect(owner2).completeMilestone(1, 1, 1, "Description", "Proof")).to.be.reverted;
+
+    await expect(largeGrant.connect(deployer).unpause()).to.not.be.reverted;
+
+    await expect(largeGrant.connect(owner2).completeMilestone(1, 1, 1, "Description", "Proof")).to.not.be.reverted;
   });
 
   it("Should not allow not admin to pause the contract", async function () {
@@ -212,6 +258,10 @@ describe("LargeGrant", async () => {
 
   it("Should not allow non-owners to create a stage", async function () {
     await expect(largeGrant.connect(nonOwner).addGrantStage(1, [1, 10])).to.be.reverted;
+  });
+
+  it("Should not allow non-owners to approve a milestone", async function () {
+    await expect(largeGrant.connect(nonOwner).approveMilestone(1, 1, 1)).to.be.reverted;
   });
 
   it("Should not allow non-owners to complete a milestone", async function () {

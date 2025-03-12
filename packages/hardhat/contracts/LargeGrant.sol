@@ -29,6 +29,8 @@ contract LargeGrant is Pausable, AccessControl {
 	struct Milestone {
 		uint8 number;
 		uint256 amount;
+		address approvedBy;
+		address completedBy;
 		bool completed;
 	}
 
@@ -37,6 +39,8 @@ contract LargeGrant is Pausable, AccessControl {
 		uint8 stageNumber;
 		uint8 number;
 		uint256 amount;
+		address approvedBy;
+		address completedBy;
 		bool completed;
 	}
 
@@ -53,7 +57,14 @@ contract LargeGrant is Pausable, AccessControl {
 		uint8 stageNumber,
 		uint256[] amounts
 	);
+	event ApproveMilestone(
+		uint256 indexed grantId,
+		uint8 stageNumber,
+		uint8 milestoneNumber,
+		address indexed approvedBy
+	);
 	event CompleteMilestone(
+		address indexed completedBy,
 		uint256 indexed grantId,
 		uint8 stageNumber,
 		uint8 milestoneNumber,
@@ -69,10 +80,45 @@ contract LargeGrant is Pausable, AccessControl {
 	error MilestoneZeroAmount();
 	error NoMilestones();
 	error MilestoneAlreadyCompleted();
+	error MilestoneAlreadyApproved();
+	error MilestoneNeedsToBeApproved();
 	error InsufficientContractFunds();
 	error WrongStageNumber();
 	error WrongMilestoneNumber();
+	error NeedsApprovalFromOtherOwner();
 	error AlreadyAdmin();
+
+	modifier validMilestone(
+		uint256 _grantId,
+		uint8 _stageNumber,
+		uint8 _milestoneNumber
+	) {
+		GrantData storage grant = grants[_grantId];
+
+		if (grant.builder == address(0)) {
+			revert GrantDoesNotExist();
+		}
+
+		if (_stageNumber == 0 || _stageNumber > grant.stages.length) {
+			revert WrongStageNumber();
+		}
+
+		if (
+			_milestoneNumber > grant.stages[_stageNumber - 1].milestones.length
+		) {
+			revert WrongMilestoneNumber();
+		}
+
+		if (
+			grant
+				.stages[_stageNumber - 1]
+				.milestones[_milestoneNumber - 1]
+				.completed
+		) {
+			revert MilestoneAlreadyCompleted();
+		}
+		_;
+	}
 
 	constructor(address _tokenAddress, address[] memory _initialOwners) {
 		tokenAddress = _tokenAddress;
@@ -107,7 +153,9 @@ contract LargeGrant is Pausable, AccessControl {
 					stageNumber: uint8(i + 1),
 					number: grant.stages[i].milestones[j].number,
 					amount: grant.stages[i].milestones[j].amount,
-					completed: grant.stages[i].milestones[j].completed
+					completed: grant.stages[i].milestones[j].completed,
+					approvedBy: grant.stages[i].milestones[j].approvedBy,
+					completedBy: grant.stages[i].milestones[j].completedBy
 				});
 				index++;
 			}
@@ -147,7 +195,9 @@ contract LargeGrant is Pausable, AccessControl {
 				Milestone({
 					number: uint8(i + 1),
 					amount: amount,
-					completed: false
+					completed: false,
+					approvedBy: address(0),
+					completedBy: address(0)
 				})
 			);
 		}
@@ -182,7 +232,9 @@ contract LargeGrant is Pausable, AccessControl {
 				Milestone({
 					number: uint8(i + 1),
 					amount: amount,
-					completed: false
+					completed: false,
+					approvedBy: address(0),
+					completedBy: address(0)
 				})
 			);
 		}
@@ -194,36 +246,70 @@ contract LargeGrant is Pausable, AccessControl {
 		);
 	}
 
+	function approveMilestone(
+		uint256 _grantId,
+		uint8 _stageNumber,
+		uint8 _milestoneNumber
+	)
+		public
+		whenNotPaused
+		onlyRole(OWNER_ROLE)
+		validMilestone(_grantId, _stageNumber, _milestoneNumber)
+	{
+		GrantData storage grant = grants[_grantId];
+
+		if (
+			grant
+				.stages[_stageNumber - 1]
+				.milestones[_milestoneNumber - 1]
+				.approvedBy != address(0)
+		) {
+			revert MilestoneAlreadyApproved();
+		}
+
+		grant
+			.stages[_stageNumber - 1]
+			.milestones[_milestoneNumber - 1]
+			.approvedBy = msg.sender;
+
+		emit ApproveMilestone(
+			_grantId,
+			_stageNumber,
+			_milestoneNumber,
+			msg.sender
+		);
+	}
+
 	function completeMilestone(
 		uint256 _grantId,
 		uint8 _stageNumber,
 		uint8 _milestoneNumber,
 		string memory _description,
 		string memory _proof
-	) public whenNotPaused onlyRole(OWNER_ROLE) {
+	)
+		public
+		whenNotPaused
+		onlyRole(OWNER_ROLE)
+		validMilestone(_grantId, _stageNumber, _milestoneNumber)
+	{
 		GrantData storage grant = grants[_grantId];
 
-		if (grant.builder == address(0)) {
-			revert GrantDoesNotExist();
-		}
-
-		if (_stageNumber > grant.stages.length) {
-			revert WrongStageNumber();
-		}
-
 		if (
-			_milestoneNumber > grant.stages[_stageNumber - 1].milestones.length
+			grant
+				.stages[_stageNumber - 1]
+				.milestones[_milestoneNumber - 1]
+				.approvedBy == address(0)
 		) {
-			revert WrongMilestoneNumber();
+			revert MilestoneNeedsToBeApproved();
 		}
 
 		if (
 			grant
 				.stages[_stageNumber - 1]
 				.milestones[_milestoneNumber - 1]
-				.completed
+				.approvedBy == msg.sender
 		) {
-			revert MilestoneAlreadyCompleted();
+			revert NeedsApprovalFromOtherOwner();
 		}
 
 		uint256 amount = grant
@@ -241,7 +327,13 @@ contract LargeGrant is Pausable, AccessControl {
 			.milestones[_milestoneNumber - 1]
 			.completed = true;
 
+		grant
+			.stages[_stageNumber - 1]
+			.milestones[_milestoneNumber - 1]
+			.completedBy = msg.sender;
+
 		emit CompleteMilestone(
+			msg.sender,
 			_grantId,
 			_stageNumber,
 			_milestoneNumber,

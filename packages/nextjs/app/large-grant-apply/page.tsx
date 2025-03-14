@@ -150,7 +150,7 @@ const LargeGrantApply: NextPage = () => {
                       <FormInputNumber
                         label="Budget (USDC)"
                         {...formMethods.register(`milestones.${index}.amount`, {
-                          setValueAs: value => parseFloat(value),
+                          setValueAs: value => parseInt(value),
                         })}
                         error={errors?.milestones?.[index]?.amount?.message}
                       />

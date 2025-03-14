@@ -1,8 +1,11 @@
-import { InferInsertModel, InferSelectModel, desc, eq, max } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, desc, eq } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { largeGrants, largeMilestones, largeStages } from "~~/services/database/config/schema";
 
 export type LargeGrantInsert = InferInsertModel<typeof largeGrants>;
+export type LargeGrantInsertWithMilestones = LargeGrantInsert & {
+  milestones: Omit<InferInsertModel<typeof largeMilestones>, "stageId" | "milestoneNumber">[];
+};
 export type LargeGrant = InferSelectModel<typeof largeGrants>;
 export type PublicLargeGrant = Awaited<ReturnType<typeof getPublicLargeGrants>>[number];
 
@@ -25,7 +28,6 @@ export async function getPublicLargeGrants() {
     orderBy: [desc(largeGrants.submitedAt)],
     columns: {
       id: true,
-      grantNumber: true,
       title: true,
       description: true,
       builderAddress: true,
@@ -89,20 +91,33 @@ export async function getBuilderLargeGrants(builderAddress: string) {
   });
 }
 
-// Note: not used yet
-export async function createLargeGrant(grant: LargeGrantInsert) {
-  const maxGrantNumber = await db
-    .select({ maxNumber: max(largeGrants.grantNumber) })
-    .from(largeGrants)
-    .where(eq(largeGrants.builderAddress, grant.builderAddress))
-    .then(result => result[0]?.maxNumber ?? 0);
+export async function createLargeGrant(
+  grant: LargeGrantInsertWithMilestones,
+): Promise<{ grantId: number; stageId: number; createdMilestones: number[] }> {
+  return await db.transaction(async tx => {
+    const [createdGrant] = await tx.insert(largeGrants).values(grant).returning({ id: largeGrants.id });
+    const [createdStage] = await tx
+      .insert(largeStages)
+      .values({ grantId: createdGrant.id })
+      .returning({ id: largeStages.id });
 
-  const newGrantNumber = maxGrantNumber + 1;
+    const createdMilestones = [];
 
-  return await db
-    .insert(largeGrants)
-    .values({ ...grant, grantNumber: newGrantNumber })
-    .returning({ id: largeGrants.id, grantNumber: largeGrants.grantNumber });
+    for (let i = 0; i < grant.milestones.length; i++) {
+      const milestone = grant.milestones[i];
+      const [createdMilestone] = await tx
+        .insert(largeMilestones)
+        .values({
+          ...milestone,
+          stageId: createdStage.id,
+          milestoneNumber: i + 1,
+        })
+        .returning({ id: largeMilestones.id });
+      createdMilestones.push(createdMilestone.id);
+    }
+
+    return { grantId: createdGrant.id, stageId: createdStage.id, createdMilestones };
+  });
 }
 
 // Note: not used yet

@@ -7,8 +7,14 @@ export const getRequiredFields = (schema: z.AnyZodObject) => {
   return Object.keys(schemaShape).filter(key => !schemaShape[key].isOptional());
 };
 
-export const useFormMethods = <FormValues extends FieldValues>({ schema }: { schema: z.AnyZodObject }) => {
-  const formMethods = useForm<FormValues>({ resolver: zodResolver(schema) });
+export const useFormMethods = <FormValues extends FieldValues>({
+  schema,
+  defaultValues,
+}: {
+  schema: z.AnyZodObject;
+  defaultValues?: any;
+}) => {
+  const formMethods = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
 
   const {
     formState: { errors },

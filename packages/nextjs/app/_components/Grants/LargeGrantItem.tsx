@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { LargeGrantMilestonesModal } from "./LargeGrantMilestonesModal";
-import { formatUnits } from "viem";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Badge } from "~~/components/pg-ens/Badge";
 import { Button } from "~~/components/pg-ens/Button";
@@ -37,16 +36,13 @@ export const LargeGrantItem = ({ grant, latestsShownStatus }: GrantItemProps) =>
 
   const allMilestonesGrantAmount = grant.stages
     .flatMap(stage => stage.milestones)
-    .reduce((acc, current) => BigInt(acc || 0n) + BigInt(current.amount || 0n), 0n);
+    .reduce((acc, current) => acc + current.amount, 0);
 
   const completedMilestones = grant.stages.flatMap(stage =>
     stage.milestones.filter(milestone => milestone.status === "completed"),
   );
 
-  const completedMilestonesAmount = completedMilestones.reduce(
-    (acc, current) => BigInt(acc || 0n) + BigInt(current.amount || 0n),
-    0n,
-  );
+  const completedMilestonesAmount = completedMilestones.reduce((acc, current) => acc + current.amount, 0);
 
   return (
     <div className="card flex flex-col bg-white text-primary-content w-full max-w-96 shadow-lg rounded-lg overflow-hidden">
@@ -74,8 +70,8 @@ export const LargeGrantItem = ({ grant, latestsShownStatus }: GrantItemProps) =>
         <GrantProgressBar
           className="w-full"
           isLargeGrant={true}
-          amount={Number(formatUnits(allMilestonesGrantAmount, 6))}
-          withdrawn={Number(formatUnits(completedMilestonesAmount || 0n, 6))}
+          amount={allMilestonesGrantAmount}
+          withdrawn={completedMilestonesAmount}
         />
       </div>
       <div className="px-5 pb-5 flex flex-col justify-between flex-grow">

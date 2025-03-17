@@ -164,7 +164,7 @@ const LargeGrantApply: NextPage = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-16 sm:gap-y-1">
                 <div className="pt-6">
                   <label className="text-xl font-bold">
                     Total requested funds:
@@ -178,7 +178,7 @@ const LargeGrantApply: NextPage = () => {
                   onClick={() =>
                     append({ description: "", proposedDeliverables: "", amount: 0, proposedCompletionDate: new Date() })
                   }
-                  variant="secondary"
+                  variant="purple-secondary"
                   className="mt-4"
                 >
                   + Add Milestone

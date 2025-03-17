@@ -128,6 +128,7 @@ const LargeGrantApply: NextPage = () => {
               <div className="rounded-xl bg-light-purple p-4">
                 {fields.map((field, index) => (
                   <div key={field.id}>
+                    {index > 0 && <hr className="border-t border-white my-6" />}
                     <h4 className="text-2xl font-bold">
                       Milestone {index + 1}
                       <button type="button" onClick={() => remove(index)} className="ml-2">

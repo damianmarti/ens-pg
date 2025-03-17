@@ -24,14 +24,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
     }
 
-    const result = await createLargeGrant({
+    const formattedBody = {
       ...body,
+      milestones: body.milestones.map(milestone => ({
+        ...milestone,
+        proposedCompletionDate:
+          milestone.proposedCompletionDate instanceof Date
+            ? milestone.proposedCompletionDate
+            : new Date(milestone.proposedCompletionDate),
+      })),
+    };
+
+    const result = await createLargeGrant({
+      ...formattedBody,
       builderAddress,
     });
 
     await notifyTelegramBot("largeGrant", {
       id: result.grantId,
-      ...body,
+      ...formattedBody,
       builderAddress,
     });
 

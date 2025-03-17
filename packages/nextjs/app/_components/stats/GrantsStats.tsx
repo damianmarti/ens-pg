@@ -1,9 +1,9 @@
 import { StatsItem } from "./StatsItem";
 import { formatEther } from "viem";
-import { getAllGrants } from "~~/services/database/repositories/grants";
+import { getPublicGrants } from "~~/services/database/repositories/grants";
 
 export const GrantsStats = async () => {
-  const allGrants = await getAllGrants();
+  const allGrants = await getPublicGrants();
   const grants = allGrants.filter(grant => {
     const latestStage = grant.stages[0];
     return (

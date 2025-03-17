@@ -50,7 +50,7 @@ module.exports = {
         "primary-red": "#E03131",
         "medium-purple": "#E789FF",
         "light-purple": "#eccfff",
-        "secondary-purple": "#FFD8FB",
+        "pale-rose": "#FFD8FB",
       },
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",

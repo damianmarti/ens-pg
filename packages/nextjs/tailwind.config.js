@@ -42,7 +42,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Satoshi', 'sans-serif'],
+        sans: ["Satoshi", "sans-serif"],
       },
       colors: {
         "primary-green": "#33AD46",
@@ -50,6 +50,7 @@ module.exports = {
         "primary-red": "#E03131",
         "medium-purple": "#E789FF",
         "light-purple": "#eccfff",
+        "secondary-purple": "#FFD8FB",
       },
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",
@@ -59,4 +60,4 @@ module.exports = {
       },
     },
   },
-}
+};

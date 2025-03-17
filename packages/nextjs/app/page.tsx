@@ -1,6 +1,7 @@
 import { ApprovedGrants } from "./_components/Grants";
 import { WorkflowItem } from "./_components/WorkflowItem";
-import { Stats } from "./_components/stats";
+import { GrantsStats } from "./_components/stats/GrantsStats";
+import { LargeGrantsStats } from "./_components/stats/LargeGrantsStats";
 import type { NextPage } from "next";
 import { Button } from "~~/components/pg-ens/Button";
 
@@ -46,7 +47,11 @@ const Home: NextPage = () => {
             resources, PG Builder Grants offer a pathway to secure the funding you need to make a lasting difference.
           </p>
         </div>
-        <Stats />
+
+        <div className="mt-8 flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 lg:gap-40">
+          <GrantsStats />
+          <LargeGrantsStats />
+        </div>
       </div>
 
       <div className="bg-secondary py-10 sm:py-20 px-4 flex flex-col items-center w-full">

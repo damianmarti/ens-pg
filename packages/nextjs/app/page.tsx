@@ -52,14 +52,34 @@ const Home: NextPage = () => {
       <div className="bg-secondary py-10 sm:py-20 px-4 flex flex-col items-center w-full">
         <h2 className="text-3xl font-black !mb-0">How does it work</h2>
 
-        <div className="my-12 grid text-sm sm:grid-cols-2 xl:grid-cols-4 max-w-screen-2xl gap-8">
+        <div className="mt-12 grid text-sm sm:grid-cols-2 xl:grid-cols-4 max-w-screen-2xl gap-8">
           {workflowItems.map(({ title, description }, idx) => (
             <WorkflowItem key={title} step={idx + 1} title={title} description={description} />
           ))}
         </div>
-        <Button link href="/apply">
-          Apply for a grant
-        </Button>
+      </div>
+
+      <div className="w-full mx-auto grid md:grid-cols-2">
+        <div className="text-center bg-pale-rose flex flex-col items-center py-10 sm:py-16 px-4">
+          <h2 className="text-3xl font-bold mb-4">Small grants (up to 2 ETH)</h2>
+          <p className="mb-8 max-w-lg">
+            Receive up to 2 ETH in a stream that unlocks over 30 days. While milestone withdrawals do not need approval,
+            each grant stage and its milestones will be reviewed by our stewards.
+          </p>
+          <Button link href="/apply">
+            Apply for a grant
+          </Button>
+        </div>
+
+        <div className="text-center bg-light-purple flex flex-col items-center py-10 sm:py-16 px-4">
+          <h2 className="text-3xl font-bold mb-4">Large grants (up to 50k USDC)</h2>
+          <p className="mb-8 max-w-lg">
+            Milestone funds will be unlocked and sent to you once the milestone completion is reviewed by our stewards.
+          </p>
+          <Button link href="/large-grant-apply">
+            Apply for a grant
+          </Button>
+        </div>
       </div>
 
       <ApprovedGrants />

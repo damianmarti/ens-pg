@@ -39,7 +39,7 @@ export const LargeGrantItem = ({ grant, latestsShownStatus }: GrantItemProps) =>
     .reduce((acc, current) => acc + current.amount, 0);
 
   const completedMilestones = grant.stages.flatMap(stage =>
-    stage.milestones.filter(milestone => milestone.status === "completed"),
+    stage.milestones.filter(milestone => milestone.status === "paid"),
   );
 
   const completedMilestonesAmount = completedMilestones.reduce((acc, current) => acc + current.amount, 0);

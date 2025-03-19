@@ -49,7 +49,11 @@ export const TimelineStage = ({ stage }: { stage: LargeStageWithMilestones }) =>
                     <div className={`text-lg font-bold flex ${isOdd ? "" : "sm:place-content-end"}`}>
                       Milestone {idx + 1} ({milestone.amount} USDC)
                       {(milestone.status === "completed" || milestone.status === "paid") && (
-                        <CheckCircleSolidIcon className="ml-1 mt-1 h-6 w-6 text-green-500" />
+                        <CheckCircleSolidIcon
+                          className={`ml-1 mt-1 h-6 w-6 ${
+                            milestone.status === "paid" ? "text-green-500" : "text-orange-500"
+                          }`}
+                        />
                       )}
                     </div>
                     <div className="text-sm font-bold">{milestone.description}</div>

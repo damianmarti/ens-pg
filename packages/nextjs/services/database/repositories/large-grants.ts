@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel, desc, eq } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, desc, eq, sql } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { largeGrants, largeMilestones, largeStages } from "~~/services/database/config/schema";
 
@@ -130,4 +130,46 @@ export async function getLargeGrantById(grantId: number) {
       },
     },
   });
+}
+
+export async function getLargeGrantsStats() {
+  const [usdcFromCompletedMilestones, allLargeGrants] = await Promise.all([
+    db
+      .select({
+        total: sql`COALESCE(sum(${largeMilestones.amount}), 0)::float`,
+      })
+      .from(largeMilestones)
+      .where(eq(largeMilestones.status, "completed")),
+
+    db
+      .select({
+        count: sql`count(${largeGrants.id})`,
+      })
+      .from(largeGrants),
+  ]);
+
+  const sortedLargeGrants = await db.query.largeGrants.findMany({
+    with: {
+      stages: {
+        orderBy: [desc(largeStages.stageNumber)],
+      },
+    },
+    orderBy: [desc(largeGrants.submitedAt)],
+  });
+
+  const proposedLargeGrants = sortedLargeGrants.filter(grant => {
+    const latestStage = grant.stages[0];
+    return (
+      latestStage &&
+      (latestStage.stageNumber > 1 ||
+        (latestStage.stageNumber === 1 && latestStage.status !== "proposed" && latestStage.status !== "rejected"))
+    );
+  });
+
+  return {
+    totalUsdcGranted: Number(usdcFromCompletedMilestones[0].total) || 0,
+    allGrantsCount: Number(allLargeGrants[0].count) || 0,
+    proposedLargeGrants,
+    proposedLargeGrantsCount: proposedLargeGrants.length,
+  };
 }

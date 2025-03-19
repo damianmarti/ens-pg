@@ -5,7 +5,7 @@ import { getBuilderLargeGrants } from "~~/services/database/repositories/large-g
 import { DiscriminatedBuilderGrant } from "~~/types/utils";
 import { authOptions } from "~~/utils/auth";
 
-export type BuilderGrantsResponse = DiscriminatedBuilderGrant[]; //Awaited<ReturnType<typeof getBuilderGrants>>;
+export type BuilderGrantsResponse = DiscriminatedBuilderGrant[];
 
 // https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006086291
 (BigInt.prototype as any).toJSON = function () {

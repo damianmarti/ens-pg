@@ -10,11 +10,7 @@ export const TimelineStage = ({ stage }: { stage: LargeStageWithMilestones }) =>
 
   return (
     <div className="grid sm:grid-cols-2">
-      <div
-        className={`hidden sm:block border-primary border-primary ${
-          isOdd ? "order-1 border-r-2" : "order-3 border-l-2"
-        }`}
-      />
+      <div className={`hidden sm:block border-primary ${isOdd ? "order-1 border-r-2" : "order-3 border-l-2"}`} />
       <div
         className={`relative px-8 pb-4 pt-1 order-2 border-primary min-h-36 ${
           isOdd ? "border-l-2" : "border-l-2 sm:border-l-0 sm:border-r-2 sm:text-right"

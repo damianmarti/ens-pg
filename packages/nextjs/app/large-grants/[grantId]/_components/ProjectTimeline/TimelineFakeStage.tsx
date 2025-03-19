@@ -6,7 +6,7 @@ export const TimelineFakeStage = ({ stageNumber }: { stageNumber: number }) => {
   return (
     <div className="grid sm:grid-cols-2">
       <div
-        className={`hidden sm:block border-primary border-secondary border-dashed ${
+        className={`hidden sm:block border-secondary border-dashed ${
           isOdd ? "order-1 border-r-2" : "order-3 border-l-2"
         }`}
       />

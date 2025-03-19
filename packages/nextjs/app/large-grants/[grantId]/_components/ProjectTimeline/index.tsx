@@ -11,6 +11,11 @@ export const ProjectTimeline = ({ grant }: { grant: LargeGrantWithStages }) => {
     return null;
   }
 
+  const fakeStageNumbers = Array.from(
+    { length: MIN_STAGES - grant.stages.length },
+    (_, i) => grant.stages.length + i + 1,
+  );
+
   return (
     <div className="w-full max-w-5xl">
       <span className="text-2xl font-bold">Project timeline</span>
@@ -19,13 +24,9 @@ export const ProjectTimeline = ({ grant }: { grant: LargeGrantWithStages }) => {
         {grant.stages.map(stage => (
           <TimelineStage key={stage.stageNumber} stage={stage} />
         ))}
-        {(() => {
-          const elements = [];
-          for (let i = grant.stages.length; i < MIN_STAGES; i++) {
-            elements.push(<TimelineFakeStage key={i + 1} stageNumber={i + 1} />);
-          }
-          return elements;
-        })()}
+        {fakeStageNumbers.map(stageNumber => (
+          <TimelineFakeStage key={stageNumber} stageNumber={stageNumber} />
+        ))}
       </div>
     </div>
   );

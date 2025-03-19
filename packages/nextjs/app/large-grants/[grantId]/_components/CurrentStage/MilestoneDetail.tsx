@@ -19,7 +19,7 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
             <div className="text-xl font-bold">Milestone {milestone.milestoneNumber}</div>
             <div className="text-sm font-bold">Deadline: {getFormattedDate(milestone.proposedCompletionDate)}</div>
           </div>
-          <div className="bg-white rounded-lg p-1 font-bold">{milestone.amount} USDC</div>
+          <div className="bg-white rounded-lg p-1 font-bold">{milestone.amount.toLocaleString()} USDC</div>
         </div>
         <div className="flex flex-col gap-4">
           <div>{multilineStringToTsx(milestone.description)}</div>

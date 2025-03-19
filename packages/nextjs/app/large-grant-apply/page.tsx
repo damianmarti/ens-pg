@@ -169,7 +169,7 @@ const LargeGrantApply: NextPage = () => {
                   <label className="text-xl font-bold">
                     Total requested funds:
                     <span className="bg-light-purple ml-2 p-1 rounded">
-                      {isNaN(totalAmount) ? "-" : Intl.NumberFormat().format(totalAmount)} USDC
+                      {isNaN(totalAmount) ? "-" : totalAmount.toLocaleString()} USDC
                     </span>
                   </label>
                 </div>

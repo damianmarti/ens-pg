@@ -22,7 +22,9 @@ export const GrantProgressBar = ({
 
   return (
     <div className={className}>
-      {!isLargeGrant && <div className="text-end">{available ? `${available} ETH available to withdraw` : ""}</div>}
+      {!isLargeGrant && (
+        <div className="text-end">{available ? `${available.toLocaleString()} ETH available to withdraw` : ""}</div>
+      )}
       <div className="bg-gray-300 h-4 rounded relative mt-2">
         <div
           className="bg-primary rounded absolute z-[2] inset-y-0 left-0"
@@ -35,10 +37,10 @@ export const GrantProgressBar = ({
       </div>
       <div className="flex justify-between font-semibold mt-2">
         <span>
-          {withdrawn} {isLargeGrant ? "USDC received" : "ETH withdrawn"}
+          {withdrawn.toLocaleString()} {isLargeGrant ? "USDC received" : "ETH withdrawn"}
         </span>
         <span>
-          {amount} {isLargeGrant ? "USDC" : "ETH"}
+          {amount.toLocaleString()} {isLargeGrant ? "USDC" : "ETH"}
         </span>
       </div>
     </div>

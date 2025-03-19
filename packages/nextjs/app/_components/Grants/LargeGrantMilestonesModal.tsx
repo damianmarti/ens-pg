@@ -1,5 +1,4 @@
 import { forwardRef } from "react";
-import { formatUnits } from "viem";
 import { LargeMilestone } from "~~/services/database/repositories/large-milestones";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
@@ -26,9 +25,7 @@ export const LargeGrantMilestonesModal = forwardRef<HTMLDialogElement, GrantMile
               <div className="flex items-center justify-between">
                 <div className="flex gap-2 items-center">
                   <div className="text-lg font-bold">Milestone {index + 1}</div>
-                  <div className="bg-secondary px-2 py-1 rounded font-semibold">
-                    {formatUnits(milestone.amount, 6)} USDC
-                  </div>
+                  <div className="bg-secondary px-2 py-1 rounded font-semibold">{milestone.amount} USDC</div>
                 </div>
                 {milestone.completedAt && <div>{getFormattedDate(milestone.completedAt)}</div>}
               </div>

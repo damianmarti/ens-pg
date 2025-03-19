@@ -49,6 +49,7 @@ module.exports = {
         "primary-orange": "#F08C00",
         "primary-red": "#E03131",
         "medium-purple": "#E789FF",
+        "light-purple": "#eccfff",
       },
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",

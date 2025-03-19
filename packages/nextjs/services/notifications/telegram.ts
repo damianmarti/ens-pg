@@ -1,4 +1,5 @@
 import { CreateNewGrantReqBody } from "~~/app/api/grants/new/route";
+import { CreateNewLargeGrantReqBody } from "~~/app/api/large-grants/new/route";
 import { CreateNewStageReqBody } from "~~/app/api/stages/new/route";
 import { GrantWithStages } from "~~/app/grants/[grantId]/page";
 
@@ -7,14 +8,16 @@ const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
 type StageData = {
   newStage: CreateNewStageReqBody;
-  grant: GrantWithStages;
+  grant?: GrantWithStages;
+  largeGrant?: CreateNewLargeGrantReqBody;
 };
 
 type GrantData = CreateNewGrantReqBody & { builderAddress: string };
+type LargeGrantData = CreateNewLargeGrantReqBody & { builderAddress: string };
 
-export async function notifyTelegramBot<T extends "grant" | "stage">(
+export async function notifyTelegramBot<T extends "grant" | "stage" | "largeGrant">(
   endpoint: T,
-  data: T extends "grant" ? GrantData : StageData,
+  data: T extends "grant" ? GrantData : T extends "largeGrant" ? LargeGrantData : StageData,
 ) {
   if (!TELEGRAM_BOT_URL || !TELEGRAM_WEBHOOK_SECRET) {
     if (!TELEGRAM_BOT_URL) {
@@ -41,7 +44,9 @@ export async function notifyTelegramBot<T extends "grant" | "stage">(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const json = await response.json();
+
+    return json;
   } catch (error) {
     // We don't throw here to prevent the main flow from failing if notifications fail
     console.error(`Error notifying Telegram bot (${endpoint}):`, error);

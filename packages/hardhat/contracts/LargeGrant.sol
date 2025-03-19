@@ -14,7 +14,7 @@ abstract contract ERC20 {
 }
 
 contract LargeGrant is Pausable, AccessControl {
-	bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
+	bytes32 public constant STEWARD_ROLE = keccak256("STEWARD_ROLE");
 
 	struct GrantData {
 		address builder;
@@ -86,7 +86,7 @@ contract LargeGrant is Pausable, AccessControl {
 	error InsufficientContractFunds();
 	error WrongStageNumber();
 	error WrongMilestoneNumber();
-	error NeedsApprovalFromOtherOwner();
+	error NeedsApprovalFromOtherSteward();
 	error AlreadyAdmin();
 
 	modifier validMilestone(
@@ -121,10 +121,10 @@ contract LargeGrant is Pausable, AccessControl {
 		_;
 	}
 
-	constructor(address _tokenAddress, address[] memory _initialOwners) {
+	constructor(address _tokenAddress, address[] memory _initialStewards) {
 		tokenAddress = _tokenAddress;
-		for (uint i = 0; i < _initialOwners.length; i++) {
-			_grantRole(OWNER_ROLE, _initialOwners[i]);
+		for (uint i = 0; i < _initialStewards.length; i++) {
+			_grantRole(STEWARD_ROLE, _initialStewards[i]);
 		}
 		_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 	}
@@ -167,7 +167,7 @@ contract LargeGrant is Pausable, AccessControl {
 		address _builder,
 		uint256 _grantId,
 		uint256[] memory _milestoneAmounts
-	) public onlyRole(OWNER_ROLE) {
+	) public onlyRole(STEWARD_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
 		if (grant.builder != address(0)) {
@@ -209,7 +209,7 @@ contract LargeGrant is Pausable, AccessControl {
 	function addGrantStage(
 		uint256 _grantId,
 		uint256[] memory _milestoneAmounts
-	) public onlyRole(OWNER_ROLE) {
+	) public onlyRole(STEWARD_ROLE) {
 		GrantData storage grant = grants[_grantId];
 
 		if (grant.builder == address(0)) {
@@ -254,7 +254,7 @@ contract LargeGrant is Pausable, AccessControl {
 	)
 		public
 		whenNotPaused
-		onlyRole(OWNER_ROLE)
+		onlyRole(STEWARD_ROLE)
 		validMilestone(_grantId, _stageNumber, _milestoneNumber)
 	{
 		GrantData storage grant = grants[_grantId];
@@ -290,7 +290,7 @@ contract LargeGrant is Pausable, AccessControl {
 	)
 		public
 		whenNotPaused
-		onlyRole(OWNER_ROLE)
+		onlyRole(STEWARD_ROLE)
 		validMilestone(_grantId, _stageNumber, _milestoneNumber)
 	{
 		GrantData storage grant = grants[_grantId];
@@ -310,7 +310,7 @@ contract LargeGrant is Pausable, AccessControl {
 				.milestones[_milestoneNumber - 1]
 				.approvedBy == msg.sender
 		) {
-			revert NeedsApprovalFromOtherOwner();
+			revert NeedsApprovalFromOtherSteward();
 		}
 
 		uint256 amount = grant
@@ -363,12 +363,16 @@ contract LargeGrant is Pausable, AccessControl {
 		emit BuilderChanged(_grantId, _newBuilder);
 	}
 
-	function addOwner(address newOwner) public onlyRole(DEFAULT_ADMIN_ROLE) {
-		grantRole(OWNER_ROLE, newOwner);
+	function addSteward(
+		address newSteward
+	) public onlyRole(DEFAULT_ADMIN_ROLE) {
+		grantRole(STEWARD_ROLE, newSteward);
 	}
 
-	function removeOwner(address owner) public onlyRole(DEFAULT_ADMIN_ROLE) {
-		revokeRole(OWNER_ROLE, owner);
+	function removeSteward(
+		address steward
+	) public onlyRole(DEFAULT_ADMIN_ROLE) {
+		revokeRole(STEWARD_ROLE, steward);
 	}
 
 	function transferAdmin(

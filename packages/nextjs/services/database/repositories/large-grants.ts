@@ -9,7 +9,6 @@ export type LargeGrantInsertWithMilestones = LargeGrantInsert & {
 export type LargeGrant = InferSelectModel<typeof largeGrants>;
 export type PublicLargeGrant = Awaited<ReturnType<typeof getPublicLargeGrants>>[number];
 
-// Note: not used yet
 export async function getAllLargeGrants() {
   return await db.query.largeGrants.findMany({
     orderBy: [desc(largeGrants.submitedAt)],
@@ -17,6 +16,11 @@ export async function getAllLargeGrants() {
       stages: {
         // this makes sure latest stage is first
         orderBy: [desc(largeStages.stageNumber)],
+        with: {
+          milestones: {
+            orderBy: [desc(largeMilestones.milestoneNumber)],
+          },
+        },
       },
     },
   });

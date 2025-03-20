@@ -1,5 +1,9 @@
-import { PublicGrant, getBuilderGrants } from "~~/services/database/repositories/grants";
-import { PublicLargeGrant, getBuilderLargeGrants } from "~~/services/database/repositories/large-grants";
+import { PublicGrant, getAllGrants, getBuilderGrants } from "~~/services/database/repositories/grants";
+import {
+  PublicLargeGrant,
+  getAllLargeGrants,
+  getBuilderLargeGrants,
+} from "~~/services/database/repositories/large-grants";
 
 export type Tuple<T, MaxLength extends number = 10, Current extends T[] = []> = Current["length"] extends MaxLength
   ? Current
@@ -16,3 +20,10 @@ export type BuilderLargeGrant = Awaited<ReturnType<typeof getBuilderLargeGrants>
 export type DiscriminatedBuilderGrant =
   | (BuilderGrant & { type: "grant" })
   | (BuilderLargeGrant & { type: "largeGrant" });
+
+export type AdminGrant = Awaited<ReturnType<typeof getAllGrants>>[0];
+
+export type AdminLargeGrant = Awaited<ReturnType<typeof getAllLargeGrants>>[0];
+
+// Add a discriminator property to distinguish between Grant and LargeGrant
+export type DiscriminatedAdminGrant = (AdminGrant & { type: "grant" }) | (AdminLargeGrant & { type: "largeGrant" });

@@ -25,9 +25,9 @@ export const ApprovedGrantsList = ({ approvedGrants }: ApprovedGrantsListProps) 
       <div className="my-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full max-w-96 sm:max-w-[50rem] xl:max-w-screen-2xl">
         {currentListApprovedGrants.map(grant =>
           grant.type === "largeGrant" ? (
-            <LargeGrantItem key={grant.id} grant={grant} latestsShownStatus="approved" />
+            <LargeGrantItem key={`${grant.type}-${grant.id}`} grant={grant} latestsShownStatus="approved" />
           ) : (
-            <GrantItem key={grant.id} grant={grant} latestsShownStatus="approved" />
+            <GrantItem key={`${grant.type}-${grant.id}`} grant={grant} latestsShownStatus="approved" />
           ),
         )}
       </div>

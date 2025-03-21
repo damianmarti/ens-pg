@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel, desc, eq, sql } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { largeGrants, largeMilestones, largeStages } from "~~/services/database/config/schema";
 
@@ -120,13 +120,17 @@ export async function createLargeGrant(
   });
 }
 
-// Note: not used yet
 export async function getLargeGrantById(grantId: number) {
   return await db.query.largeGrants.findFirst({
     where: eq(largeGrants.id, grantId),
     with: {
       stages: {
-        orderBy: [desc(largeStages.stageNumber)],
+        orderBy: [asc(largeStages.stageNumber)],
+        with: {
+          milestones: {
+            orderBy: [asc(largeMilestones.milestoneNumber)],
+          },
+        },
       },
     },
   });

@@ -1,3 +1,4 @@
+import { LargeMilestone } from "./large-milestones";
 import { InferInsertModel, InferSelectModel, eq } from "drizzle-orm";
 import { db } from "~~/services/database/config/postgresClient";
 import { largeStages, stagesStatusEnum } from "~~/services/database/config/schema";
@@ -5,6 +6,10 @@ import { largeStages, stagesStatusEnum } from "~~/services/database/config/schem
 export type LargeStageInsert = InferInsertModel<typeof largeStages>;
 export type LargeStageUpdate = Partial<LargeStageInsert>;
 export type LargeStage = InferSelectModel<typeof largeStages>;
+export type LargeStageWithMilestones = LargeStage & {
+  milestones: LargeMilestone[];
+};
+
 export type Status = (typeof stagesStatusEnum.enumValues)[number];
 
 // Note: not used yet

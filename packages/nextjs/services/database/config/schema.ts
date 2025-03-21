@@ -135,6 +135,13 @@ export const largeStages = pgTable("large_stages", {
   approvedAt: timestamp("approved_at"),
 });
 
+export const milestonesStatusEnum = pgEnum("milestones_status", [
+  "proposed",
+  "approved",
+  "completed",
+  "paid",
+  "rejected",
+]);
 export const largeMilestones = pgTable("large_milestones", {
   id: serial("id").primaryKey(),
   milestoneNumber: integer("milestone_number").notNull().default(1),
@@ -147,10 +154,10 @@ export const largeMilestones = pgTable("large_milestones", {
   completionProof: text("completion_proof"),
   completedAt: timestamp("completed_at"),
   amount: integer("amount").notNull(),
-  status: stagesStatusEnum("status").notNull().default("proposed"),
+  status: milestonesStatusEnum("status").notNull().default("proposed"),
   statusNote: text("statusNote"),
-  approvedTx: varchar("approved_tx", { length: 66 }),
-  approvedAt: timestamp("approved_at"),
+  paymentTx: varchar("payment_tx", { length: 66 }),
+  paidAt: timestamp("paid_at"),
 });
 
 export const largeMilestonesRelations = relations(largeMilestones, ({ one }) => ({

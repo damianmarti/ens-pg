@@ -46,14 +46,15 @@ export const LargeGrantItem = ({ grant, latestsShownStatus }: GrantItemProps) =>
 
   return (
     <div className="card flex flex-col bg-white text-primary-content w-full max-w-96 shadow-lg rounded-lg overflow-hidden">
-      <div className="px-5 py-3 flex justify-between items-center w-full">
+      <div className="px-3 py-3 flex justify-between items-center w-full">
         <div className="flex items-center gap-2">
+          <div className="rounded-full bg-medium-purple h-3.5 w-3.5" />
           <div className="font-bold text-xl">{showProposalTitle ? "Proposal" : `Stage ${latestStage.stageNumber}`}</div>
           <Badge status={latestStage.status} size="sm" className="ml-2" />
         </div>
         <div>{getFormattedDate(latestStage.submitedAt as Date)}</div>
       </div>
-      <div className="px-5 py-8 bg-gray-100 mb-0 shadow-sm">
+      <div className="px-4 py-8 bg-gray-100 mb-0 shadow-sm">
         <div className="flex items-start mb-6">
           {isAdmin ? (
             <Link href={`/grants/${grant.id}`} className="hover:underline flex items-start">

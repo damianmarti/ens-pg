@@ -57,7 +57,7 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
   useEffect(() => {
     setCanVote(!approvalVotes || approvalVotes.every(vote => vote.authorAddress !== address));
   }, [approvalVotes, address]);
-  
+
   return (
     <div className="card bg-white text-primary-content w-full max-w-lg shadow-center">
       <div className="px-5 py-3 flex justify-between items-center w-full">

@@ -53,7 +53,7 @@ export const GrantItem = ({ grant, latestsShownStatus }: GrantItemProps) => {
     <div className="card flex flex-col bg-white text-primary-content w-full max-w-96 shadow-lg rounded-lg overflow-hidden">
       <div className="px-3 py-3 flex justify-between items-center w-full">
         <div className="flex items-center gap-2">
-          <div className="rounded-full bg-primary h-3.5 w-3.5" />
+          <div className="rounded-full bg-medium-purple h-3.5 w-3.5" />
           <div className="font-bold text-xl">{showProposalTitle ? "Proposal" : `Stage ${latestStage.stageNumber}`}</div>
           <Badge status={latestStage.status} size="sm" className="ml-2" />
         </div>

@@ -21,7 +21,7 @@ const workflowItems = [
   {
     title: "Deliver your milestones",
     description:
-      "If your project is selected, you will begin working on the milestones outlined in your submission. While withdrawals do not need approval, each grant stage and its milestones will be reviewed by our stewards. Please ensure proof of completion is clear.",
+      "If your project is selected, you will begin working on the milestones outlined in your submission. Please ensure proof of completion is clear.",
   },
   {
     title: "Apply for another stage",

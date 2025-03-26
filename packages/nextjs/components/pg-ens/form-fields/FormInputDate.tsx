@@ -24,6 +24,7 @@ export const FormInputDate = ({ error, label, name, required }: FormInputProps) 
         selected={dateValue ? new Date(dateValue) : null}
         onChange={date => setValue(name, date)}
         className={`input input-bordered mt-1 w-full${error ? " input-error" : ""}`}
+        disabledKeyboardNavigation
       />
       <FormErrorMessage error={error} />
     </div>

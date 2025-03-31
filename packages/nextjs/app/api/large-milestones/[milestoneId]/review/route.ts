@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
     }
 
     if (body.status !== "completed" && session?.user.role !== "admin") {
-      return NextResponse.json({ error: "Only admins can review stages" }, { status: 401 });
+      return NextResponse.json({ error: "Only admins can review milestones" }, { status: 401 });
     }
 
     if (session?.user.address !== recoveredAddress)

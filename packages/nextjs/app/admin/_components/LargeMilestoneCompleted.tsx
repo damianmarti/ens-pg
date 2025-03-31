@@ -10,7 +10,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormErrorMessage } from "~~/components/pg-ens/form-fields/FormErrorMessage";
 import { Address } from "~~/components/scaffold-eth";
-import { getCompledOrVerifiedMilestones } from "~~/services/database/repositories/large-milestones";
+import { getCompletedOrVerifiedMilestones } from "~~/services/database/repositories/large-milestones";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 function isElementClamped(element: HTMLElement | null) {
@@ -18,7 +18,7 @@ function isElementClamped(element: HTMLElement | null) {
   return element.scrollHeight > element.clientHeight;
 }
 
-export type LargeMilestoneWithRelatedData = Awaited<ReturnType<typeof getCompledOrVerifiedMilestones>>[0];
+export type LargeMilestoneWithRelatedData = Awaited<ReturnType<typeof getCompletedOrVerifiedMilestones>>[0];
 
 export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilestoneWithRelatedData }) => {
   const milesonesRef = useRef<HTMLDivElement>(null);

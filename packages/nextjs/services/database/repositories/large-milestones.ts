@@ -24,7 +24,7 @@ export async function updateMilestoneStatusToCompleted(milestoneId: number) {
   return await db.update(largeMilestones).set({ status: "completed" }).where(eq(largeMilestones.id, milestoneId));
 }
 
-export async function getCompledOrVerifiedMilestones() {
+export async function getCompletedOrVerifiedMilestones() {
   return await db.query.largeMilestones.findMany({
     where: or(eq(largeMilestones.status, "completed"), eq(largeMilestones.status, "verified")),
     orderBy: [desc(largeMilestones.completedAt)],

@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { SignInBtn } from "~~/components/pg-ens/SignInBtn";
 import { getAllGrantsWithStagesAndPrivateNotes } from "~~/services/database/repositories/grants";
 import { getAllLargeGrantsWithStagesAndPrivateNotes } from "~~/services/database/repositories/large-grants";
-import { getCompledOrVerifiedMilestones } from "~~/services/database/repositories/large-milestones";
+import { getCompletedOrVerifiedMilestones } from "~~/services/database/repositories/large-milestones";
 import { DiscriminatedGrantWithStagesAndPrivateNotes } from "~~/types/utils";
 import { authOptions } from "~~/utils/auth";
 
@@ -61,7 +61,7 @@ const Admin: NextPage = async () => {
     }
   });
 
-  const milestones = await getCompledOrVerifiedMilestones();
+  const milestones = await getCompletedOrVerifiedMilestones();
 
   return (
     <div className="flex flex-col flex-grow px-4 py-10 sm:py-20">

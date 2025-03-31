@@ -104,7 +104,18 @@ export const LargeMilestoneApprovalModal = forwardRef<
   });
 
   if (milestone.status !== "completed" && milestone.status !== "verified") {
-    return notification.error("Milestone is not in a valid state for approval.");
+    return (
+      <dialog id="action_modal" className="modal" ref={ref}>
+        <div className="modal-box flex flex-col space-y-3">
+          <form method="dialog" className="bg-secondary -mx-6 -mt-6 px-6 py-4 flex items-center justify-between">
+            <div className="flex justify-between items-center">
+              <p className="font-bold text-xl m-0">Milestone is not in a valid state for approval.</p>
+            </div>
+            <button className="btn btn-sm btn-circle btn-ghost text-xl h-auto">✕</button>
+          </form>
+        </div>
+      </dialog>
+    );
   }
 
   return (

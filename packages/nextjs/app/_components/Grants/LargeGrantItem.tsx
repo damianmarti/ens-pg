@@ -57,7 +57,7 @@ export const LargeGrantItem = ({ grant, latestsShownStatus }: GrantItemProps) =>
       <div className="px-4 py-8 bg-gray-100 mb-0 shadow-sm">
         <div className="flex items-start mb-6">
           {isAdmin ? (
-            <Link href={`/grants/${grant.id}`} className="hover:underline flex items-start">
+            <Link href={`/large-grants/${grant.id}`} className="hover:underline flex items-start">
               <h2 className="text-2xl font-bold pr-2 flex-grow">{grant.title}</h2>
               <MagnifyingGlassIcon className="flex-shrink-0 w-6 h-6 text-gray-500 mt-1" />
             </Link>

@@ -65,7 +65,6 @@ export async function getPublicLargeGrants() {
   });
 }
 
-// Note: not used yet
 // Note: use only for admin pages
 export async function getAllLargeGrantsWithStagesAndPrivateNotes() {
   return await db.query.largeGrants.findMany({
@@ -77,6 +76,9 @@ export async function getAllLargeGrantsWithStagesAndPrivateNotes() {
         with: {
           privateNotes: true,
           approvalVotes: true,
+          milestones: {
+            orderBy: [asc(largeMilestones.milestoneNumber)],
+          },
         },
       },
     },

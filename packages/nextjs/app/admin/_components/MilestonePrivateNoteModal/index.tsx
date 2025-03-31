@@ -1,28 +1,25 @@
 import { forwardRef } from "react";
 import { useRouter } from "next/navigation";
-import { PrivateNoteModalFormValues, privateNoteModalFormSchema } from "./schema";
+import { LargeMilestoneWithRelatedData } from "../LargeMilestoneCompleted";
+import { PrivateNoteModalFormValues, privateNoteModalFormSchema } from "../PrivateNoteModal/schema";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { useSignTypedData } from "wagmi";
-import { StagePrivateNoteReqBody } from "~~/app/api/stages/[stageId]/private-note/route";
+import { MilestonePrivateNoteReqBody } from "~~/app/api/large-milestones/[milestoneId]/private-note/route";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
-import { LargeStage } from "~~/services/database/repositories/large-stages";
-import { Stage } from "~~/services/database/repositories/stages";
-import { EIP_712_DOMAIN, EIP_712_TYPES__STAGE_PRIVATE_NOTE } from "~~/utils/eip712";
+import { EIP_712_DOMAIN, EIP_712_TYPES__LARGE_MILESTONE_PRIVATE_NOTE } from "~~/utils/eip712";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
-type PrivateNoteModalProps = {
-  stage: Stage | LargeStage;
-  grantName: string;
-  isLargeGrant?: boolean;
+type MilestonePrivateNoteModalProps = {
+  milestone: LargeMilestoneWithRelatedData;
   closeModal: () => void;
 };
 
-export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalProps>(
-  ({ stage, grantName, isLargeGrant = false, closeModal }, ref) => {
+export const MilestonePrivateNoteModal = forwardRef<HTMLDialogElement, MilestonePrivateNoteModalProps>(
+  ({ milestone, closeModal }, ref) => {
     const router = useRouter();
     const { formMethods, getCommonOptions } = useFormMethods<PrivateNoteModalFormValues>({
       schema: privateNoteModalFormSchema,
@@ -31,9 +28,9 @@ export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalPr
     const { signTypedDataAsync, isPending: isSigning } = useSignTypedData();
 
     const { mutateAsync: postPrivateNote, isPending: isPostingPrivateNote } = useMutation({
-      mutationFn: (stagePrivateNoteBody: StagePrivateNoteReqBody) =>
-        postMutationFetcher(`/api/${isLargeGrant ? "large-" : ""}stages/${stage.id}/private-note`, {
-          body: stagePrivateNoteBody,
+      mutationFn: (milestonePrivateNoteBody: MilestonePrivateNoteReqBody) =>
+        postMutationFetcher(`/api/large-milestones/${milestone.id}/private-note`, {
+          body: milestonePrivateNoteBody,
         }),
     });
 
@@ -43,9 +40,10 @@ export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalPr
 
         const signature = await signTypedDataAsync({
           domain: EIP_712_DOMAIN,
-          types: EIP_712_TYPES__STAGE_PRIVATE_NOTE,
+          types: EIP_712_TYPES__LARGE_MILESTONE_PRIVATE_NOTE,
           primaryType: "Message",
           message: {
+            milestoneId: milestone.id.toString(),
             note,
           },
         });
@@ -66,7 +64,8 @@ export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalPr
           <form method="dialog" className="bg-secondary -mx-6 -mt-6 px-6 py-4 flex items-center justify-between">
             <div className="flex justify-between items-center">
               <p className="font-bold text-xl m-0">
-                Private note for Stage {stage.stageNumber} of {grantName}
+                Private note for Milestone {milestone.milestoneNumber} - Stage {milestone.stage.stageNumber} of{" "}
+                {milestone.stage.grant.title}
               </p>
             </div>
             {/* if there is a button in form, it will close the modal */}
@@ -87,4 +86,4 @@ export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalPr
   },
 );
 
-PrivateNoteModal.displayName = "PrivateNoteModal";
+MilestonePrivateNoteModal.displayName = "MilestonePrivateNoteModal";

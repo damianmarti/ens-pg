@@ -4,6 +4,7 @@ const badgeBgColor: Record<LargeMilestoneStatus, string> = {
   proposed: "bg-warning",
   rejected: "bg-error",
   completed: "bg-warning",
+  verified: "bg-warning",
   paid: "bg-success",
   approved: "bg-success",
 };
@@ -12,6 +13,7 @@ const badgeTextColor: Record<LargeMilestoneStatus, string> = {
   proposed: "text-primary-orange",
   rejected: "text-primary-red",
   completed: "text-primary-orange",
+  verified: "text-primary-orange",
   paid: "text-primary-green",
   approved: "text-primary-green",
 };
@@ -28,6 +30,7 @@ const statusText: Record<LargeMilestoneStatus, string> = {
   proposed: "Proposed",
   rejected: "Rejected",
   completed: "Completed (Pending Review)",
+  verified: "Completed (Verified)",
   paid: "Completed (Paid)",
   approved: "Approved",
 };

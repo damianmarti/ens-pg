@@ -47,6 +47,9 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
                   </a>
                 </div>
               )}
+              {milestone.status === "rejected" && milestone.statusNote && (
+                <div className="mt-2 ml-4 text-sm font-bold text-gray-400">Note: {milestone.statusNote}</div>
+              )}
             </div>
           )}
         </div>

@@ -139,6 +139,7 @@ export const milestonesStatusEnum = pgEnum("milestones_status", [
   "proposed",
   "approved",
   "completed",
+  "verified",
   "paid",
   "rejected",
 ]);
@@ -156,22 +157,26 @@ export const largeMilestones = pgTable("large_milestones", {
   amount: integer("amount").notNull(),
   status: milestonesStatusEnum("status").notNull().default("proposed"),
   statusNote: text("statusNote"),
+  verifiedTx: varchar("verified_tx", { length: 66 }),
+  verifiedAt: timestamp("verified_at"),
+  verifiedBy: varchar("verified_by", { length: 42 }),
   paymentTx: varchar("payment_tx", { length: 66 }),
   paidAt: timestamp("paid_at"),
+  paidBy: varchar("paid_by", { length: 42 }),
 });
 
-export const largeMilestonesRelations = relations(largeMilestones, ({ one }) => ({
+export const largeMilestonesRelations = relations(largeMilestones, ({ one, many }) => ({
   stage: one(largeStages, {
     fields: [largeMilestones.stageId],
     references: [largeStages.id],
   }),
+  privateNotes: many(largeMilestonePrivateNotes),
 }));
 
 export const largeApprovalVotes = pgTable(
   "large_approval_votes",
   {
     id: serial("id").primaryKey(),
-    amount: bigint("amount", { mode: "bigint" }).notNull(),
     votedAt: timestamp("voted_at").default(sql`now()`),
     stageId: integer("stage_id")
       .references(() => largeStages.id)
@@ -209,6 +214,25 @@ export const largePrivateNotesRelations = relations(largePrivateNotes, ({ one })
   stage: one(largeStages, {
     fields: [largePrivateNotes.stageId],
     references: [largeStages.id],
+  }),
+}));
+
+export const largeMilestonePrivateNotes = pgTable("large_milestone_private_notes", {
+  id: serial("id").primaryKey(),
+  note: text("note").notNull(),
+  writtenAt: timestamp("written_at").default(sql`now()`),
+  milestoneId: integer("milestone_id")
+    .references(() => largeMilestones.id)
+    .notNull(),
+  authorAddress: varchar("author_address", { length: 42 })
+    .references(() => users.address)
+    .notNull(),
+});
+
+export const largeMilestonePrivateNotesRelations = relations(largeMilestonePrivateNotes, ({ one }) => ({
+  milestone: one(largeMilestones, {
+    fields: [largeMilestonePrivateNotes.milestoneId],
+    references: [largeMilestones.id],
   }),
 }));
 

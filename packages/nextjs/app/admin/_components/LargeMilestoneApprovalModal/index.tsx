@@ -1,4 +1,5 @@
 import { forwardRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FinalApproveModalFormValues, finalApproveModalFormSchema } from "../LargeGrantFinalApproveModal/schema";
 import { LargeMilestoneWithRelatedData } from "../LargeMilestoneCompleted";
 import { FormProvider } from "react-hook-form";
@@ -37,10 +38,12 @@ export const LargeMilestoneApprovalModal = forwardRef<
   HTMLDialogElement,
   {
     milestone: LargeMilestoneWithRelatedData;
+    closeModal: () => void;
   }
->(({ milestone }, ref) => {
+>(({ milestone, closeModal }, ref) => {
   const { reviewMilestone, isSigning } = useLargeMilestoneReview(milestone.id);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(LOADING_STATUS_MAP.Empty);
+  const router = useRouter();
 
   const { getCommonOptions, formMethods } = useFormMethods<FinalApproveModalFormValues>({
     schema: finalApproveModalFormSchema,
@@ -96,6 +99,8 @@ export const LargeMilestoneApprovalModal = forwardRef<
       await reviewMilestone({ status: "verified", ...fieldValues, txHash });
       setLoadingStatus(LOADING_STATUS_MAP.Empty);
     }
+    closeModal();
+    router.refresh();
   };
 
   const loadingStatusText = getLoadingStatusText({

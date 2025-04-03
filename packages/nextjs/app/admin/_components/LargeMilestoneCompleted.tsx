@@ -136,7 +136,11 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         )}
       </div>
 
-      <LargeMilestoneApprovalModal ref={approvalModalRef} milestone={milestone} />
+      <LargeMilestoneApprovalModal
+        ref={approvalModalRef}
+        milestone={milestone}
+        closeModal={() => approvalModalRef.current?.close()}
+      />
       <LargeMilestoneRejectModal ref={rejectModalRef} milestone={milestone} />
       <MilestonePrivateNoteModal
         ref={privateNoteModalRef}

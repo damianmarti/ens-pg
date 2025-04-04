@@ -34,6 +34,9 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
           ) : (
             <div className="flex flex-row">
               <BadgeMilestone status={milestone.status} />
+              {["rejected", "paid"].includes(milestone.status) && milestone.statusNote && (
+                <div className="mt-2 ml-4 text-sm font-bold text-gray-400">Note: {milestone.statusNote}</div>
+              )}
               {milestone.status === "paid" && milestone.paidAt && (
                 <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
                   Paid on {milestone.paidAt.toLocaleString()} -
@@ -46,9 +49,6 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
                     See transaction details
                   </a>
                 </div>
-              )}
-              {milestone.status === "rejected" && milestone.statusNote && (
-                <div className="mt-2 ml-4 text-sm font-bold text-gray-400">Note: {milestone.statusNote}</div>
               )}
             </div>
           )}

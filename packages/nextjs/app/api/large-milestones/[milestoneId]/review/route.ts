@@ -14,6 +14,7 @@ export type ReviewMilestoneBody = {
   verifiedTx?: LargeMilestoneUpdate["verifiedTx"];
   paymentTx?: LargeMilestoneUpdate["paymentTx"];
   statusNote?: LargeMilestoneUpdate["statusNote"];
+  completionProof?: LargeMilestoneUpdate["completionProof"];
   signature: `0x${string}`;
 };
 
@@ -62,25 +63,28 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
       return NextResponse.json({ error: "Milestone not verified yet" }, { status: 400 });
     }
 
-    const verifiedObj = body.verifiedTx
-      ? {
-          verifiedTx: body.verifiedTx,
-          verifiedAt: new Date(),
-          verifiedBy: session?.user.address,
-        }
-      : {};
+    const verifiedObj =
+      body.status === "verified"
+        ? {
+            verifiedTx: body.verifiedTx,
+            verifiedAt: new Date(),
+            verifiedBy: session?.user.address,
+          }
+        : {};
 
-    const paymentObj = body.paymentTx
-      ? {
-          paymentTx: body.paymentTx,
-          paidAt: new Date(),
-          paidBy: session?.user.address,
-        }
-      : {};
+    const paymentObj =
+      body.status === "paid"
+        ? {
+            paymentTx: body.paymentTx,
+            paidAt: new Date(),
+            paidBy: session?.user.address,
+          }
+        : {};
 
     await updateMilestone(Number(milestoneId), {
       status: body.status,
-      statusNote: body.statusNote,
+      statusNote: session?.user.role === "admin" ? body.statusNote : undefined,
+      completionProof: body.completionProof,
       ...verifiedObj,
       ...paymentObj,
     });

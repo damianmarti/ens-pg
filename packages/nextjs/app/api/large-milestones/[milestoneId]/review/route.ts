@@ -6,6 +6,7 @@ import {
   getMilestoneByIdWithRelatedData,
   updateMilestone,
 } from "~~/services/database/repositories/large-milestones";
+import { getStageWithMilestones, updateStageStatusToCompleted } from "~~/services/database/repositories/large-stages";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_LARGE_MILESTONE } from "~~/utils/eip712";
 
@@ -88,6 +89,19 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
       ...verifiedObj,
       ...paymentObj,
     });
+
+    // check if this is the last milestone of the stage and update the stage status to "completed"
+    if (body.status === "paid") {
+      const stage = milestone.stage;
+      const stageWithMilestones = await getStageWithMilestones(stage.id);
+      const allMilestonesPaid = stageWithMilestones
+        ? stageWithMilestones.milestones.every(m => m.status === "paid")
+        : false;
+
+      if (allMilestonesPaid) {
+        await updateStageStatusToCompleted(stage.id);
+      }
+    }
 
     return NextResponse.json({ milestoneId, status: body.status }, { status: 200 });
   } catch (e) {

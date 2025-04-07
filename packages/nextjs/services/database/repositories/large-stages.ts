@@ -43,7 +43,15 @@ export async function getStageByIdWithGrantAndVotes(stageId: number) {
   });
 }
 
-// Note: not used yet
+export async function getStageWithMilestones(stageId: number) {
+  return await db.query.largeStages.findFirst({
+    where: eq(largeStages.id, stageId),
+    with: {
+      milestones: true,
+    },
+  });
+}
+
 export async function updateStageStatusToCompleted(stageId: number) {
   return await db.update(largeStages).set({ status: "completed" }).where(eq(largeStages.id, stageId));
 }

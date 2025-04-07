@@ -6,6 +6,7 @@ import {
   getMilestoneByIdWithRelatedData,
   updateMilestone,
 } from "~~/services/database/repositories/large-milestones";
+import { getStageWithMilestones, updateStageStatusToCompleted } from "~~/services/database/repositories/large-stages";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_LARGE_MILESTONE } from "~~/utils/eip712";
 
@@ -14,6 +15,7 @@ export type ReviewMilestoneBody = {
   verifiedTx?: LargeMilestoneUpdate["verifiedTx"];
   paymentTx?: LargeMilestoneUpdate["paymentTx"];
   statusNote?: LargeMilestoneUpdate["statusNote"];
+  completionProof?: LargeMilestoneUpdate["completionProof"];
   signature: `0x${string}`;
 };
 
@@ -62,28 +64,44 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
       return NextResponse.json({ error: "Milestone not verified yet" }, { status: 400 });
     }
 
-    const verifiedObj = body.verifiedTx
-      ? {
-          verifiedTx: body.verifiedTx,
-          verifiedAt: new Date(),
-          verifiedBy: session?.user.address,
-        }
-      : {};
+    const verifiedObj =
+      body.status === "verified"
+        ? {
+            verifiedTx: body.verifiedTx,
+            verifiedAt: new Date(),
+            verifiedBy: session?.user.address,
+          }
+        : {};
 
-    const paymentObj = body.paymentTx
-      ? {
-          paymentTx: body.paymentTx,
-          paidAt: new Date(),
-          paidBy: session?.user.address,
-        }
-      : {};
+    const paymentObj =
+      body.status === "paid"
+        ? {
+            paymentTx: body.paymentTx,
+            paidAt: new Date(),
+            paidBy: session?.user.address,
+          }
+        : {};
 
     await updateMilestone(Number(milestoneId), {
       status: body.status,
-      statusNote: body.statusNote,
+      statusNote: session?.user.role === "admin" ? body.statusNote : undefined,
+      completionProof: body.completionProof,
       ...verifiedObj,
       ...paymentObj,
     });
+
+    // check if this is the last milestone of the stage and update the stage status to "completed"
+    if (body.status === "paid") {
+      const stage = milestone.stage;
+      const stageWithMilestones = await getStageWithMilestones(stage.id);
+      const allMilestonesPaid = stageWithMilestones
+        ? stageWithMilestones.milestones.every(m => m.status === "paid")
+        : false;
+
+      if (allMilestonesPaid) {
+        await updateStageStatusToCompleted(stage.id);
+      }
+    }
 
     return NextResponse.json({ milestoneId, status: body.status }, { status: 200 });
   } catch (e) {

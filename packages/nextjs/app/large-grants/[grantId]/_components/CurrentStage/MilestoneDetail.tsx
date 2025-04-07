@@ -22,6 +22,7 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
         </div>
         <div className="flex flex-col gap-4">
           <div>{multilineStringToTsx(milestone.description)}</div>
+          {milestone.completionProof && <div>Completion Proof: {milestone.completionProof}</div>}
           {milestone.status === "approved" ? (
             <Button
               className="w-auto self-start"
@@ -32,25 +33,27 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
               Complete
             </Button>
           ) : (
-            <div className="flex flex-row">
-              <BadgeMilestone status={milestone.status} />
-              {milestone.status === "paid" && milestone.paidAt && (
-                <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
-                  Paid on {milestone.paidAt.toLocaleString()} -
-                  <a
-                    href={`https://optimistic.etherscan.io/tx/${milestone.paymentTx}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-1 underline"
-                  >
-                    See transaction details
-                  </a>
-                </div>
-              )}
-              {milestone.status === "rejected" && milestone.statusNote && (
-                <div className="mt-2 ml-4 text-sm font-bold text-gray-400">Note: {milestone.statusNote}</div>
-              )}
-            </div>
+            milestone.status !== "proposed" && (
+              <div className="flex flex-row">
+                <BadgeMilestone status={milestone.status} />
+                {["rejected", "paid"].includes(milestone.status) && milestone.statusNote && (
+                  <div className="mt-2 ml-4 text-sm font-bold text-gray-400">Note: {milestone.statusNote}</div>
+                )}
+                {milestone.status === "paid" && milestone.paidAt && (
+                  <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
+                    Paid on {milestone.paidAt.toLocaleString()} -
+                    <a
+                      href={`https://optimistic.etherscan.io/tx/${milestone.paymentTx}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1 underline"
+                    >
+                      See transaction details
+                    </a>
+                  </div>
+                )}
+              </div>
+            )
           )}
         </div>
       </div>

@@ -21,10 +21,12 @@ export const useLargeMilestoneReview = (milestoneId?: number) => {
     status,
     txHash,
     statusNote,
+    completionProof,
   }: {
     status: LargeMilestoneStatus;
     txHash?: string;
     statusNote?: string;
+    completionProof?: string;
   }) => {
     if (!milestoneId) return;
     let notificationId;
@@ -34,7 +36,7 @@ export const useLargeMilestoneReview = (milestoneId?: number) => {
         return;
       }
 
-      if ((status === "verified" || status === "completed") && !txHash) {
+      if ((status === "verified" || status === "paid") && !txHash) {
         notification.error("Please fill tx hash");
         return;
       }
@@ -65,11 +67,12 @@ export const useLargeMilestoneReview = (milestoneId?: number) => {
             }
           : {};
 
-      notificationId = notification.loading("Submitting review");
+      notificationId = notification.loading("Submitting milestone");
       await postMilestoneReview({
         status,
         signature,
         statusNote,
+        completionProof,
         ...verifiedObj,
         ...paymentObj,
       });

@@ -30,7 +30,7 @@ const statusText: Record<LargeMilestoneStatus, string> = {
   proposed: "Proposed",
   rejected: "Rejected",
   completed: "Completed (Pending Review)",
-  verified: "Completed (Verified)",
+  verified: "Completed (Pending Review)",
   paid: "Completed (Paid)",
   approved: "Approved",
 };

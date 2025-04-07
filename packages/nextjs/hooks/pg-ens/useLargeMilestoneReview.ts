@@ -67,7 +67,7 @@ export const useLargeMilestoneReview = (milestoneId?: number) => {
             }
           : {};
 
-      notificationId = notification.loading("Submitting review");
+      notificationId = notification.loading("Submitting milestone");
       await postMilestoneReview({
         status,
         signature,

@@ -22,6 +22,7 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
         </div>
         <div className="flex flex-col gap-4">
           <div>{multilineStringToTsx(milestone.description)}</div>
+          {milestone.completionProof && <div>Completion Proof: {milestone.completionProof}</div>}
           {milestone.status === "approved" ? (
             <Button
               className="w-auto self-start"

@@ -1,5 +1,6 @@
 import { CreateNewGrantReqBody } from "~~/app/api/grants/new/route";
 import { CreateNewLargeGrantReqBody } from "~~/app/api/large-grants/new/route";
+import { CreateNewLargeStageReqBody } from "~~/app/api/large-stages/new/route";
 import { CreateNewStageReqBody } from "~~/app/api/stages/new/route";
 import { GrantWithStages } from "~~/app/grants/[grantId]/page";
 
@@ -7,7 +8,8 @@ const TELEGRAM_BOT_URL = process.env.TELEGRAM_BOT_URL;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
 type StageData = {
-  newStage: CreateNewStageReqBody;
+  newStage?: CreateNewStageReqBody;
+  newLargeStage?: CreateNewLargeStageReqBody;
   grant?: GrantWithStages;
   largeGrant?: CreateNewLargeGrantReqBody;
 };
@@ -15,7 +17,7 @@ type StageData = {
 type GrantData = CreateNewGrantReqBody & { builderAddress: string };
 type LargeGrantData = CreateNewLargeGrantReqBody & { builderAddress: string };
 
-export async function notifyTelegramBot<T extends "grant" | "stage" | "largeGrant">(
+export async function notifyTelegramBot<T extends "grant" | "stage" | "largeGrant" | "largeStage">(
   endpoint: T,
   data: T extends "grant" ? GrantData : T extends "largeGrant" ? LargeGrantData : StageData,
 ) {

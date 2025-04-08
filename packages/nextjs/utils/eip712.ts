@@ -68,3 +68,10 @@ export const EIP_712_TYPES__REVIEW_LARGE_MILESTONE = {
     { name: "statusNote", type: "string" },
   ],
 } as const;
+
+export const EIP_712_TYPES__APPLY_FOR_LARGE_STAGE = {
+  Message: [
+    { name: "stage_number", type: "string" },
+    { name: "milestones", type: "string" },
+  ],
+} as const;

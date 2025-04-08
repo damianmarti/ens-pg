@@ -4,6 +4,9 @@ import { db } from "~~/services/database/config/postgresClient";
 import { largeMilestones, largeStages, stagesStatusEnum } from "~~/services/database/config/schema";
 
 export type LargeStageInsert = InferInsertModel<typeof largeStages>;
+export type LargeStageInsertWithMilestones = LargeStageInsert & {
+  milestones: Omit<InferInsertModel<typeof largeMilestones>, "stageId" | "milestoneNumber">[];
+};
 export type LargeStageUpdate = Partial<LargeStageInsert>;
 export type LargeStage = InferSelectModel<typeof largeStages>;
 export type LargeStageWithMilestones = LargeStage & {
@@ -12,9 +15,29 @@ export type LargeStageWithMilestones = LargeStage & {
 
 export type Status = (typeof stagesStatusEnum.enumValues)[number];
 
-// Note: not used yet
-export async function createStage(stage: LargeStageInsert) {
-  return await db.insert(largeStages).values(stage).returning({ id: largeStages.id });
+export async function createStage(
+  stage: LargeStageInsertWithMilestones,
+): Promise<{ stageId: number; createdMilestones: number[] }> {
+  return await db.transaction(async tx => {
+    const [createdStage] = await tx.insert(largeStages).values(stage).returning({ id: largeStages.id });
+
+    const createdMilestones = [];
+
+    for (let i = 0; i < stage.milestones.length; i++) {
+      const milestone = stage.milestones[i];
+      const [createdMilestone] = await tx
+        .insert(largeMilestones)
+        .values({
+          ...milestone,
+          stageId: createdStage.id,
+          milestoneNumber: i + 1,
+        })
+        .returning({ id: largeMilestones.id });
+      createdMilestones.push(createdMilestone.id);
+    }
+
+    return { stageId: createdStage.id, createdMilestones };
+  });
 }
 
 export async function updateStage(stageId: Required<LargeStageUpdate>["id"], stage: LargeStageUpdate) {

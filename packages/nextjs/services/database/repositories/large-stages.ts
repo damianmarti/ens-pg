@@ -21,20 +21,21 @@ export async function createStage(
   return await db.transaction(async tx => {
     const [createdStage] = await tx.insert(largeStages).values(stage).returning({ id: largeStages.id });
 
-    const createdMilestones = [];
+    // Prepare all milestone data with the correct stageId and milestoneNumber
+    const milestoneData = stage.milestones.map((milestone, index) => ({
+      ...milestone,
+      stageId: createdStage.id,
+      milestoneNumber: index + 1,
+    }));
 
-    for (let i = 0; i < stage.milestones.length; i++) {
-      const milestone = stage.milestones[i];
-      const [createdMilestone] = await tx
-        .insert(largeMilestones)
-        .values({
-          ...milestone,
-          stageId: createdStage.id,
-          milestoneNumber: i + 1,
-        })
-        .returning({ id: largeMilestones.id });
-      createdMilestones.push(createdMilestone.id);
-    }
+    // Bulk insert all milestones at once
+    const createdMilestoneResults = await tx
+      .insert(largeMilestones)
+      .values(milestoneData)
+      .returning({ id: largeMilestones.id });
+
+    // Extract the IDs of the created milestones
+    const createdMilestones = createdMilestoneResults.map(result => result.id);
 
     return { stageId: createdStage.id, createdMilestones };
   });

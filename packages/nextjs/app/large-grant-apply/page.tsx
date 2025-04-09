@@ -128,12 +128,12 @@ const LargeGrantApply: NextPage = () => {
                 {fields.map((field, index) => (
                   <div key={field.id}>
                     {index > 0 && <hr className="border-t border-white my-6" />}
-                    <h4 className="text-2xl font-bold">
-                      Milestone {index + 1}
-                      <button type="button" onClick={() => remove(index)} className="ml-2">
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </h4>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-2xl font-bold">Milestone {index + 1}</h4>
+                      <Button variant="secondary" size="sm" onClick={() => remove(index)} className="ml-2">
+                        <TrashIcon className="h-4 w-4" /> Delete milestone
+                      </Button>
+                    </div>
                     <FormTextarea
                       label="Description"
                       showMessageLength

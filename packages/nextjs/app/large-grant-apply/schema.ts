@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { DEFAULT_INPUT_MAX_LENGTH, DEFAULT_TEXTAREA_MAX_LENGTH } from "~~/utils/forms";
 
-const milestoneSchema = z.object({
+export const milestoneSchema = z.object({
   description: z.string().min(20, { message: "At least 20 characters required" }).max(DEFAULT_TEXTAREA_MAX_LENGTH),
   proposedDeliverables: z
     .string()

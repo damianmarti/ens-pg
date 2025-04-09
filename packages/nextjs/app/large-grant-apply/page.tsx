@@ -81,9 +81,8 @@ const LargeGrantApply: NextPage = () => {
     name: "milestones",
   });
 
-  const watchMilestones = watch(["milestones"]);
-
-  const totalAmount = watchMilestones[0].reduce((acc, curr) => acc + Number(curr.amount), 0);
+  const watchMilestones = watch("milestones");
+  const totalAmount = watchMilestones.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   return (
     <div className="flex flex-col w-full items-center justify-center p-6 sm:p-10">

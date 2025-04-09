@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     const grant = await getLargeGrantById(newStage.grantId);
     if (!grant) return NextResponse.json({ error: "Grant not found" }, { status: 404 });
-    const latestStage = grant.stages[0];
+    const latestStage = grant.stages[grant.stages.length - 1];
 
     const recoveredAddress = await recoverTypedDataAddress({
       domain: EIP_712_DOMAIN,

@@ -149,7 +149,7 @@ export async function getLargeGrantsStats() {
         total: sql`COALESCE(sum(${largeMilestones.amount}), 0)::float`,
       })
       .from(largeMilestones)
-      .where(eq(largeMilestones.status, "completed")),
+      .where(eq(largeMilestones.status, "paid")),
 
     db
       .select({

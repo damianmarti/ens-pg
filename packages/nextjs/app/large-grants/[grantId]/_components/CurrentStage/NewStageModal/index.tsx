@@ -83,9 +83,8 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
       name: "milestones",
     });
 
-    const watchMilestones = watch(["milestones"]);
-
-    const totalAmount = watchMilestones[0].reduce((acc, curr) => acc + Number(curr.amount), 0);
+    const watchMilestones = watch("milestones");
+    const totalAmount = watchMilestones.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
     return (
       <>

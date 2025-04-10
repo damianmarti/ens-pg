@@ -131,7 +131,8 @@ const LargeGrantApply: NextPage = () => {
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-2xl font-bold">Milestone {index + 1}</h4>
                       <Button variant="secondary" size="sm" onClick={() => remove(index)} className="ml-2">
-                        <TrashIcon className="h-4 w-4" /> Delete milestone
+                        <TrashIcon className="h-4 w-4" />
+                        <span className="hidden sm:inline">Delete milestone</span>
                       </Button>
                     </div>
                     <FormTextarea

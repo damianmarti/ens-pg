@@ -49,29 +49,39 @@ export const LargeGrantApprovalVoteModal = forwardRef<HTMLDialogElement, Approva
 
     return (
       <dialog id="action_modal" className="modal" ref={ref}>
-        <div className="modal-box flex flex-col space-y-3">
+        <div className="modal-box flex flex-col space-y-6">
           <form method="dialog" className="bg-secondary -mx-6 -mt-6 px-6 py-4 flex items-center justify-between">
             <div className="flex justify-between items-center">
               <p className="font-bold text-xl m-0">
-                Approval vote for Stage {stage.stageNumber} of {grantName}
+                {stage.stageNumber > 1 ? `Stage ${stage.stageNumber} of ${grantName}` : grantName}
               </p>
             </div>
             {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost text-xl h-auto">✕</button>
           </form>
-          <span className="text-sm">
-            <p>This grant doesn&apos;t meet the approval threshold to setup contract yet.</p>
-          </span>
-          <Button
-            type="submit"
-            variant="green-secondary"
-            disabled={isPostingApprovalVote || isSigning}
-            className="self-center"
-            onClick={onSubmit}
-          >
-            {(isPostingApprovalVote || isSigning) && <span className="loading loading-spinner"></span>}
-            Vote for approval
-          </Button>
+          <div>Are you sure you want to vote for the approval of this {stage.stageNumber > 1 ? "stage" : "grant"}?</div>
+          <div className="flex justify-between">
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={isPostingApprovalVote || isSigning}
+              className="self-center"
+              onClick={closeModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="green-secondary"
+              size="sm"
+              disabled={isPostingApprovalVote || isSigning}
+              className="self-center"
+              onClick={onSubmit}
+            >
+              {(isPostingApprovalVote || isSigning) && <span className="loading loading-spinner"></span>}
+              Vote for approval
+            </Button>
+          </div>
         </div>
         <Toaster />
       </dialog>

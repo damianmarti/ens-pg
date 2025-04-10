@@ -167,7 +167,7 @@ export async function getLargeGrantsStats() {
     orderBy: [desc(largeGrants.submitedAt)],
   });
 
-  const proposedLargeGrants = sortedLargeGrants.filter(grant => {
+  const approvedLargeGrants = sortedLargeGrants.filter(grant => {
     const latestStage = grant.stages[0];
     return (
       latestStage &&
@@ -179,7 +179,7 @@ export async function getLargeGrantsStats() {
   return {
     totalUsdcGranted: Number(usdcFromCompletedMilestones[0].total) || 0,
     allGrantsCount: Number(allLargeGrants[0].count) || 0,
-    proposedLargeGrants,
-    proposedLargeGrantsCount: proposedLargeGrants.length,
+    approvedLargeGrants,
+    approvedLargeGrantsCount: approvedLargeGrants.length,
   };
 }

@@ -5,6 +5,7 @@ import { CompleteMilestoneModal } from "./CompleteMilestoneModal";
 import { BadgeMilestone } from "~~/components/pg-ens/BadgeMilestone";
 import { Button } from "~~/components/pg-ens/Button";
 import { LargeMilestone } from "~~/services/database/repositories/large-milestones";
+import { getFormattedDateWithDay } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) => {
@@ -16,7 +17,9 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
         <div className="flex justify-between items-center">
           <div>
             <div className="text-xl font-bold">Milestone {milestone.milestoneNumber}</div>
-            <div className="text-sm font-bold">Deadline: {milestone.proposedCompletionDate.toLocaleDateString()}</div>
+            <div className="text-sm font-bold">
+              Deadline: {getFormattedDateWithDay(milestone.proposedCompletionDate)}
+            </div>
           </div>
           <div className="bg-white rounded-lg p-1 font-bold">{milestone.amount.toLocaleString()} USDC</div>
         </div>
@@ -41,7 +44,7 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
                 )}
                 {milestone.status === "paid" && milestone.paidAt && (
                   <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
-                    Paid on {milestone.paidAt.toLocaleString()} -
+                    Paid on {getFormattedDateWithDay(milestone.paidAt)} -
                     <a
                       href={`https://optimistic.etherscan.io/tx/${milestone.paymentTx}`}
                       target="_blank"

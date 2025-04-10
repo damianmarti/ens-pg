@@ -65,7 +65,7 @@ export const TimelineStage = ({ stage }: { stage: LargeStageWithMilestones }) =>
                         />
                       )}
                     </div>
-                    <div className="text-sm font-bold">{milestone.description}</div>
+                    <div className="text-sm">{milestone.description}</div>
                   </div>
                 </div>
               ))}

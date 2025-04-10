@@ -56,6 +56,17 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
               </div>
             )
           )}
+          {milestone.status === "rejected" && (
+            <Button
+              className="w-auto self-start"
+              size="sm"
+              onClick={() => {
+                completeMilestoneModalRef.current?.showModal();
+              }}
+            >
+              Submit again
+            </Button>
+          )}
         </div>
       </div>
 

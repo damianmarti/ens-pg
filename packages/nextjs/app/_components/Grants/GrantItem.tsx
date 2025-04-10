@@ -34,7 +34,6 @@ export const GrantItem = ({ grant, latestsShownStatus }: GrantItemProps) => {
     (latestStage.status === "proposed" || latestStage.status === "rejected");
 
   const allStagesGrantAmount = grant.stages
-    .filter(stage => stage.status !== "proposed" && stage.status !== "rejected")
     .map(stage => stage.grantAmount || 0n)
     .reduce((acc, current) => BigInt(acc || 0n) + BigInt(current || 0n), 0n);
 

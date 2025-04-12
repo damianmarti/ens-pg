@@ -26,7 +26,7 @@ type BadgeProps = {
   className?: string;
 };
 
-const statusText: Record<LargeMilestoneStatus, string> = {
+export const statusText: Record<LargeMilestoneStatus, string> = {
   proposed: "Proposed",
   rejected: "Rejected",
   completed: "Completed (Pending Review)",

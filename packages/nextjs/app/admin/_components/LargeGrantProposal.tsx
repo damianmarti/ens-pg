@@ -36,6 +36,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
   const [isDefaultExpanded, setIsDefaultExpanded] = useState(true);
   const [isExpandedByClick, setIsExpandedByClick] = useState(false);
   const [canVote, setCanVote] = useState(true);
+  const [canReject, setCanReject] = useState(true);
   const { address } = useAccount();
 
   const privateNoteModalRef = useRef<HTMLDialogElement>(null);
@@ -44,7 +45,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
   const rejectModalRef = useRef<HTMLDialogElement>(null);
 
   const latestStage = proposal.stages[0];
-  const { privateNotes, approvalVotes } = latestStage;
+  const { privateNotes, approvalVotes, rejectVotes } = latestStage;
 
   const isFinalApproveAvailable = approvalVotes && approvalVotes.length >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
 
@@ -61,6 +62,10 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
     setCanVote(!approvalVotes || approvalVotes.every(vote => vote.authorAddress !== address));
   }, [approvalVotes, address]);
 
+  useEffect(() => {
+    setCanReject(!rejectVotes || rejectVotes.every(vote => vote.authorAddress !== address));
+  }, [rejectVotes, address]);
+
   return (
     <div className="card bg-white text-primary-content w-full max-w-lg shadow-center">
       <div className="px-5 py-3 flex justify-between items-center w-full">
@@ -70,7 +75,11 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
         </div>
         <div>{getFormattedDate(latestStage.submitedAt as Date)}</div>
       </div>
-      <div className="px-5 py-8 bg-gray-100">
+      <div
+        className={`px-5 pt-8 pb-${
+          latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0 ? "2" : "8"
+        } bg-gray-100`}
+      >
         <h2 className="text-2xl font-bold mb-0">{proposal.title}</h2>
         <Link
           href={`/large-grants/${proposal.id}`}
@@ -93,6 +102,20 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
             <ArrowTopRightOnSquareIcon className="w-5 h-5" />
           </Link>
         </div>
+        {(latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0) && (
+          <div className="flex gap-1 justify-end">
+            {latestStage.approvalVotes.map(vote => (
+              <div key={vote.id} className="tooltip" data-tip={`Pre-approved by ${vote.authorAddress}`}>
+                <div>👍</div>
+              </div>
+            ))}
+            {latestStage.rejectVotes.map(vote => (
+              <div key={vote.id} className="tooltip" data-tip={`Pre-rejected by ${vote.authorAddress}`}>
+                <div>👎</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="p-5">
@@ -153,13 +176,17 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
               </div>
             )}
           </div>
-          <Button
-            variant="red-secondary"
-            size="sm"
-            onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
-          >
-            Reject
-          </Button>
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="red-secondary"
+              size="sm"
+              onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
+              disabled={!canReject}
+            >
+              Reject
+            </Button>
+            {!canReject && <FormErrorMessage error="Already rejected" className="text-center" />}
+          </div>
         </div>
 
         {privateNotes?.length > 0 && (
@@ -190,7 +217,12 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
         grantName={proposal.title}
         closeModal={() => approvalVoteModalRef.current?.close()}
       />
-      <LargeRejectModal ref={rejectModalRef} stage={latestStage} grantName={proposal.title} />
+      <LargeRejectModal
+        ref={rejectModalRef}
+        stage={latestStage}
+        grantName={proposal.title}
+        closeModal={() => rejectModalRef.current?.close()}
+      />
       <PrivateNoteModal
         ref={privateNoteModalRef}
         stage={latestStage}

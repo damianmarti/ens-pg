@@ -198,6 +198,31 @@ export const largeApprovalVotesRelations = relations(largeApprovalVotes, ({ one 
   }),
 }));
 
+export const largeRejectVotes = pgTable(
+  "large_reject_votes",
+  {
+    id: serial("id").primaryKey(),
+    votedAt: timestamp("voted_at").default(sql`now()`),
+    stageId: integer("stage_id")
+      .references(() => largeStages.id)
+      .notNull(),
+    authorAddress: varchar("author_address", { length: 42 })
+      .references(() => users.address)
+      .notNull(),
+  },
+  table => ({
+    // Ensure each author can only vote once per stage
+    uniqueVotePerStage: unique().on(table.stageId, table.authorAddress),
+  }),
+);
+
+export const largeRejectVotesRelations = relations(largeRejectVotes, ({ one }) => ({
+  stage: one(largeStages, {
+    fields: [largeRejectVotes.stageId],
+    references: [largeStages.id],
+  }),
+}));
+
 export const largePrivateNotes = pgTable("large_private_notes", {
   id: serial("id").primaryKey(),
   note: text("note").notNull(),
@@ -244,6 +269,7 @@ export const largeStagesRelations = relations(largeStages, ({ one, many }) => ({
   milestones: many(largeMilestones),
   privateNotes: many(largePrivateNotes),
   approvalVotes: many(largeApprovalVotes),
+  rejectVotes: many(largeRejectVotes),
 }));
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "grantee"]);

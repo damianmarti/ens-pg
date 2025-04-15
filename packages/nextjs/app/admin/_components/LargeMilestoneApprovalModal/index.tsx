@@ -125,7 +125,7 @@ export const LargeMilestoneApprovalModal = forwardRef<
 
   return (
     <dialog id="action_modal" className="modal" ref={ref}>
-      <div className="modal-box flex flex-col space-y-3">
+      <div className="modal-box flex flex-col space-y-6">
         <form method="dialog" className="bg-secondary -mx-6 -mt-6 px-6 py-4 flex items-center justify-between">
           <div className="flex justify-between items-center">
             <p className="font-bold text-xl m-0">
@@ -145,9 +145,11 @@ export const LargeMilestoneApprovalModal = forwardRef<
               <div className="divider" />
             </>
           )}
-          <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-1">
-            {milestone.status === "verified" && (
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-1 space-y-6">
+            {milestone.status === "verified" ? (
               <FormTextarea label="Note (visible to grantee)" {...getCommonOptions("statusNote")} />
+            ) : (
+              <div>Are you sure you want to vote for the approval of this milestone?</div>
             )}
             {loadingStatusText && (
               <div className="text-xl flex justify-center items-center gap-2 my-2">
@@ -155,9 +157,20 @@ export const LargeMilestoneApprovalModal = forwardRef<
                 {loadingStatusText}
               </div>
             )}
-            <Button variant="green" type="submit" className="!px-4 self-center" disabled={Boolean(loadingStatus)}>
-              <span>{milestone.status === "verified" ? "Final Approve" : "Approve"}</span>
-            </Button>
+            <div className="flex justify-between">
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={Boolean(loadingStatus)}
+                className="self-center"
+                onClick={closeModal}
+              >
+                Cancel
+              </Button>
+              <Button variant="green" type="submit" className="!px-4 self-center" disabled={Boolean(loadingStatus)}>
+                <span>{milestone.status === "verified" ? "Final Approve" : "Approve"}</span>
+              </Button>
+            </div>
           </form>
         </FormProvider>
       </div>

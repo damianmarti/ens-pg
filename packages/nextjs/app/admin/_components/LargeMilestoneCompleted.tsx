@@ -73,15 +73,19 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
       </div>
 
       <div className="p-5">
-        <div className="mt-2">
+        <div>
           <div className={isExpandedByClick ? "" : "line-clamp-2"} ref={milesonesRef}>
             <div>
-              Description:
+              <span className="font-semibold">Description:</span>
               {multilineStringToTsx(milestone.description)}
             </div>
+            <div className="mt-2">
+              <span className="font-semibold">Proposed Deliverables:</span>
+              {multilineStringToTsx(milestone.proposedDeliverables)}
+            </div>
             {milestone.completionProof && (
-              <div>
-                Completion Proof:
+              <div className="mt-2">
+                <span className="font-semibold">Completion Proof:</span>
                 {multilineStringToTsx(milestone.completionProof)}
               </div>
             )}

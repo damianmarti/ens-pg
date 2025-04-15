@@ -1,5 +1,7 @@
+import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
+import { statusText } from "~~/components/pg-ens/BadgeMilestone";
 import { StyledTooltip } from "~~/components/pg-ens/StyledTooltip";
 import { LargeStageWithMilestones } from "~~/services/database/repositories/large-stages";
 import { getFormattedDate } from "~~/utils/getFormattedDate";
@@ -48,15 +50,22 @@ export const TimelineStage = ({ stage }: { stage: LargeStageWithMilestones }) =>
                   <div>
                     <div className={`text-lg font-bold flex ${isOdd ? "" : "sm:place-content-end"}`}>
                       Milestone {idx + 1} ({milestone.amount.toLocaleString()} USDC)
-                      {(milestone.status === "completed" || milestone.status === "paid") && (
+                      {["completed", "verified", "paid"].includes(milestone.status) && (
                         <CheckCircleSolidIcon
                           className={`ml-1 mt-1 h-6 w-6 ${
-                            milestone.status === "paid" ? "text-green-500" : "text-orange-500"
+                            milestone.status === "paid" ? "text-primary-green" : "text-primary-orange"
                           }`}
+                          title={statusText[milestone.status]}
+                        />
+                      )}
+                      {milestone.status === "rejected" && (
+                        <ExclamationCircleIcon
+                          className="ml-1 mt-1 h-6 w-6 text-primary-red"
+                          title={statusText[milestone.status]}
                         />
                       )}
                     </div>
-                    <div className="text-sm font-bold">{milestone.description}</div>
+                    <div className="text-sm">{milestone.description}</div>
                   </div>
                 </div>
               ))}

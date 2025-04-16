@@ -50,7 +50,7 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
           },
         });
 
-        await postRejectVote({ signature });
+        await postRejectVote({ signature, statusNote: fieldValues.statusNote || "" });
         closeModal();
         router.refresh();
       } catch (error) {

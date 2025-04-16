@@ -185,7 +185,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
             >
               Reject
             </Button>
-            {!canReject && <FormErrorMessage error="Already rejected" className="text-center" />}
+            {!canReject && <FormErrorMessage error="Already voted" className="text-center" />}
           </div>
         </div>
 

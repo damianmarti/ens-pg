@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { RejectModalFormValues, rejectModalFormSchema } from "./schema";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
 import { useSignTypedData } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { RejectVoteReqBody } from "~~/app/api/large-stages/[stageId]/reject-vote/route";
@@ -117,6 +118,7 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
             </form>
           </FormProvider>
         </div>
+        <Toaster />
       </dialog>
     );
   },

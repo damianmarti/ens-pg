@@ -74,17 +74,21 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
         </Link>
         <div className="mt-6 flex flex-col lg:flex-row gap-1">
           <Address address={proposal.builderAddress} />
-          <span className="hidden lg:inline">·</span>
-          <Link
-            href={`/builder-grants/${proposal.builderAddress}`}
-            className="text-gray-500 underline flex items-center gap-1"
-            target="_blank"
-          >
-            <span>
-              {userSubmissionsAmount} submission{userSubmissionsAmount === 1 ? "" : "s"}
-            </span>
-            <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-          </Link>
+          {latestStage.stageNumber === 1 && (
+            <>
+              <span className="hidden lg:inline">·</span>
+              <Link
+                href={`/builder-grants/${proposal.builderAddress}`}
+                className="text-gray-500 underline flex items-center gap-1"
+                target="_blank"
+              >
+                <span>
+                  {userSubmissionsAmount} submission{userSubmissionsAmount === 1 ? "" : "s"}
+                </span>
+                <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+              </Link>
+            </>
+          )}
         </div>
       </div>
 

@@ -28,6 +28,7 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
     const { formMethods, getCommonOptions } = useFormMethods<RejectModalFormValues>({ schema: rejectModalFormSchema });
     const { handleSubmit } = formMethods;
     const { rejectVotes } = stage;
+    const finalReject = rejectVotes.length + 1 === MINIMAL_VOTES_FOR_FINAL_APPROVAL;
 
     const router = useRouter();
 
@@ -86,7 +87,7 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col space-y-1">
-              {rejectVotes.length + 1 === MINIMAL_VOTES_FOR_FINAL_APPROVAL ? (
+              {finalReject ? (
                 <>
                   <div className="flex items-center gap-1 mb-4">
                     <ExclamationTriangleIcon className="w-6 h-6 text-primary-orange" />
@@ -112,7 +113,7 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
                 </Button>
                 <Button variant="red" type="submit" disabled={isPostingRejectVote || isSigning} className="self-center">
                   {(isPostingRejectVote || isSigning) && <span className="loading loading-spinner"></span>}
-                  Reject
+                  {finalReject ? "Reject" : "Vote for Rejection"}
                 </Button>
               </div>
             </form>

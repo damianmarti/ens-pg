@@ -49,7 +49,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
     <div className="card bg-white text-primary-content w-full max-w-lg shadow-center">
       <div className="px-5 py-3 flex justify-between items-center w-full">
         <div className="font-bold text-xl flex items-center">
-          <div className="rounded-full bg-primary h-3.5 w-3.5 mr-2" />
+          <div className="rounded-full bg-primary h-3.5 w-3.5 min-w-3.5 mr-2" />
           {milestone.stage.grant.title} - Stage {latestStage.stageNumber}
         </div>
         <div>{milestone.completedAt?.toLocaleDateString()}</div>

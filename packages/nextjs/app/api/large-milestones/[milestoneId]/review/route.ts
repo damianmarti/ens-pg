@@ -82,12 +82,20 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
           }
         : {};
 
+    const completedObj =
+      body.status === "completed"
+        ? {
+            completedAt: new Date(),
+          }
+        : {};
+
     await updateMilestone(Number(milestoneId), {
       status: body.status,
       statusNote: session?.user.role === "admin" ? body.statusNote : undefined,
       completionProof: body.completionProof,
       ...verifiedObj,
       ...paymentObj,
+      ...completedObj,
     });
 
     // check if this is the last milestone of the stage and update the stage status to "completed"

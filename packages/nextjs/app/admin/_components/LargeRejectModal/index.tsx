@@ -111,7 +111,12 @@ export const LargeRejectModal = forwardRef<HTMLDialogElement, RejectModalProps>(
                 >
                   Cancel
                 </Button>
-                <Button variant="red" type="submit" disabled={isPostingRejectVote || isSigning} className="self-center">
+                <Button
+                  variant={finalReject ? "red" : "red-secondary"}
+                  type="submit"
+                  disabled={isPostingRejectVote || isSigning}
+                  className="self-center"
+                >
                   {(isPostingRejectVote || isSigning) && <span className="loading loading-spinner"></span>}
                   {finalReject ? "Reject" : "Vote for Rejection"}
                 </Button>

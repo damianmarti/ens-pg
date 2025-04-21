@@ -118,11 +118,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
               {!canVote && <FormErrorMessage error="Already voted" className="text-center" />}
             </div>
           </div>
-          <Button
-            variant="red-secondary"
-            size="sm"
-            onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
-          >
+          <Button variant="red" size="sm" onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}>
             Reject
           </Button>
         </div>

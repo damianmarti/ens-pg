@@ -48,6 +48,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
   const { privateNotes, approvalVotes, rejectVotes } = latestStage;
 
   const isFinalApproveAvailable = approvalVotes && approvalVotes.length >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
+  const isFinalRejectAvailable = rejectVotes && rejectVotes.length + 1 >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
 
   const milestonesToShow = latestStage.milestones;
 
@@ -178,7 +179,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
           </div>
           <div className="flex flex-col gap-1">
             <Button
-              variant="red-secondary"
+              variant={isFinalRejectAvailable ? "red" : "red-secondary"}
               size="sm"
               onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
               disabled={!canReject}

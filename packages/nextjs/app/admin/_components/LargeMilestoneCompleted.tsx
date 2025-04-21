@@ -54,7 +54,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         </div>
         <div>{milestone.completedAt?.toLocaleDateString()}</div>
       </div>
-      <div className="px-5 py-8 bg-gray-100">
+      <div className={`px-5 pt-8 bg-gray-100 ${isFinalApproveAvailable ? "pb-5" : "pb-8"}`}>
         <div className="flex justify-between">
           <h2 className="text-2xl font-bold mb-0">Milestone {milestone.milestoneNumber}</h2>
           <div className="bg-white rounded-lg p-1">{milestone.amount.toLocaleString()} USDC</div>
@@ -69,6 +69,13 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         <div className="mt-6 flex flex-col lg:flex-row gap-1">
           <span className="font-bold">Deadline:</span> {milestone.proposedCompletionDate.toLocaleDateString()}
         </div>
+        {isFinalApproveAvailable && (
+          <div className="flex gap-1 justify-end">
+            <div className="tooltip" data-tip={`Pre-approved by ${milestone.verifiedBy}`}>
+              <div>👍</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-5">

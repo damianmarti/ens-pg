@@ -76,8 +76,8 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
         <div>{getFormattedDate(latestStage.submitedAt as Date)}</div>
       </div>
       <div
-        className={`px-5 pt-8 pb-${
-          latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0 ? "2" : "8"
+        className={`px-5 pt-8 ${
+          latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0 ? "pb-2" : "pb-8"
         } bg-gray-100`}
       >
         <h2 className="text-2xl font-bold mb-0">{proposal.title}</h2>

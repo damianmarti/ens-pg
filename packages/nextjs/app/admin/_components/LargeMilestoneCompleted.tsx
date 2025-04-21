@@ -54,20 +54,22 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         </div>
         <div>{milestone.completedAt?.toLocaleDateString()}</div>
       </div>
-      <div className={`px-5 pt-8 bg-gray-100 ${isFinalApproveAvailable ? "pb-5" : "pb-8"}`}>
+      <div className={`px-5 pt-5 bg-gray-100 ${isFinalApproveAvailable ? "pb-2" : "pb-5"}`}>
         <div className="flex justify-between">
           <h2 className="text-2xl font-bold mb-0">Milestone {milestone.milestoneNumber}</h2>
           <div className="bg-white rounded-lg p-1">{milestone.amount.toLocaleString()} USDC</div>
         </div>
-        <Link
-          href={`/large-grants/${milestone.stage.grant.id}`}
-          className="text-gray-500 underline flex items-center gap-1 mr-2"
-          target="_blank"
-        >
-          View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-        </Link>
-        <div className="mt-6 flex flex-col lg:flex-row gap-1">
-          <span className="font-bold">Deadline:</span> {milestone.proposedCompletionDate.toLocaleDateString()}
+        <div className="flex justify-between">
+          <Link
+            href={`/large-grants/${milestone.stage.grant.id}`}
+            className="text-gray-500 underline flex items-center gap-1 mr-2"
+            target="_blank"
+          >
+            View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+          </Link>
+          <div className="font-semibold">
+            <span>Deadline:</span> {milestone.proposedCompletionDate.toLocaleDateString()}
+          </div>
         </div>
         {isFinalApproveAvailable && (
           <div className="flex gap-1 justify-end">

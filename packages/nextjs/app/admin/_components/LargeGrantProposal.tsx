@@ -172,7 +172,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
                 >
                   Vote for approval
                 </Button>
-                {!canVote && <FormErrorMessage error="Already voted" className="text-center" />}
+                {!canVote && <FormErrorMessage error="Voted" className="text-center" />}
               </div>
             )}
           </div>
@@ -185,7 +185,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
             >
               Reject
             </Button>
-            {!canReject && <FormErrorMessage error="Already voted" className="text-center" />}
+            {!canReject && <FormErrorMessage error="Voted" className="text-center" />}
           </div>
         </div>
 

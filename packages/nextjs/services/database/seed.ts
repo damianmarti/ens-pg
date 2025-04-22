@@ -6,6 +6,7 @@ import {
   largeMilestonePrivateNotes,
   largeMilestones,
   largePrivateNotes,
+  largeRejectVotes,
   largeStages,
   privateNotes,
   stages,
@@ -38,6 +39,7 @@ async function seed() {
   await db.delete(largeMilestones).execute();
   await db.delete(largePrivateNotes).execute();
   await db.delete(largeApprovalVotes).execute();
+  await db.delete(largeRejectVotes).execute();
   await db.delete(largeStages).execute();
   await db.delete(largeGrants).execute();
 

@@ -55,21 +55,30 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         </div>
         <div>{milestone.completedAt && getFormattedDateWithDay(milestone.completedAt)}</div>
       </div>
-      <div className="px-5 py-8 bg-gray-100">
+      <div className={`px-5 pt-5 bg-gray-100 ${isFinalApproveAvailable ? "pb-2" : "pb-5"}`}>
         <div className="flex justify-between">
           <h2 className="text-2xl font-bold mb-0">Milestone {milestone.milestoneNumber}</h2>
           <div className="bg-white rounded-lg p-1">{milestone.amount.toLocaleString()} USDC</div>
         </div>
-        <Link
-          href={`/large-grants/${milestone.stage.grant.id}`}
-          className="text-gray-500 underline flex items-center gap-1 mr-2"
-          target="_blank"
-        >
-          View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-        </Link>
-        <div className="mt-6 flex flex-col lg:flex-row gap-1">
-          <span className="font-bold">Deadline:</span> {getFormattedDateWithDay(milestone.proposedCompletionDate)}
+        <div className="flex justify-between">
+          <Link
+            href={`/large-grants/${milestone.stage.grant.id}`}
+            className="text-gray-500 underline flex items-center gap-1 mr-2"
+            target="_blank"
+          >
+            View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+          </Link>
+          <div className="font-semibold">
+            <span>Deadline:</span> {getFormattedDateWithDay(milestone.proposedCompletionDate)}
+          </div>
         </div>
+        {isFinalApproveAvailable && (
+          <div className="flex gap-1 justify-end">
+            <div className="tooltip" data-tip={`Pre-approved by ${milestone.verifiedBy}`}>
+              <div>👍</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-5">
@@ -119,11 +128,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
               {!canVote && <FormErrorMessage error="Already voted" className="text-center" />}
             </div>
           </div>
-          <Button
-            variant="red-secondary"
-            size="sm"
-            onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}
-          >
+          <Button variant="red" size="sm" onClick={() => rejectModalRef && rejectModalRef.current?.showModal()}>
             Reject
           </Button>
         </div>

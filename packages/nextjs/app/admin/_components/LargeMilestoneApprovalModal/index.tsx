@@ -161,6 +161,7 @@ export const LargeMilestoneApprovalModal = forwardRef<
               <Button
                 variant="secondary"
                 size="sm"
+                type="button"
                 disabled={Boolean(loadingStatus)}
                 className="self-center"
                 onClick={closeModal}

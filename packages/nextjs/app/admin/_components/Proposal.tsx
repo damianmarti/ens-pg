@@ -139,7 +139,7 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
                 >
                   Vote for approval
                 </Button>
-                {!canVote && <FormErrorMessage error="Already voted" className="text-center" />}
+                {!canVote && <FormErrorMessage error="Voted" className="text-center" />}
               </div>
             )}
           </div>

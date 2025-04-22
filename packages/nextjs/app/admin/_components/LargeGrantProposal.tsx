@@ -71,7 +71,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
     <div className="card bg-white text-primary-content w-full max-w-lg shadow-center">
       <div className="px-5 py-3 flex justify-between items-center w-full">
         <div className="font-bold text-xl flex items-center">
-          <div className="rounded-full bg-primary h-3.5 w-3.5 mr-2" />
+          <div className="rounded-full bg-primary h-3.5 w-3.5 min-w-3.5 mr-2" />
           Stage {latestStage.stageNumber}
         </div>
         <div>{getFormattedDate(latestStage.submitedAt as Date)}</div>
@@ -91,17 +91,21 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
         </Link>
         <div className="mt-6 flex flex-col lg:flex-row gap-1">
           <Address address={proposal.builderAddress as `0x${string}`} />
-          <span className="hidden lg:inline">·</span>
-          <Link
-            href={`/builder-grants/${proposal.builderAddress}`}
-            className="text-gray-500 underline flex items-center gap-1"
-            target="_blank"
-          >
-            <span>
-              {userSubmissionsAmount} submission{userSubmissionsAmount === 1 ? "" : "s"}
-            </span>
-            <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-          </Link>
+          {latestStage.stageNumber === 1 && (
+            <>
+              <span className="hidden lg:inline">·</span>
+              <Link
+                href={`/builder-grants/${proposal.builderAddress}`}
+                className="text-gray-500 underline flex items-center gap-1"
+                target="_blank"
+              >
+                <span>
+                  {userSubmissionsAmount} submission{userSubmissionsAmount === 1 ? "" : "s"}
+                </span>
+                <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+              </Link>
+            </>
+          )}
         </div>
         {(latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0) && (
           <div className="flex gap-1 justify-end">

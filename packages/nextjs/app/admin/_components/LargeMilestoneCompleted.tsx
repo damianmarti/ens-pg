@@ -11,6 +11,7 @@ import { Button } from "~~/components/pg-ens/Button";
 import { FormErrorMessage } from "~~/components/pg-ens/form-fields/FormErrorMessage";
 import { Address } from "~~/components/scaffold-eth";
 import { getCompletedOrVerifiedMilestones } from "~~/services/database/repositories/large-milestones";
+import { getFormattedDateWithDay } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 function isElementClamped(element: HTMLElement | null) {
@@ -49,10 +50,10 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
     <div className="card bg-white text-primary-content w-full max-w-lg shadow-center">
       <div className="px-5 py-3 flex justify-between items-center w-full">
         <div className="font-bold text-xl flex items-center">
-          <div className="rounded-full bg-primary h-3.5 w-3.5 mr-2" />
+          <div className="rounded-full bg-primary h-3.5 w-3.5 min-w-3.5 mr-2" />
           {milestone.stage.grant.title} - Stage {latestStage.stageNumber}
         </div>
-        <div>{milestone.completedAt?.toLocaleDateString()}</div>
+        <div>{milestone.completedAt && getFormattedDateWithDay(milestone.completedAt)}</div>
       </div>
       <div className={`px-5 pt-5 bg-gray-100 ${isFinalApproveAvailable ? "pb-2" : "pb-5"}`}>
         <div className="flex justify-between">
@@ -68,7 +69,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
             View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
           </Link>
           <div className="font-semibold">
-            <span>Deadline:</span> {milestone.proposedCompletionDate.toLocaleDateString()}
+            <span>Deadline:</span> {getFormattedDateWithDay(milestone.proposedCompletionDate)}
           </div>
         </div>
         {isFinalApproveAvailable && (

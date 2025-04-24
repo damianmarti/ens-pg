@@ -5,13 +5,17 @@ import {
   PrivateNoteModalFormValues,
   privateNoteModalFormSchema,
 } from "~~/app/admin/_components/PrivateNoteModal/schema";
+import { createLargePrivateNote } from "~~/services/database/repositories/large-private-notes";
 import { createPrivateNote } from "~~/services/database/repositories/private-notes";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__STAGE_PRIVATE_NOTE } from "~~/utils/eip712";
 
 export type StagePrivateNoteReqBody = PrivateNoteModalFormValues & { signature: `0x${string}` };
 
-export async function POST(req: NextRequest, { params }: { params: { stageId: string } }) {
+export async function createPrivateNoteRequest(
+  req: NextRequest,
+  { params, isLargeGrant }: { params: { stageId: string }; isLargeGrant: boolean },
+) {
   try {
     const { stageId } = params;
     const session = await getServerSession(authOptions);
@@ -42,14 +46,27 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
     }
 
-    const privateNoteId = await createPrivateNote({
-      stageId: Number(stageId),
-      note,
-      authorAddress: session.user.address,
-    });
+    let privateNoteId;
+    if (isLargeGrant) {
+      privateNoteId = await createLargePrivateNote({
+        stageId: Number(stageId),
+        note,
+        authorAddress: session.user.address,
+      });
+    } else {
+      privateNoteId = await createPrivateNote({
+        stageId: Number(stageId),
+        note,
+        authorAddress: session.user.address,
+      });
+    }
 
     return NextResponse.json({ privateNoteId }, { status: 200 });
   } catch (e) {
     return NextResponse.json({ error: "Error creating private note" }, { status: 500 });
   }
+}
+
+export async function POST(req: NextRequest, { params }: { params: { stageId: string } }) {
+  return createPrivateNoteRequest(req, { params, isLargeGrant: false });
 }

@@ -1,7 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import { MilestoneDetail } from "./MilestoneDetail";
+import { NewStageModal } from "./NewStageModal";
 import { Badge } from "~~/components/pg-ens/Badge";
+import { Button } from "~~/components/pg-ens/Button";
 import { GrantProgressBar } from "~~/components/pg-ens/GrantProgressBar";
 import { LargeStageWithMilestones } from "~~/services/database/repositories/large-stages";
 
@@ -10,6 +13,8 @@ export const CurrentStage = ({ stage }: { stage: LargeStageWithMilestones }) => 
 
   const completedMilestones = stage.milestones.filter(milestone => milestone.status === "paid");
   const completedMilestonesAmount = completedMilestones.reduce((acc, current) => acc + current.amount, 0);
+
+  const newStageModalRef = useRef<HTMLDialogElement>(null);
 
   return (
     <div className="w-full max-w-5xl">
@@ -27,12 +32,32 @@ export const CurrentStage = ({ stage }: { stage: LargeStageWithMilestones }) => 
             amount={allMilestonesGrantAmount}
             withdrawn={completedMilestonesAmount}
           />
+
+          {stage.status === "completed" && (
+            <div className="flex justify-end">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="mt-4"
+                onClick={() => newStageModalRef && newStageModalRef.current?.showModal()}
+              >
+                Apply for a new stage
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
       {stage.milestones.map(milestone => (
         <MilestoneDetail milestone={milestone} key={milestone.id} />
       ))}
+
+      <NewStageModal
+        ref={newStageModalRef}
+        previousStage={stage}
+        grantId={stage.grantId}
+        closeModal={() => newStageModalRef.current?.close()}
+      />
     </div>
   );
 };

@@ -1,7 +1,13 @@
-import { PublicGrant, getAllGrants, getBuilderGrants } from "~~/services/database/repositories/grants";
+import {
+  PublicGrant,
+  getAllGrants,
+  getAllGrantsWithStagesAndPrivateNotes,
+  getBuilderGrants,
+} from "~~/services/database/repositories/grants";
 import {
   PublicLargeGrant,
   getAllLargeGrants,
+  getAllLargeGrantsWithStagesAndPrivateNotes,
   getBuilderLargeGrants,
 } from "~~/services/database/repositories/large-grants";
 
@@ -27,3 +33,13 @@ export type AdminLargeGrant = Awaited<ReturnType<typeof getAllLargeGrants>>[0];
 
 // Add a discriminator property to distinguish between Grant and LargeGrant
 export type DiscriminatedAdminGrant = (AdminGrant & { type: "grant" }) | (AdminLargeGrant & { type: "largeGrant" });
+
+export type GrantWithStagesAndPrivateNotes = Awaited<ReturnType<typeof getAllGrantsWithStagesAndPrivateNotes>>[0];
+
+export type LargeGrantWithStagesAndPrivateNotes = Awaited<
+  ReturnType<typeof getAllLargeGrantsWithStagesAndPrivateNotes>
+>[0];
+
+export type DiscriminatedGrantWithStagesAndPrivateNotes =
+  | (GrantWithStagesAndPrivateNotes & { type: "grant" })
+  | (LargeGrantWithStagesAndPrivateNotes & { type: "largeGrant" });

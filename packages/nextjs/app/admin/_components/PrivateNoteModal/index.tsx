@@ -8,19 +8,21 @@ import { StagePrivateNoteReqBody } from "~~/app/api/stages/[stageId]/private-not
 import { Button } from "~~/components/pg-ens/Button";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
+import { LargeStage } from "~~/services/database/repositories/large-stages";
 import { Stage } from "~~/services/database/repositories/stages";
 import { EIP_712_DOMAIN, EIP_712_TYPES__STAGE_PRIVATE_NOTE } from "~~/utils/eip712";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type PrivateNoteModalProps = {
-  stage: Stage;
+  stage: Stage | LargeStage;
   grantName: string;
+  isLargeGrant?: boolean;
   closeModal: () => void;
 };
 
 export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalProps>(
-  ({ stage, grantName, closeModal }, ref) => {
+  ({ stage, grantName, isLargeGrant = false, closeModal }, ref) => {
     const router = useRouter();
     const { formMethods, getCommonOptions } = useFormMethods<PrivateNoteModalFormValues>({
       schema: privateNoteModalFormSchema,
@@ -30,7 +32,9 @@ export const PrivateNoteModal = forwardRef<HTMLDialogElement, PrivateNoteModalPr
 
     const { mutateAsync: postPrivateNote, isPending: isPostingPrivateNote } = useMutation({
       mutationFn: (stagePrivateNoteBody: StagePrivateNoteReqBody) =>
-        postMutationFetcher(`/api/stages/${stage.id}/private-note`, { body: stagePrivateNoteBody }),
+        postMutationFetcher(`/api/${isLargeGrant ? "large-" : ""}stages/${stage.id}/private-note`, {
+          body: stagePrivateNoteBody,
+        }),
     });
 
     const onSubmit = async (fieldValues: PrivateNoteModalFormValues) => {

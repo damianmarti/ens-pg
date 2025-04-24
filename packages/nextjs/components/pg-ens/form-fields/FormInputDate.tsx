@@ -25,6 +25,7 @@ export const FormInputDate = ({ error, label, name, required }: FormInputProps) 
         onChange={date => setValue(name, date)}
         className={`input input-bordered mt-1 w-full${error ? " input-error" : ""}`}
         disabledKeyboardNavigation
+        dateFormat="d MMM yyyy"
       />
       <FormErrorMessage error={error} />
     </div>

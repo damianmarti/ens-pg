@@ -3,8 +3,10 @@ import {
   grants,
   largeApprovalVotes,
   largeGrants,
+  largeMilestonePrivateNotes,
   largeMilestones,
   largePrivateNotes,
+  largeRejectVotes,
   largeStages,
   privateNotes,
   stages,
@@ -33,9 +35,11 @@ async function seed() {
   await db.delete(stages).execute(); // Ensure stages are deleted before grants
   await db.delete(grants).execute(); // Delete grants
 
+  await db.delete(largeMilestonePrivateNotes).execute();
   await db.delete(largeMilestones).execute();
   await db.delete(largePrivateNotes).execute();
   await db.delete(largeApprovalVotes).execute();
+  await db.delete(largeRejectVotes).execute();
   await db.delete(largeStages).execute();
   await db.delete(largeGrants).execute();
 
@@ -163,6 +167,16 @@ async function seed() {
         telegram: "telegram-account-3",
         email: "email3@email.com",
       },
+      {
+        title: "Large Grant 4",
+        description: "Description for grant 4",
+        builderAddress: "0xB4F53bd85c00EF22946d24Ae26BC38Ac64F5E7B1",
+        showcaseVideoUrl: null,
+        github: "github-account-4",
+        twitter: null,
+        telegram: "telegram-account-4",
+        email: "email3@email.com",
+      },
     ])
     .returning({ id: largeGrants.id })
     .execute();
@@ -202,6 +216,10 @@ async function seed() {
       {
         stageNumber: 3,
         grantId: insertedLargeGrants[2].id,
+      },
+      {
+        stageNumber: 1,
+        grantId: insertedLargeGrants[3].id,
       },
     ])
     .returning({ id: largeStages.id })
@@ -330,6 +348,24 @@ async function seed() {
         amount: 40,
         proposedDeliverables: "Deliverables 9",
         proposedCompletionDate: new Date("2025-09-01"),
+      },
+      {
+        description: "Milestone 1 - Stage 1 - Large Grant 4",
+        milestoneNumber: 1,
+        stageId: insertedLargeStages[7].id,
+        status: "proposed",
+        amount: 4000,
+        proposedDeliverables: "Deliverables 10",
+        proposedCompletionDate: new Date("2025-10-01"),
+      },
+      {
+        description: "Milestone 2 - Stage 1 - Large Grant 4",
+        milestoneNumber: 2,
+        stageId: insertedLargeStages[7].id,
+        status: "proposed",
+        amount: 2000,
+        proposedDeliverables: "Deliverables 11",
+        proposedCompletionDate: new Date("2025-11-01"),
       },
     ])
     .execute();

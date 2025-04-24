@@ -65,7 +65,6 @@ export async function getPublicLargeGrants() {
   });
 }
 
-// Note: not used yet
 // Note: use only for admin pages
 export async function getAllLargeGrantsWithStagesAndPrivateNotes() {
   return await db.query.largeGrants.findMany({
@@ -77,6 +76,10 @@ export async function getAllLargeGrantsWithStagesAndPrivateNotes() {
         with: {
           privateNotes: true,
           approvalVotes: true,
+          rejectVotes: true,
+          milestones: {
+            orderBy: [asc(largeMilestones.milestoneNumber)],
+          },
         },
       },
     },
@@ -147,7 +150,7 @@ export async function getLargeGrantsStats() {
         total: sql`COALESCE(sum(${largeMilestones.amount}), 0)::float`,
       })
       .from(largeMilestones)
-      .where(eq(largeMilestones.status, "completed")),
+      .where(eq(largeMilestones.status, "paid")),
 
     db
       .select({
@@ -165,7 +168,7 @@ export async function getLargeGrantsStats() {
     orderBy: [desc(largeGrants.submitedAt)],
   });
 
-  const proposedLargeGrants = sortedLargeGrants.filter(grant => {
+  const approvedLargeGrants = sortedLargeGrants.filter(grant => {
     const latestStage = grant.stages[0];
     return (
       latestStage &&
@@ -177,7 +180,7 @@ export async function getLargeGrantsStats() {
   return {
     totalUsdcGranted: Number(usdcFromCompletedMilestones[0].total) || 0,
     allGrantsCount: Number(allLargeGrants[0].count) || 0,
-    proposedLargeGrants,
-    proposedLargeGrantsCount: proposedLargeGrants.length,
+    approvedLargeGrants,
+    approvedLargeGrantsCount: approvedLargeGrants.length,
   };
 }

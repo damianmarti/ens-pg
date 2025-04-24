@@ -81,9 +81,8 @@ const LargeGrantApply: NextPage = () => {
     name: "milestones",
   });
 
-  const watchMilestones = watch(["milestones"]);
-
-  const totalAmount = watchMilestones[0].reduce((acc, curr) => acc + Number(curr.amount), 0);
+  const watchMilestones = watch("milestones");
+  const totalAmount = watchMilestones.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   return (
     <div className="flex flex-col w-full items-center justify-center p-6 sm:p-10">
@@ -129,12 +128,13 @@ const LargeGrantApply: NextPage = () => {
                 {fields.map((field, index) => (
                   <div key={field.id}>
                     {index > 0 && <hr className="border-t border-white my-6" />}
-                    <h4 className="text-2xl font-bold">
-                      Milestone {index + 1}
-                      <button type="button" onClick={() => remove(index)} className="ml-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-2xl font-bold">Milestone {index + 1}</h4>
+                      <Button variant="secondary" size="sm" onClick={() => remove(index)} className="ml-2">
                         <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </h4>
+                        <span className="hidden sm:inline">Delete milestone</span>
+                      </Button>
+                    </div>
                     <FormTextarea
                       label="Description"
                       showMessageLength

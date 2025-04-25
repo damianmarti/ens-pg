@@ -51,14 +51,14 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
       <div className="px-5 py-3 flex justify-between items-center w-full">
         <div className="font-bold text-xl flex items-center">
           <div className="rounded-full bg-primary h-3.5 w-3.5 min-w-3.5 mr-2" />
-          {milestone.stage.grant.title} - Stage {latestStage.stageNumber}
+          Milestone {milestone.milestoneNumber} - Stage {latestStage.stageNumber}
         </div>
         <div>{milestone.completedAt && getFormattedDateWithDay(milestone.completedAt)}</div>
       </div>
       <div className={`px-5 pt-5 bg-gray-100 ${isFinalApproveAvailable ? "pb-2" : "pb-5"}`}>
         <div className="flex justify-between">
-          <h2 className="text-2xl font-bold mb-0">Milestone {milestone.milestoneNumber}</h2>
-          <div className="bg-white rounded-lg p-1">{milestone.amount.toLocaleString()} USDC</div>
+          <h2 className="text-2xl font-bold mb-0">{milestone.stage.grant.title}</h2>
+          <div className="bg-white rounded-lg p-1 h-8">{milestone.amount.toLocaleString()}&nbsp;USDC</div>
         </div>
         <div className="flex justify-between">
           <Link

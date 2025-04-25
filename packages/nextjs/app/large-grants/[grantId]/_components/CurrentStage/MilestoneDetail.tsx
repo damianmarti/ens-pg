@@ -48,7 +48,7 @@ export const MilestoneDetail = ({ milestone }: { milestone: LargeMilestone }) =>
                 <BadgeMilestone status={milestone.status} />
                 {["rejected", "paid"].includes(milestone.status) && milestone.statusNote && (
                   <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
-                    {milestone.status == "rejected" ? "Rejection notes" : "Note"}: {milestone.statusNote}
+                    {milestone.status === "rejected" ? "Rejection notes" : "Note"}: {milestone.statusNote}
                   </div>
                 )}
                 {milestone.status === "paid" && milestone.paidAt && (

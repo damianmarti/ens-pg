@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { LargeMilestone } from "~~/services/database/repositories/large-milestones";
-import { getFormattedDate } from "~~/utils/getFormattedDate";
+import { getFormattedDateWithDay } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 type GrantMilestonesModalProps = {
@@ -27,7 +27,7 @@ export const LargeGrantMilestonesModal = forwardRef<HTMLDialogElement, GrantMile
                   <div className="text-lg font-bold">Milestone {index + 1}</div>
                   <div className="bg-secondary px-2 py-1 rounded font-semibold">{milestone.amount} USDC</div>
                 </div>
-                {milestone.completedAt && <div>{getFormattedDate(milestone.completedAt)}</div>}
+                {milestone.completedAt && <div>{getFormattedDateWithDay(milestone.completedAt)}</div>}
               </div>
               <div className="mt-2">{multilineStringToTsx(milestone.completionProof || "-")}</div>
             </div>

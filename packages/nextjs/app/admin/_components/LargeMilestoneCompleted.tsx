@@ -106,8 +106,8 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row-reverse lg:items-start justify-between gap-3 mt-4">
-          <div className="flex flex-col lg:flex-row lg:items-start gap-3">
+        <div className="flex flex-col 2xl:flex-row-reverse 2xl:items-start justify-between gap-3 mt-4">
+          <div className="flex flex-col 2xl:flex-row 2xl:items-start gap-3">
             <Button
               variant="secondary"
               size="sm"

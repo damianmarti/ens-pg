@@ -67,7 +67,7 @@ const Admin: NextPage = async () => {
     <div className="flex flex-col flex-grow px-4 py-10 sm:py-20">
       <h1 className="text-3xl text-center font-extrabold !mb-0">Pending proposals</h1>
 
-      <div className="mt-10 mx-auto grid md:grid-cols-3 gap-4 sm:gap-8 w-full">
+      <div className="mt-10 mx-auto grid xl:grid-cols-3 gap-4 sm:gap-8 w-full">
         <div className="flex flex-col items-center p-4 sm:p-6 bg-[#FBE6F4] rounded-xl">
           <h2 className="text-2xl font-bold !m-0">New Grant Proposals ({grantProposals.length})</h2>
           <div className="mt-4 sm:mt-6 space-y-4 w-full flex flex-col items-center">

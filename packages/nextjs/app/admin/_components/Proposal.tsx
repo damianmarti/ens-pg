@@ -70,7 +70,7 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
           className="text-gray-500 underline flex items-center gap-1"
           target="_blank"
         >
-          View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+          View grant <ArrowTopRightOnSquareIcon className="w-5 h-5" />
         </Link>
         <div className="mt-6 flex flex-col lg:flex-row gap-1">
           <Address address={proposal.builderAddress} />
@@ -111,8 +111,8 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row-reverse lg:items-start justify-between gap-3 mt-4">
-          <div className="flex flex-col lg:flex-row lg:items-start gap-3">
+        <div className="flex flex-col 2xl:flex-row-reverse 2xl:items-start justify-between gap-3 mt-4">
+          <div className="flex flex-col 2xl:flex-row 2xl:items-start gap-3">
             <Button
               variant="secondary"
               size="sm"

@@ -87,7 +87,7 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
           className="text-gray-500 underline flex items-center gap-1"
           target="_blank"
         >
-          View grant page <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+          View grant <ArrowTopRightOnSquareIcon className="w-5 h-5" />
         </Link>
         <div className="mt-6 flex flex-col lg:flex-row gap-1">
           <Address address={proposal.builderAddress as `0x${string}`} />

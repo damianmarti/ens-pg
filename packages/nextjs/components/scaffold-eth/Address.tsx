@@ -8,6 +8,7 @@ import { normalize } from "viem/ens";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { useCopyToClipboard } from "~~/hooks/scaffold-eth/useCopyToClipboard";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
@@ -34,7 +35,8 @@ const blockieSizeMap = {
 export const Address = ({ address, disableAddressLink, format, size = "base" }: AddressProps) => {
   const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
-  const [addressCopied, setAddressCopied] = useState(false);
+  const { copyToClipboard: copyAddressToClipboard, isCopiedToClipboard: isAddressCopiedToClipboard } =
+    useCopyToClipboard();
   const checkSumAddress = address ? getAddress(address) : undefined;
 
   const { targetNetwork } = useTargetNetwork();
@@ -114,7 +116,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           {displayAddress}
         </a>
       )}
-      {addressCopied ? (
+      {isAddressCopiedToClipboard ? (
         <CheckCircleIcon
           className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
           aria-hidden="true"
@@ -123,18 +125,9 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
         <DocumentDuplicateIcon
           className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
           aria-hidden="true"
-          onClick={async () => {
-            if (checkSumAddress) {
-              try {
-                await navigator.clipboard.writeText(checkSumAddress);
-                setAddressCopied(true);
-                setTimeout(() => {
-                  setAddressCopied(false);
-                }, 800);
-              } catch (err) {
-                console.error("Failed to copy address to clipboard:", err);
-              }
-            }
+          onClick={e => {
+            e.stopPropagation();
+            copyAddressToClipboard(checkSumAddress as string);
           }}
         />
       )}

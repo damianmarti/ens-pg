@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { recoverTypedDataAddress } from "viem";
+import { createLargeApprovalVote } from "~~/services/database/repositories/large-approval-votes";
 import {
   LargeStageUpdate,
   approveStage,
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
 
     if (
       body.status === "approved" &&
-      (!stage?.approvalVotes || stage.approvalVotes.length < MINIMAL_VOTES_FOR_FINAL_APPROVAL)
+      (!stage?.approvalVotes || stage.approvalVotes.length + 1 < MINIMAL_VOTES_FOR_FINAL_APPROVAL)
     ) {
       return NextResponse.json({ error: "Not enough votes for final approval" }, { status: 400 });
     }
@@ -69,6 +70,12 @@ export async function POST(req: NextRequest, { params }: { params: { stageId: st
       : {};
 
     if (body.status === "approved") {
+      // Create approval vote
+      await createLargeApprovalVote({
+        stageId: Number(stageId),
+        authorAddress: session.user.address,
+      });
+
       await approveStage(Number(stageId), {
         statusNote: body.statusNote,
         ...approvedObj,

@@ -45,7 +45,7 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
   const { privateNotes, approvalVotes } = latestStage;
   const canVote = !approvalVotes || approvalVotes.every(vote => vote.authorAddress !== address);
 
-  const isFinalApproveAvailable = approvalVotes && approvalVotes.length >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
+  const isFinalApproveAvailable = approvalVotes && approvalVotes.length + 1 >= MINIMAL_VOTES_FOR_FINAL_APPROVAL;
 
   const milestonesToShow = latestStage.stageNumber > 1 ? latestStage.milestone : proposal.milestones;
 
@@ -122,13 +122,17 @@ export const Proposal = ({ proposal, userSubmissionsAmount, isGrant }: ProposalP
             </Button>
 
             {isFinalApproveAvailable ? (
-              <Button
-                variant="green"
-                size="sm"
-                onClick={() => finalApproveModalRef && finalApproveModalRef.current?.showModal()}
-              >
-                Final Approve
-              </Button>
+              <div className="flex flex-col gap-1">
+                <Button
+                  variant="green"
+                  size="sm"
+                  onClick={() => finalApproveModalRef && finalApproveModalRef.current?.showModal()}
+                  disabled={!canVote}
+                >
+                  Final Approve
+                </Button>
+                {!canVote && <FormErrorMessage error="Voted" className="text-center" />}
+              </div>
             ) : (
               <div className="flex flex-col gap-1">
                 <Button

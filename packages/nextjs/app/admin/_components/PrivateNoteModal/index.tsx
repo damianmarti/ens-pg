@@ -4,13 +4,13 @@ import { PrivateNoteModalFormValues, privateNoteModalFormSchema } from "./schema
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { useSignTypedData } from "wagmi";
-import { StagePrivateNoteReqBody } from "~~/app/api/stages/[stageId]/private-note/route";
 import { Button } from "~~/components/pg-ens/Button";
 import { FormTextarea } from "~~/components/pg-ens/form-fields/FormTextarea";
 import { useFormMethods } from "~~/hooks/pg-ens/useFormMethods";
 import { LargeStage } from "~~/services/database/repositories/large-stages";
 import { Stage } from "~~/services/database/repositories/stages";
 import { EIP_712_DOMAIN, EIP_712_TYPES__STAGE_PRIVATE_NOTE } from "~~/utils/eip712";
+import { StagePrivateNoteReqBody } from "~~/utils/privateNote";
 import { postMutationFetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 

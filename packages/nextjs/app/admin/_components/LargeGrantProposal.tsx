@@ -110,12 +110,20 @@ export const LargeGrantProposal = ({ proposal, userSubmissionsAmount, isGrant }:
         {(latestStage.approvalVotes.length > 0 || latestStage.rejectVotes.length > 0) && (
           <div className="flex gap-1 justify-end">
             {latestStage.approvalVotes.map(vote => (
-              <div key={vote.id} className="tooltip" data-tip={`Pre-approved by ${vote.authorAddress}`}>
+              <div
+                key={vote.id}
+                className="tooltip lg:tooltip-top tooltip-left"
+                data-tip={`Pre-approved by ${vote.authorAddress}`}
+              >
                 <div>👍</div>
               </div>
             ))}
             {latestStage.rejectVotes.map(vote => (
-              <div key={vote.id} className="tooltip" data-tip={`Pre-rejected by ${vote.authorAddress}`}>
+              <div
+                key={vote.id}
+                className="tooltip lg:tooltip-top tooltip-left"
+                data-tip={`Pre-rejected by ${vote.authorAddress}`}
+              >
                 <div>👎</div>
               </div>
             ))}

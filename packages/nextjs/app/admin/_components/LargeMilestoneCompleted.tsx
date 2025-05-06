@@ -76,7 +76,7 @@ export const LargeMilestoneCompleted = ({ milestone }: { milestone: LargeMilesto
         </div>
         {isFinalApproveAvailable && (
           <div className="flex gap-1 justify-end mt-2">
-            <div className="tooltip" data-tip={`Pre-approved by ${milestone.verifiedBy}`}>
+            <div className="tooltip tooltip-left" data-tip={`Pre-approved by ${milestone.verifiedBy}`}>
               <div>👍</div>
             </div>
           </div>

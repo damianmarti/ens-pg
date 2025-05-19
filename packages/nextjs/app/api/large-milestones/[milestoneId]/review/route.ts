@@ -7,6 +7,7 @@ import {
   updateMilestone,
 } from "~~/services/database/repositories/large-milestones";
 import { getStageWithMilestones, updateStageStatusToCompleted } from "~~/services/database/repositories/large-stages";
+import { notifyTelegramBot } from "~~/services/notifications/telegram";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__REVIEW_LARGE_MILESTONE } from "~~/utils/eip712";
 
@@ -116,6 +117,10 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
       if (allMilestonesPaid) {
         await updateStageStatusToCompleted(stage.id);
       }
+    }
+
+    if (status === "completed") {
+      await notifyTelegramBot("largeMilestone", { largeMilestone: milestone });
     }
 
     return NextResponse.json({ milestoneId, status }, { status: 200 });

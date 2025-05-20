@@ -120,7 +120,9 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
     }
 
     if (status === "completed") {
-      await notifyTelegramBot("largeMilestone", { largeMilestone: milestone });
+      // Fetch the updated milestone
+      const updatedMilestone = await getMilestoneByIdWithRelatedData(Number(milestoneId));
+      await notifyTelegramBot("largeMilestone", { largeMilestone: updatedMilestone });
     }
 
     return NextResponse.json({ milestoneId, status }, { status: 200 });

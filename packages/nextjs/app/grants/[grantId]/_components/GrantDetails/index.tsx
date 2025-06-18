@@ -75,7 +75,6 @@ export const GrantDetails = async ({ grant }: GrantDetailsProps) => {
             ))
           ) : (
             <>
-              <GrantDetailsField title="Project milestones" description={grant.milestones} />
               <GrantDetailsField title="Stage milestones" description={grant.stages} />
             </>
           )}

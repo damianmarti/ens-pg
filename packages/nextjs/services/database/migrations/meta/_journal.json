@@ -43,6 +43,13 @@
       "when": 1749750852086,
       "tag": "0005_charming_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1750356203342,
+      "tag": "0006_known_wrecker",
+      "breakpoints": true
     }
   ]
 }

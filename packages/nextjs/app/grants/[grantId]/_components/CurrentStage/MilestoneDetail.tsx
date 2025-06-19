@@ -6,18 +6,16 @@ import { formatEther } from "viem";
 import { BadgeMilestone } from "~~/components/pg-ens/BadgeMilestone";
 import { Button } from "~~/components/pg-ens/Button";
 import { Milestone } from "~~/services/database/repositories/milestones";
-import { Stage } from "~~/services/database/repositories/stages";
 import { getFormattedDateWithDay } from "~~/utils/getFormattedDate";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 
 type MilestoneDetailProps = {
   milestone: Milestone;
-  stage: Stage;
   contractGrantId?: bigint;
   refetchContractInfo: () => Promise<any>;
 };
 
-export const MilestoneDetail = ({ milestone, stage, contractGrantId, refetchContractInfo }: MilestoneDetailProps) => {
+export const MilestoneDetail = ({ milestone, contractGrantId, refetchContractInfo }: MilestoneDetailProps) => {
   const withdrawModalRef = useRef<HTMLDialogElement>(null);
 
   return (
@@ -62,9 +60,9 @@ export const MilestoneDetail = ({ milestone, stage, contractGrantId, refetchCont
                     {milestone.status === "rejected" ? "Rejection notes" : "Note"}: {milestone.statusNote}
                   </div>
                 )}
-                {milestone.status === "paid" && milestone.paidAt && (
+                {milestone.status === "paid" && milestone.completedAt && (
                   <div className="mt-2 ml-4 text-sm font-bold text-gray-400">
-                    Paid on {getFormattedDateWithDay(milestone.paidAt)} -
+                    Withdraw on {getFormattedDateWithDay(milestone.completedAt)} -
                     <a
                       href={`https://optimistic.etherscan.io/tx/${milestone.paymentTx}`}
                       target="_blank"
@@ -83,7 +81,7 @@ export const MilestoneDetail = ({ milestone, stage, contractGrantId, refetchCont
 
       <WithdrawModal
         ref={withdrawModalRef}
-        stage={stage}
+        milestone={milestone}
         closeModal={() => withdrawModalRef.current?.close()}
         contractGrantId={contractGrantId}
         refetchContractInfo={refetchContractInfo}

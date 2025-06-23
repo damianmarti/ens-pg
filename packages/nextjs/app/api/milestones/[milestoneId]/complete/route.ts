@@ -23,7 +23,11 @@ export async function POST(req: NextRequest, { params }: { params: { milestoneId
 
     if (!milestone) return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
 
-    if (session?.user.address !== milestone.stage.grant.builderAddress) {
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (session.user.address !== milestone.stage.grant.builderAddress) {
       return NextResponse.json({ error: "Only grant owner can complete milestones" }, { status: 401 });
     }
 

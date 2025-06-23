@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { useRouter } from "next/navigation";
 import { WithdrawModalFormValues, withdrawModalFormSchema } from "./schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { Toaster } from "react-hot-toast";
 import { formatEther } from "viem";
@@ -13,6 +13,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { Milestone } from "~~/services/database/repositories/milestones";
 import { multilineStringToTsx } from "~~/utils/multiline-string-to-tsx";
 import { postMutationFetcher } from "~~/utils/react-query";
+import { fetcher } from "~~/utils/react-query";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type WithdrawModalProps = {
@@ -38,10 +39,30 @@ export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
         postMutationFetcher(`/api/milestones/${milestone.id}/complete`, { body: completionData }),
     });
 
+    const { data: milestoneStatus, isLoading: isLoadingMilestoneStatus } = useQuery({
+      queryKey: ["milestone-status", { milestoneId: milestone.id }],
+      queryFn: () => fetcher<{ status: string }>(`/api/milestones/${milestone.id}/status`),
+    });
+
     const onSubmit = async (fieldValues: WithdrawModalFormValues) => {
       let txnHash: string | undefined;
       try {
         const { completionProof } = fieldValues;
+
+        if (!milestoneStatus) {
+          notification.error("Error loading milestone.");
+          return;
+        }
+
+        if (milestoneStatus.status === "paid") {
+          notification.error("Milestone already paid.");
+          return;
+        }
+
+        if (milestoneStatus.status !== "approved") {
+          notification.error("Milestone must be approved before withdrawing.");
+          return;
+        }
 
         txnHash = await writeContractAsync({
           functionName: "streamWithdraw",
@@ -103,10 +124,10 @@ export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
               </div>
               <Button
                 type="submit"
-                disabled={isWritingWithOnChain || isPostingCompleteMilestone}
+                disabled={isWritingWithOnChain || isPostingCompleteMilestone || isLoadingMilestoneStatus}
                 className="self-center"
               >
-                {(isWritingWithOnChain || isPostingCompleteMilestone) && (
+                {(isWritingWithOnChain || isPostingCompleteMilestone || isLoadingMilestoneStatus) && (
                   <span className="loading loading-spinner"></span>
                 )}
                 Withdraw

@@ -81,12 +81,12 @@ export const WithdrawModal = forwardRef<HTMLDialogElement, WithdrawModalProps>(
             {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost text-xl h-auto">✕</button>
           </form>
-          <hr className="-mx-6 my-0 border-t border-white" />
-          <div className="-mx-6 px-6 py-4 bg-secondary text-xl font-bold">
-            {multilineStringToTsx(milestone.description)}
-          </div>
           <FormProvider {...formMethods}>
             <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col space-y-1 mt-4">
+              <div className="text-xl">
+                <span className="font-bold">Description:</span>
+                <p className="mt-1">{multilineStringToTsx(milestone.description)}</p>
+              </div>
               <div className="text-xl">
                 <span className="font-bold">Amount:</span>
                 <p className="mt-1">{formatEther(milestone.grantedAmount || 0n)} ETH</p>

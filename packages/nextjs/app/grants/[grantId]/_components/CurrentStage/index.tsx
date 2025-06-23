@@ -57,7 +57,9 @@ export const CurrentStage = ({ grant }: CurrentStageProps) => {
             ))}
 
           <GrantProgressBar
-            className="w-full sm:w-1/2"
+            className={`w-full ${
+              (contractGrantInfo && amountLeft === BigInt(0)) || latestStage.status === "completed" ? "sm:w-1/2" : ""
+            }`}
             amount={Number(formatEther(cap))}
             withdrawn={Number(formatEther(amountWithdrawn as unknown as bigint))}
             available={Number(formatEther(unlockedAmount ?? BigInt(0)))}

@@ -30,7 +30,7 @@ const Apply: NextPage = () => {
   const { formMethods, getCommonOptions } = useFormMethods<ApplyFormValues>({
     schema: applyFormSchema,
     defaultValues: {
-      milestones: [{ description: "", proposedDeliverables: "", amount: 0, proposedCompletionDate: new Date() }],
+      milestones: [{ description: "", proposedDeliverables: "", amount: 0 }],
     },
   });
 

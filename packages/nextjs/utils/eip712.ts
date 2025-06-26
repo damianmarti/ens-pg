@@ -6,7 +6,7 @@ export const EIP_712_DOMAIN = {
 export const EIP_712_TYPES__APPLY_FOR_STAGE = {
   Message: [
     { name: "stage_number", type: "string" },
-    { name: "milestone", type: "string" },
+    { name: "milestones", type: "string" },
   ],
 } as const;
 

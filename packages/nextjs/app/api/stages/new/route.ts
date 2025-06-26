@@ -5,13 +5,17 @@ import { newStageModalFormSchema } from "~~/app/grants/[grantId]/_components/Cur
 import deployedContracts from "~~/contracts/deployedContracts";
 import scaffoldConfig from "~~/scaffold.config";
 import { getGrantById } from "~~/services/database/repositories/grants";
-import { StageInsert, createStage, updateStageStatusToCompleted } from "~~/services/database/repositories/stages";
+import {
+  StageInsertWithMilestones,
+  createStage,
+  updateStageStatusToCompleted,
+} from "~~/services/database/repositories/stages";
 import { notifyTelegramBot } from "~~/services/notifications/telegram";
 import { authOptions } from "~~/utils/auth";
 import { EIP_712_DOMAIN, EIP_712_TYPES__APPLY_FOR_STAGE } from "~~/utils/eip712";
 import { getAlchemyHttpUrl } from "~~/utils/scaffold-eth";
 
-export type CreateNewStageReqBody = StageInsert & { signature: `0x${string}` };
+export type CreateNewStageReqBody = StageInsertWithMilestones & { signature: `0x${string}` };
 
 export async function POST(req: Request) {
   try {
@@ -19,7 +23,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as CreateNewStageReqBody;
 
     try {
-      newStageModalFormSchema.parse({ milestone: body.milestone });
+      newStageModalFormSchema.parse({ milestones: body.milestones });
     } catch (err) {
       return NextResponse.json({ error: "Invalid form details submitted" }, { status: 400 });
     }
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
       domain: EIP_712_DOMAIN,
       types: EIP_712_TYPES__APPLY_FOR_STAGE,
       primaryType: "Message",
-      message: { stage_number: (latestStage.stageNumber + 1).toString(), milestone: body.milestone as string },
+      message: { stage_number: (latestStage.stageNumber + 1).toString(), milestones: JSON.stringify(body.milestones) },
       signature,
     });
 
@@ -95,9 +99,9 @@ export async function POST(req: Request) {
       await updateStageStatusToCompleted(latestStage.id);
     }
 
-    const [createdStage] = await createStage({
+    const createdStage = await createStage({
       grantId: newStage.grantId,
-      milestone: newStage.milestone,
+      milestones: newStage.milestones,
       stageNumber: latestStage.stageNumber + 1,
     });
 
@@ -106,7 +110,7 @@ export async function POST(req: Request) {
       grant: grant,
     });
 
-    return NextResponse.json({ grantId: newStage.grantId, stageId: createdStage.id }, { status: 201 });
+    return NextResponse.json({ grantId: newStage.grantId, stageId: createdStage.stageId }, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Error creating grant" }, { status: 500 });

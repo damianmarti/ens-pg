@@ -121,7 +121,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
                         showMessageLength
                         {...getCommonOptions(`milestones.${index}.proposedDeliverables`)}
                       />
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-16 sm:gap-y-1">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-x-16 sm:gap-y-1">
                         <FormSelect
                           label="Requested Funds (in ETH)"
                           options={["0.25", "0.5", "1", "2"]}
@@ -153,17 +153,12 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
                       })
                     }
                     variant="purple-secondary"
-                    className="mt-4 px-8"
+                    className="mt-4 px-8 h-[52px]"
                   >
                     + Milestone
                   </Button>
                 </div>
-                <Button
-                  variant="green"
-                  type="submit"
-                  disabled={isPostingNewStage || isSigning}
-                  className="self-center mt-4"
-                >
+                <Button type="submit" disabled={isPostingNewStage || isSigning} className="self-center mt-4">
                   {(isPostingNewStage || isSigning) && <span className="loading loading-spinner"></span>}
                   Apply
                 </Button>

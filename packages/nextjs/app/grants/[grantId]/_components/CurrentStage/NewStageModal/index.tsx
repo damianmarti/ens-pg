@@ -131,7 +131,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-16 sm:gap-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-16 sm:gap-y-1 items-start">
                   <div className="pt-6">
                     <label className="text-xl font-bold">
                       Total:
@@ -153,7 +153,7 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
                       })
                     }
                     variant="purple-secondary"
-                    className="mt-4 px-8 h-[52px]"
+                    className="mt-4 px-8"
                   >
                     + Milestone
                   </Button>

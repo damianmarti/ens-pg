@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { createPublicClient, http, recoverTypedDataAddress } from "viem";
+import { createPublicClient, http, parseEther, recoverTypedDataAddress } from "viem";
 import { newStageModalFormSchema } from "~~/app/grants/[grantId]/_components/CurrentStage/NewStageModal/schema";
 import deployedContracts from "~~/contracts/deployedContracts";
 import scaffoldConfig from "~~/scaffold.config";
@@ -29,6 +29,11 @@ export async function POST(req: Request) {
     }
 
     const { signature, ...newStage } = body;
+
+    const totalAmount = newStage.milestones.reduce((sum, milestone) => sum + BigInt(milestone.requestedAmount), 0n);
+    if (totalAmount > parseEther("2")) {
+      return NextResponse.json({ error: "Total requested funds should not exceed 2 ETH" }, { status: 400 });
+    }
 
     const grant = await getGrantById(newStage.grantId);
     if (!grant) return NextResponse.json({ error: "Grant not found" }, { status: 404 });

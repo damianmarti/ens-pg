@@ -74,3 +74,12 @@ export async function updateStageMilestonesGrantedAmounts(
     return milestoneIds;
   });
 }
+
+export async function getStageWithMilestones(stageId: number) {
+  return await db.query.stages.findFirst({
+    where: eq(stages.id, stageId),
+    with: {
+      milestones: true,
+    },
+  });
+}

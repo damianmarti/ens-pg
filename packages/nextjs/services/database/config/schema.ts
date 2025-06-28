@@ -71,7 +71,6 @@ export const milestones = pgTable("milestones", {
   status: milestonesStatusEnum("status").notNull().default("proposed"),
   statusNote: text("statusNote"),
   paymentTx: varchar("payment_tx", { length: 66 }),
-  paidAt: timestamp("paid_at"),
 });
 
 export const milestonesRelations = relations(milestones, ({ one }) => ({

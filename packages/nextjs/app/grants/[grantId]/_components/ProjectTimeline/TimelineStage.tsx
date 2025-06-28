@@ -85,7 +85,7 @@ export const TimelineStage = ({ stage, grant }: TimelineStageProps) => {
               </div>
             )}
 
-            {stage.milestones && (
+            {stage.milestones ? (
               <div className="mt-4">
                 {stage.milestones.map((milestone, idx) => (
                   <div key={`milestone-${milestone.id}`} className="mt-2">
@@ -112,17 +112,17 @@ export const TimelineStage = ({ stage, grant }: TimelineStageProps) => {
                   </div>
                 ))}
               </div>
-            )}
+            ) : (
+              withdrawals.map((withdrawal, idx) => (
+                <div key={`withdrawal-${withdrawal.id}`} className="mt-3 text-gray-500">
+                  <div className="font-bold text-lg">
+                    Milestone {idx + 1} ({formatEther(BigInt(withdrawal.amount))} Eth withdraw)
+                  </div>
 
-            {withdrawals.map((withdrawal, idx) => (
-              <div key={`withdrawal-${withdrawal.id}`} className="mt-3 text-gray-500">
-                <div className="font-bold text-lg">
-                  Milestone {idx + 1} ({formatEther(BigInt(withdrawal.amount))} Eth withdraw)
+                  {multilineStringToTsx(withdrawal.reason || "-")}
                 </div>
-
-                {multilineStringToTsx(withdrawal.reason || "-")}
-              </div>
-            ))}
+              ))
+            )}
           </>
         ) : (
           <div className="font-bold text-2xl -mt-1.5 text-gray-500">Stage {stage.stageNumber} (locked)</div>

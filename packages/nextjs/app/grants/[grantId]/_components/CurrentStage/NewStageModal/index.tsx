@@ -158,7 +158,11 @@ export const NewStageModal = forwardRef<HTMLDialogElement, NewStageModalProps>(
                     + Milestone
                   </Button>
                 </div>
-                <Button type="submit" disabled={isPostingNewStage || isSigning} className="self-center mt-4">
+                <Button
+                  type="submit"
+                  disabled={isPostingNewStage || isSigning || totalAmount > 2}
+                  className="self-center mt-4"
+                >
                   {(isPostingNewStage || isSigning) && <span className="loading loading-spinner"></span>}
                   Apply
                 </Button>

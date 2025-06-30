@@ -4,6 +4,9 @@ import { db } from "~~/services/database/config/postgresClient";
 import { grants, milestones, stages, stagesStatusEnum } from "~~/services/database/config/schema";
 
 export type StageInsert = InferInsertModel<typeof stages>;
+export type StageInsertWithMilestones = StageInsert & {
+  milestones: Omit<InferInsertModel<typeof milestones>, "stageId" | "milestoneNumber">[];
+};
 export type StageUpdate = Partial<StageInsert>;
 export type Stage = InferSelectModel<typeof stages>;
 export type StageWithMilestones = Stage & {
@@ -11,8 +14,27 @@ export type StageWithMilestones = Stage & {
 };
 export type Status = (typeof stagesStatusEnum.enumValues)[number];
 
-export async function createStage(stage: StageInsert) {
-  return await db.insert(stages).values(stage).returning({ id: stages.id });
+export async function createStage(
+  stage: StageInsertWithMilestones,
+): Promise<{ stageId: number; createdMilestones: number[] }> {
+  return await db.transaction(async tx => {
+    const [createdStage] = await tx.insert(stages).values(stage).returning({ id: stages.id });
+
+    // Prepare all milestone data with the correct stageId and milestoneNumber
+    const milestoneData = stage.milestones.map((milestone, index) => ({
+      ...milestone,
+      stageId: createdStage.id,
+      milestoneNumber: index + 1,
+    }));
+
+    // Bulk insert all milestones at once
+    const createdMilestoneResults = await tx.insert(milestones).values(milestoneData).returning({ id: milestones.id });
+
+    // Extract the IDs of the created milestones
+    const createdMilestones = createdMilestoneResults.map(result => result.id);
+
+    return { stageId: createdStage.id, createdMilestones };
+  });
 }
 
 export async function updateStage(stageId: Required<StageUpdate>["id"], stage: StageUpdate) {

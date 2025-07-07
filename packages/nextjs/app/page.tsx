@@ -5,7 +5,7 @@ import { LargeGrantsStats } from "./_components/stats/LargeGrantsStats";
 import type { NextPage } from "next";
 import { Button } from "~~/components/pg-ens/Button";
 
-export const revalidate = 30; //21600; // 6 hours
+export const revalidate = 60; //21600; // 6 hours
 
 const workflowItems = [
   {

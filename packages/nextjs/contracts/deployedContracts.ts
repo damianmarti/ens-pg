@@ -4303,7 +4303,7 @@ const deployedContracts = {
       },
     },
     Stream: {
-      address: "0x6612a71133c12480D76cb5204B4CA7fcCbc9Bf58",
+      address: "0x2c347833861d98ec41f8E46CE8E334D5f07e4A2E",
       abi: [
         {
           inputs: [

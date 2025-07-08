@@ -37,7 +37,7 @@ const scaffoldConfig = {
   disableBurnerWalletOnLocal: true,
 
   // start blocknumber for contract deployment indexing
-  startBlock: 128564237,
+  startBlock: 30090784,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
